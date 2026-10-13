@@ -1,0 +1,126 @@
+{
+  "title": "PromisePulse \u2014 E-Commerce Intelligence",
+  "generated_at": "2026-10-13T02:24:01.407255+00:00",
+  "dataset": {
+    "name": "Brazilian E-Commerce Public Dataset by Olist",
+    "provider": "Olist (Kaggle)",
+    "url": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
+    "license": "CC BY-NC-SA 4.0",
+    "period": "2016\u20132018 (historical; not live orders)"
+  },
+  "source_files": [
+    {
+      "file": "olist_customers_dataset.csv",
+      "table": "customers",
+      "rows": 99441,
+      "bytes": 9033957
+    },
+    {
+      "file": "olist_sellers_dataset.csv",
+      "table": "sellers",
+      "rows": 3095,
+      "bytes": 174703
+    },
+    {
+      "file": "olist_products_dataset.csv",
+      "table": "products",
+      "rows": 32951,
+      "bytes": 2379446
+    },
+    {
+      "file": "olist_orders_dataset.csv",
+      "table": "orders",
+      "rows": 99441,
+      "bytes": 17654914
+    },
+    {
+      "file": "olist_order_items_dataset.csv",
+      "table": "order_items",
+      "rows": 112650,
+      "bytes": 15438671
+    },
+    {
+      "file": "olist_order_payments_dataset.csv",
+      "table": "order_payments",
+      "rows": 103886,
+      "bytes": 5777138
+    },
+    {
+      "file": "olist_order_reviews_dataset.csv",
+      "table": "order_reviews",
+      "rows": 99224,
+      "bytes": 14451670
+    },
+    {
+      "file": "product_category_name_translation.csv",
+      "table": "product_category_translation",
+      "rows": 71,
+      "bytes": 2613
+    }
+  ],
+  "warehouse": {
+    "dim_customer": 99441,
+    "dim_product": 32951,
+    "dim_seller": 3095,
+    "dim_date": 774,
+    "fact_orders": 99441,
+    "fact_order_items": 112650,
+    "risk_predictions": 19294
+  },
+  "quality": {
+    "duplicate_order_keys": 0,
+    "duplicate_item_keys": 0,
+    "missing_order_customer": 0,
+    "missing_item_product": 0,
+    "missing_item_seller": 0,
+    "unlabeled_orders": 2971,
+    "labeled_deliveries": 96470,
+    "missing_payment_orders": 1,
+    "duplicate_source_review_ids": 814,
+    "payment_total_delta_cents": 0,
+    "item_sales_delta_cents": 0,
+    "revenue_note": "Order payment totals and item sales use separate grains and are not summed after joining raw items."
+  },
+  "model": {
+    "status": "evaluated",
+    "prediction_time": "At order placement (historical simulated decision point)",
+    "target": "Delivered after estimated delivery calendar date; unknown outcomes excluded",
+    "threshold": 0.6,
+    "train_rows": 58731,
+    "validation_rows": 12435,
+    "test_rows": 19294,
+    "test_start": "2018-05-26 18:18:03",
+    "test_end": "2018-08-29 15:00:37",
+    "model_metrics": {
+      "precision": 0.04882959979864083,
+      "recall": 0.2878338278931751,
+      "f1": 0.08349472778136433,
+      "roc_auc": 0.6980031681577832,
+      "pr_auc": 0.06776764211310733,
+      "true_positive": 194,
+      "false_positive": 3779,
+      "true_negative": 14841,
+      "false_negative": 480
+    },
+    "baseline_metrics": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.5,
+      "pr_auc": 0.03493313983621851,
+      "true_positive": 0,
+      "false_positive": 0,
+      "true_negative": 18620,
+      "false_negative": 674
+    }
+  },
+  "lineage": [
+    "Kaggle Olist CSVs",
+    "DuckDB raw staging",
+    "Dimensional warehouse",
+    "SQL OLAP operations",
+    "Chronological sklearn classification",
+    "Parquet export",
+    "React + DuckDB-Wasm"
+  ]
+}

@@ -1,0 +1,14 @@
+node_modules/
+web/dist/
+web/public/data/*.parquet
+web/public/data/manifest.json
+warehouse/
+models/
+data/raw/
+*.duckdb
+*.duckdb.wal
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc

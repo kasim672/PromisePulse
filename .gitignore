@@ -1,0 +1,53 @@
+# PromisePulse — Git Ignore Configuration
+
+# Dependencies
+node_modules/
+web/node_modules/
+.venv/
+env/
+venv/
+
+# Build artifacts & distribution
+web/dist/
+dist/
+build/
+*.tsbuildinfo
+web/*.tsbuildinfo
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local warehouse databases & temporary WAL files
+warehouse/*.duckdb
+warehouse/*.duckdb.wal
+*.duckdb
+*.duckdb.wal
+
+# Raw datasets (Do not commit external Kaggle raw CSVs)
+data/raw/
+data/*.csv
+data/*.zip
+
+# Environments & credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Notes:
+# web/public/data/ contains generated Parquet exports and manifest.json required
+# for static deployment of the web client. These assets are tracked in the web project.

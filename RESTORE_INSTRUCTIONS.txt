@@ -1,0 +1,21 @@
+PROMISEPULSE WEB REPAIR
+
+This archive contains the complete React/Vite source and configuration of the luxury redesign.
+It does not contain web/public/data or model/data exports, so those are never overwritten.
+
+From your Linux terminal:
+
+  cd ~/Downloads/promisepulse-react-mvp
+  mkdir -p ~/Downloads/promisepulse-backup
+  cp -a web ~/Downloads/promisepulse-backup/web-before-repair
+  unzip -o ~/Downloads/promisepulse-web-repair.zip -d ~/Downloads/promisepulse-react-mvp
+  cd web
+  npm install
+  npm run build
+  npm run dev
+
+If exported data manifest is missing, stop server and run at project root:
+  .venv/bin/python scripts/build_web_data.py --raw-dir ~/Downloads/olist-sales-analytics-pipeline-main/data/raw --train
+  .venv/bin/python scripts/verify_export.py
+
+Use your real dataset; the ZIP doesn't contain data.

@@ -1,0 +1,8 @@
+# PromisePulse React + embedded DuckDB migration
+web/node_modules/
+web/dist/
+web/public/data/*.parquet
+web/public/data/manifest.json
+warehouse/
+*.duckdb
+*.duckdb.wal
