@@ -79,6 +79,14 @@ The Brazilian E-Commerce Public Dataset provided by Olist contains 100,000 real 
 
 PromisePulse enforces a strict separation between **offline compute** (heavy data extraction, cleansing, dimensional modeling, and model training) and **client-side analytical presentation** (zero-latency SQL querying and visualization).
 
+<div align="center">
+  <img src="docs/screenshots/architecture.png" alt="PromisePulse Architecture Diagram" width="85%" />
+  <p><em>Figure 2: End-to-end architecture diagram detailing the offline DuckDB + scikit-learn pipeline and the zero-server browser DuckDB-Wasm runtime.</em></p>
+</div>
+
+<details>
+<summary><strong>View Mermaid Architecture Source</strong></summary>
+
 ```mermaid
 flowchart TB
     subgraph Offline_Pipeline["Offline Data Engineering & Mining (Python & DuckDB)"]
@@ -115,6 +123,7 @@ flowchart TB
         APP --> UI_CATALOG
     end
 ```
+</details>
 
 ---
 
@@ -123,6 +132,14 @@ flowchart TB
 The analytical backbone of PromisePulse is a conformed **Star Schema** designed to eliminate fan-out errors and support rapid OLAP aggregations.
 
 ### Schema Entity-Relationship Diagram
+
+<div align="center">
+  <img src="docs/screenshots/warehouse-er-schema.png" alt="Warehouse Entity-Relationship Diagram" width="85%" />
+  <p><em>Figure 3: Conformed Star Schema dimensional model with fact_orders, fact_order_items, and four dimension tables.</em></p>
+</div>
+
+<details>
+<summary><strong>View Mermaid Schema ER Source</strong></summary>
 
 ```mermaid
 erDiagram
@@ -198,6 +215,7 @@ erDiagram
         VARCHAR risk_band
     }
 ```
+</details>
 
 ### Table Grains and Architectural Rationale
 
