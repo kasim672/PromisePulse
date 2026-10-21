@@ -13,7 +13,7 @@ export function dashboardQueries(year: YearSelection) {
       COUNT(*) FILTER (WHERE is_late = true) AS late_orders,
       COUNT(*) FILTER (WHERE is_late = false) AS ontime_orders,
       ROUND(100.0 * COUNT(*) FILTER (WHERE is_late = false)/NULLIF(COUNT(is_late),0),1) AS ontime_pct,
-      ROUND(AVG(date_diff('day',purchase_ts,delivered_ts)) FILTER (WHERE is_late IS NOT NULL),1) AS delivery_days
+      ROUND(AVG(date_diff('day',purchase_ts,delivered_ts)) FILTER (WHERE is_late IS NOT NULL AND delivered_ts >= purchase_ts),1) AS delivery_days
       FROM fact_orders o WHERE ${period}`,
     monthly: `SELECT strftime(o.purchase_ts, '%Y-%m') AS period,
       COUNT(*) AS orders, ROUND(SUM(o.payment_total),2) AS revenue,
