@@ -9,11 +9,13 @@ import {
 import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
+import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
 import type { OlapFilters, OlapOperation, WarehouseTable } from './queries'
 
 const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] = [
   { label: 'Overview', icon: LayoutDashboard, description: 'Executive overview' },
+  { label: 'Intelligence', icon: BarChart3, description: 'Historical analytical intelligence' },
   { label: 'OLAP Lab', icon: Layers3, description: 'Run multidimensional SQL' },
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
@@ -48,7 +50,7 @@ function Table({ rows, max = 100 }: { rows: RecordRow[]; max?: number }) {
     <tbody>{visible.map((r, i) => <tr key={i}>{cols.map(c => <td key={c} title={r[c] === null ? 'NULL' : String(r[c])}>{typeof r[c] === 'number' ? nfmt(r[c], 2) : String(r[c] ?? '—')}</td>)}</tr>)}</tbody></table>
     <div className="table-foot">Showing {visible.length.toLocaleString()} of {rows.length.toLocaleString()} returned rows</div></div>
 }
-function BarChart({ data, x, y, currency = false }: { data: RecordRow[]; x: string; y: string; currency?: boolean }) {
+export function BarChart({ data, x, y, currency = false }: { data: RecordRow[]; x: string; y: string; currency?: boolean }) {
   const items = data.slice(0, 12)
   const max = Math.max(1, ...items.map(row => Number(row[y]) || 0))
   if (!items.length) return <Empty title="No chart data" description="Generate warehouse exports to view trends." />
@@ -60,7 +62,7 @@ function BarChart({ data, x, y, currency = false }: { data: RecordRow[]; x: stri
     </div>
   })}</div>
 }
-function RevenueChart({ rows }: { rows: RecordRow[] }) {
+export function RevenueChart({ rows }: { rows: RecordRow[] }) {
   const [selected, setSelected] = useState<number | null>(null)
   const data = rows.filter(r => Number.isFinite(Number(r.payment_revenue)))
   if (!data.length) return <Empty title="No monthly revenue data" description="Run the real-data export to populate this chart." />
@@ -108,7 +110,7 @@ function useSql(db: Warehouse | null, sql: string) {
   return { rows, loading, error }
 }
 
-function Overview({ db, onNavigate }: { db: Warehouse; onNavigate: (tab: Tab) => void }) {
+export function Overview({ db, onNavigate }: { db: Warehouse; onNavigate: (tab: Tab) => void }) {
   const kpis = useSql(db, OVERVIEW_SQL)
   const trends = useSql(db, TRENDS_SQL)
   const categories = useSql(db, CATEGORY_SQL)
@@ -282,22 +284,23 @@ export default function App() {
   return <div className="app-shell">
     <header className="site-header">
       <div className="header-inner">
-        <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.png" alt="PromisePulse — Data Intelligence" /></button>
+        <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><span className="pp-brand-symbol" aria-hidden="true">✳</span><span className="pp-brand-name">promise<span>pulse.</span></span></button>
         <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => <button key={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}>{item.label}</button>)}</nav>
-        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'LOCAL SQL READY' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore SQL <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore SQL <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
     </header>
     <main className="main-content" id="main-content">
       {pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {!pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
       {db && <>
-        {active === 'Overview' && <Overview db={db} onNavigate={changePage}/>}
+        {active === 'Overview' && <PremiumOverview db={db} onNavigate={changePage}/>}
+        {active === 'Intelligence' && <PremiumIntelligence db={db}/>}
         {active === 'OLAP Lab' && <OlapLab db={db}/>}
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
       </>}
     </main>
-    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse overview" onClick={()=>changePage('Overview')}><img className="footer-logo-image" src="/promisepulse-logo.png" alt="PromisePulse — Data Intelligence" /></button><span>Research-grade analytics on real historical data.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
+    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse overview" onClick={()=>changePage('Overview')}><span className="pp-brand-symbol" aria-hidden="true">✳</span><span className="pp-brand-name">promise<span>pulse.</span></span></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
 }
