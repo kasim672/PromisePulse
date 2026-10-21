@@ -22,4 +22,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Run SQL generation regression tests
+        env:
+          NODE_PATH: ${{ github.workspace }}/web/node_modules
         run: node ../tests/test_sql_generation.cjs
