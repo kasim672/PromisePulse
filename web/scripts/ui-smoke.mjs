@@ -53,6 +53,8 @@ try {
       }
     }
     await page.getByRole('navigation',{name:'Primary workspace'}).getByRole('button',{name:'Overview'}).click()
+    await page.locator('.pp-map-layout').waitFor({timeout:120000})
+    await page.mouse.move(viewport.width-25,40)
     await page.screenshot({path:join('artifacts',viewport.name+'-overview.png'),fullPage:true,animations:'disabled'})
     ensure(errors.length===0,viewport.name+' browser errors: '+errors.join('; '))
     console.log('PASS', viewport.name, 'six routes, no overflow, screenshot saved')
