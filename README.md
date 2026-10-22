@@ -53,12 +53,36 @@ The Brazilian E-Commerce Public Dataset provided by Olist contains 100,000 real 
 
 ## Key Features
 
-* **Executive Performance Overview**: Real-time evaluation of aggregate order volume (99,441 facts), total payment revenue (R$ 16.01M), average basket size (R$ 160.99), and empirical late delivery rate (6.8%).
+* **Executive Performance Overview**: Interactive historical evaluation of aggregate order volume (99,441 facts), total payment revenue (R$ 16.01M), average basket size (R$ 160.99), and empirical late delivery rate (6.8%).
 * **Interactive In-Browser OLAP Lab**: First-class support for multi-dimensional operations (`ROLLUP`, Drill-down, Slice, Dice, and Pivot) executing standard SQL in milliseconds via WebAssembly.
 * **Predictive Delivery-Risk Investigation**: Interactive triage center featuring adjustable probability decision thresholds, dynamic client-side confusion matrix recalculation, and CSV investigation export.
 * **Audited Data Catalog**: Comprehensive provenance documentation detailing source CSV bytes and record counts, table grain definitions, and interactive live SQL table previews.
 * **Automated Data Quality & Reconciliation**: Strict zero-tolerance assertions guaranteeing primary key uniqueness, referential foreign-key completeness, and exact penny-level revenue reconciliation.
 * **Responsive Modern Luxury Interface**: Clean design language built with CSS custom properties, accessible contrast ratios, full mobile drawer navigation, and zero third-party UI framework bloat.
+
+---
+
+## Analytics Atlas — 36 Reproducible Interactive Charts
+
+The optional **Analytics Atlas** workspace adds a single dock destination while preserving the existing dashboard, Brazilian state choropleth, OLAP Lab, Risk Center, and both themes. Its 36 views comprise 32 grouped trend/ranking/distribution plots and four advanced research plots, with one lens loaded on demand.
+
+| Research lens | Interactive views | Unit of observation |
+| --- | ---: | --- |
+| Commercial pulse | 4 | Purchase month, one row per order |
+| Weekly behavior | 4 | Purchase weekday, one row per order |
+| Hourly demand | 4 | Purchase hour, one row per order |
+| Regional comparisons | 4 | Customer state, one row per order |
+| Fulfillment anatomy | 4 | Nonnegative observed delivery-duration bands |
+| Customer experience | 4 | Orders with recorded review score |
+| Product economics | 4 | Item facts grouped by product category |
+| Seller geography | 4 | Order-item facts grouped by seller state |
+| Research laboratory | 4 | Weekday×hour / state×month / review×punctuality matrices and held-out calibration |
+
+Use the global **Year** and **Customer state** filters to query DuckDB-Wasm Parquet aggregations; navigate each figure by keyboard, inspect selected bins, switch line/bar/area/dot representation, expand underlying aggregate tables and download CSVs. Late-rate plots include labeled-outcome denominators and exploratory **95% Wilson** interval whiskers, which do not adjust for confounding or clustered customer orders. Risk calibration uses the model's actual held-out cohort rather than the year filter; no fabricated live logistics data is present.
+
+**Technical appendix:** [Figure inventory, SQL lineage, denominators, exclusions and publication limits](docs/ANALYTICS_ATLAS_METHODOLOGY.md). **Code:** `web/src/AnalyticsAtlas.tsx`, `web/src/atlasQueries.ts`, `web/src/atlas.css`. **Verification:** `node tests/test_atlas.cjs`.
+
+These interactive visualizations support exploratory research; they do **not** establish novel scientific findings, causal effects or journal acceptance.
 
 ---
 
