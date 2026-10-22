@@ -82,46 +82,46 @@ function validated(year:AtlasYear,state:AtlasState){
   if(!['all','2016','2017','2018'].includes(year))throw new Error('Invalid year')
   if(!ATLAS_STATES.includes(state))throw new Error('Invalid state')
   return {
-    year:year==='all'?'TRUE':\`EXTRACT(YEAR FROM o.purchase_ts)=\${Number(year)}\`,
-    state:state==='ALL'?'TRUE':\`c.customer_state='\${state}'\`
+    year:year==='all'?'TRUE':`EXTRACT(YEAR FROM o.purchase_ts)=${Number(year)}`,
+    state:state==='ALL'?'TRUE':`c.customer_state='${state}'`
   }
 }
-const O=\`FROM fact_orders o LEFT JOIN dim_customer c USING(customer_id)\`
-const duration=\`date_diff('day',o.purchase_ts,o.delivered_ts)\`
-const measures=\`COUNT(*) AS orders, ROUND(SUM(o.payment_total),2) AS payment_revenue,
+const O=`FROM fact_orders o LEFT JOIN dim_customer c USING(customer_id)`
+const duration=`date_diff('day',o.purchase_ts,o.delivered_ts)`
+const measures=`COUNT(*) AS orders, ROUND(SUM(o.payment_total),2) AS payment_revenue,
 ROUND(AVG(o.payment_total),2) AS avg_payment,
 COUNT(o.is_late) AS labeled_orders,
 ROUND(100.0*COUNT(*) FILTER(WHERE o.is_late=true)/NULLIF(COUNT(o.is_late),0),2) AS late_pct,
-ROUND(AVG(\${duration}) FILTER(WHERE o.delivered_ts>=o.purchase_ts AND o.purchase_ts IS NOT NULL),2) AS delivery_days\`
+ROUND(AVG(${duration}) FILTER(WHERE o.delivered_ts>=o.purchase_ts AND o.purchase_ts IS NOT NULL),2) AS delivery_days`
 
 export function atlasQuery(lens:AtlasLens,year:AtlasYear,state:AtlasState,modelEvaluated=false):string{
   const f=validated(year,state)
-  const wh=\`WHERE o.purchase_ts IS NOT NULL AND \${f.year} AND \${f.state}\`
+  const wh=`WHERE o.purchase_ts IS NOT NULL AND ${f.year} AND ${f.state}`
   switch(lens){
-    case 'commerce': return \`SELECT strftime(o.purchase_ts,'%Y-%m') AS label,\${measures} \${O} \${wh} GROUP BY 1 ORDER BY 1\`
-    case 'weekday': return \`SELECT CAST(EXTRACT(DOW FROM o.purchase_ts) AS VARCHAR) AS label,\${measures} \${O} \${wh} GROUP BY 1 ORDER BY 1\`
-    case 'hour': return \`SELECT lpad(CAST(EXTRACT(HOUR FROM o.purchase_ts) AS VARCHAR),2,'0') AS label,\${measures} \${O} \${wh} GROUP BY 1 ORDER BY 1\`
-    case 'geography': return \`SELECT c.customer_state AS label,\${measures} \${O} \${wh} AND c.customer_state IS NOT NULL GROUP BY 1 ORDER BY orders DESC\`
-    case 'delivery': return \`SELECT CASE WHEN \${duration}<=7 THEN '01 · 0–7d' WHEN \${duration}<=14 THEN '02 · 8–14d' WHEN \${duration}<=21 THEN '03 · 15–21d' WHEN \${duration}<=30 THEN '04 · 22–30d' ELSE '05 · 31+d' END AS label,
-       \${measures},ROUND(AVG(o.review_score),2) AS avg_review
-       \${O} \${wh} AND o.delivered_ts>=o.purchase_ts AND o.order_status='delivered' GROUP BY 1 ORDER BY 1\`
-    case 'reviews': return \`SELECT CAST(CAST(ROUND(o.review_score) AS INTEGER) AS VARCHAR) AS label,
-       \${measures} \${O} \${wh} AND o.review_score BETWEEN 1 AND 5 GROUP BY 1 ORDER BY 1\`
-    case 'category': return \`SELECT COALESCE(p.category,'Unknown') AS label,
+    case 'commerce': return `SELECT strftime(o.purchase_ts,'%Y-%m') AS label,${measures} ${O} ${wh} GROUP BY 1 ORDER BY 1`
+    case 'weekday': return `SELECT CAST(EXTRACT(DOW FROM o.purchase_ts) AS VARCHAR) AS label,${measures} ${O} ${wh} GROUP BY 1 ORDER BY 1`
+    case 'hour': return `SELECT lpad(CAST(EXTRACT(HOUR FROM o.purchase_ts) AS VARCHAR),2,'0') AS label,${measures} ${O} ${wh} GROUP BY 1 ORDER BY 1`
+    case 'geography': return `SELECT c.customer_state AS label,${measures} ${O} ${wh} AND c.customer_state IS NOT NULL GROUP BY 1 ORDER BY orders DESC`
+    case 'delivery': return `SELECT CASE WHEN ${duration}<=7 THEN '01 · 0–7d' WHEN ${duration}<=14 THEN '02 · 8–14d' WHEN ${duration}<=21 THEN '03 · 15–21d' WHEN ${duration}<=30 THEN '04 · 22–30d' ELSE '05 · 31+d' END AS label,
+       ${measures},ROUND(AVG(o.review_score),2) AS avg_review
+       ${O} ${wh} AND o.delivered_ts>=o.purchase_ts AND o.order_status='delivered' GROUP BY 1 ORDER BY 1`
+    case 'reviews': return `SELECT CAST(CAST(ROUND(o.review_score) AS INTEGER) AS VARCHAR) AS label,
+       ${measures} ${O} ${wh} AND o.review_score BETWEEN 1 AND 5 GROUP BY 1 ORDER BY 1`
+    case 'category': return `SELECT COALESCE(p.category,'Unknown') AS label,
        COUNT(*) AS items,ROUND(SUM(i.price),2) AS item_sales,
        ROUND(AVG(i.price),2) AS avg_price,ROUND(SUM(i.freight_value),2) AS freight_total,
        ROUND(100.0*SUM(i.freight_value)/NULLIF(SUM(i.price+i.freight_value),0),2) AS freight_pct
        FROM fact_order_items i JOIN fact_orders o USING(order_id)
        LEFT JOIN dim_customer c USING(customer_id)
        LEFT JOIN dim_product p USING(product_id)
-       \${wh} GROUP BY 1 ORDER BY item_sales DESC NULLS LAST LIMIT 16\`
-    case 'sellers': return \`SELECT s.seller_state AS label,
+       ${wh} GROUP BY 1 ORDER BY item_sales DESC NULLS LAST LIMIT 16`
+    case 'sellers': return `SELECT s.seller_state AS label,
        COUNT(DISTINCT i.seller_id) AS sellers,COUNT(*) AS items,
        ROUND(SUM(i.price),2) AS item_sales,ROUND(AVG(i.freight_value),2) AS avg_freight
        FROM fact_order_items i JOIN fact_orders o USING(order_id)
        LEFT JOIN dim_customer c USING(customer_id)
        JOIN dim_seller s USING(seller_id)
-       \${wh} AND s.seller_state IS NOT NULL GROUP BY 1 ORDER BY item_sales DESC NULLS LAST\`
+       ${wh} AND s.seller_state IS NOT NULL GROUP BY 1 ORDER BY item_sales DESC NULLS LAST`
     case 'laboratory': throw new Error('Use atlasLabQueries for matrix views')
   }
 }
@@ -129,26 +129,26 @@ export function atlasQuery(lens:AtlasLens,year:AtlasYear,state:AtlasState,modelE
 /** Full drill-downs are intentionally limited to aggregate cells (no customer-level disclosure). */
 export function atlasLabQueries(year:AtlasYear,state:AtlasState,modelEvaluated:boolean){
   const f=validated(year,state)
-  const wh=\`WHERE o.purchase_ts IS NOT NULL AND \${f.year} AND \${f.state}\`
+  const wh=`WHERE o.purchase_ts IS NOT NULL AND ${f.year} AND ${f.state}`
   const all:{
     weekhour:string;statemonth:string;reviewlate:string;calibration:string|null
   }={
-    weekhour:\`SELECT CAST(EXTRACT(DOW FROM o.purchase_ts) AS VARCHAR) AS y,
+    weekhour:`SELECT CAST(EXTRACT(DOW FROM o.purchase_ts) AS VARCHAR) AS y,
        lpad(CAST(EXTRACT(HOUR FROM o.purchase_ts) AS VARCHAR),2,'0') AS x,
-       COUNT(*) AS orders \${O} \${wh} GROUP BY 1,2 ORDER BY 1,2\`,
-    statemonth:\`SELECT c.customer_state AS y,strftime(o.purchase_ts,'%Y-%m') AS x,
-       COUNT(*) AS orders \${O} \${wh} AND c.customer_state IS NOT NULL
-       GROUP BY 1,2 ORDER BY 1,2\`,
-    reviewlate:\`SELECT CAST(CAST(ROUND(o.review_score) AS INTEGER) AS VARCHAR) AS y,
+       COUNT(*) AS orders ${O} ${wh} GROUP BY 1,2 ORDER BY 1,2`,
+    statemonth:`SELECT c.customer_state AS y,strftime(o.purchase_ts,'%Y-%m') AS x,
+       COUNT(*) AS orders ${O} ${wh} AND c.customer_state IS NOT NULL
+       GROUP BY 1,2 ORDER BY 1,2`,
+    reviewlate:`SELECT CAST(CAST(ROUND(o.review_score) AS INTEGER) AS VARCHAR) AS y,
        CASE WHEN o.is_late THEN 'Late' ELSE 'On time' END AS x,
-       COUNT(*) AS orders \${O} \${wh} AND o.review_score BETWEEN 1 AND 5
-       AND o.is_late IS NOT NULL GROUP BY 1,2 ORDER BY 1,2\`,
-    calibration:modelEvaluated?\`SELECT CAST(FLOOR(LEAST(0.999999,GREATEST(0,risk_probability))*10) AS INTEGER) AS decile,
+       COUNT(*) AS orders ${O} ${wh} AND o.review_score BETWEEN 1 AND 5
+       AND o.is_late IS NOT NULL GROUP BY 1,2 ORDER BY 1,2`,
+    calibration:modelEvaluated?`SELECT CAST(FLOOR(LEAST(0.999999,GREATEST(0,risk_probability))*10) AS INTEGER) AS decile,
        COUNT(*) AS orders, ROUND(100.0*AVG(CAST(actual_late AS DOUBLE)),2) AS observed_pct,
        ROUND(100.0*AVG(risk_probability),2) AS predicted_pct
        FROM risk_predictions
-       \${state==='ALL'?'WHERE TRUE':\`WHERE customer_state='\${state}'\`}
-       GROUP BY 1 ORDER BY 1\`:null
+       ${state==='ALL'?'WHERE TRUE':`WHERE customer_state='${state}'`}
+       GROUP BY 1 ORDER BY 1`:null
   }
   return all
 }
