@@ -5,6 +5,7 @@ import type { Warehouse } from './db'
 import type { RecordRow } from './types'
 import { dashboardQueries, insightQueries } from './premiumQueries'
 import type { YearSelection } from './premiumQueries'
+import { BRAZIL_STATE_SHAPES } from './brazilMap'
 
 type Switch = (page: 'Overview' | 'OLAP Lab' | 'Risk Center' | 'Data Catalog' | 'Pipeline & Quality' | 'Intelligence') => void
 type Dataset = { rows: RecordRow[]; busy: boolean; error: string }
@@ -22,6 +23,14 @@ function useQuery(db: Warehouse, sql: string): Dataset {
 }
 const num=(value:unknown,dec=0)=>Number.isFinite(Number(value))?new Intl.NumberFormat('en-US',{maximumFractionDigits:dec}).format(Number(value)):'—'
 const brl=(v:unknown)=>Number.isFinite(Number(v))?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(Number(v)):'—'
+const brlCompact=(v:unknown)=>{
+  const n=Number(v)
+  if(!Number.isFinite(n))return '—'
+  if(n>=1_000_000_000)return `R$ ${(n/1_000_000_000).toFixed(1)}B`
+  if(n>=1_000_000)return `R$ ${(n/1_000_000).toFixed(1)}M`
+  if(n>=1_000)return `R$ ${(n/1_000).toFixed(1)}K`
+  return brl(n)
+}
 const compact=(v:unknown)=>Number.isFinite(Number(v))?new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(Number(v)):'—'
 function Export({rows,name}:{rows:RecordRow[],name:string}) {
   const save=()=>{
@@ -78,29 +87,63 @@ function MonthlySpark({data}:{data:RecordRow[]}){
     return <div key={i} className="pp-month-col" title={r.period+': '+num(r.orders)+' orders'}><span style={{height:Math.max(3,Number(r.orders)/max*100)+'%'}}/></div>
   })}</div>
 }
-/** This is a geographic state-level cartogram, not a GPS or street map. Areas are not to geographic scale. */
-const statePositions:Record<string,[number,number]>={
- AC:[12,53],AL:[86,49],AM:[23,34],AP:[56,10],BA:[76,53],CE:[84,32],DF:[66,68],ES:[84,76],
- GO:[62,65],MA:[69,27],MG:[73,72],MS:[49,77],MT:[44,58],PA:[55,32],PB:[90,40],
- PE:[89,45],PI:[75,35],PR:[58,89],RJ:[82,82],RN:[90,34],RO:[27,55],RR:[33,11],
- RS:[56,99],SC:[59,94],SE:[85,53],SP:[70,83],TO:[66,46]
+const heatColor=(value:number,max:number)=>{
+  const t=max>0?Math.pow(Math.max(0,value)/max,.34):0
+  const start=[39,37,47],end=[137,88,255]
+  const rgb=start.map((v,i)=>Math.round(v+(end[i]-v)*t))
+  return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]})`
 }
 function Geo({rows}:{rows:RecordRow[]}){
+  const sorted=useMemo(()=>[...rows].sort((a,b)=>Number(b.orders)-Number(a.orders)),[rows])
   const [selected,setSelected]=useState<string|null>(null)
+  const byState=useMemo(()=>new Map(rows.map(r=>[String(r.state),r])),[rows])
   const max=Math.max(1,...rows.map(r=>Number(r.orders)||0))
-  const current=rows.find(r=>r.state===selected)??rows[0]
+  const total=rows.reduce((sum,r)=>sum+(Number(r.orders)||0),0)
+  const current=byState.get(selected??'')??sorted[0]
+  const selectedCode=String(current?.state??'')
+  const selectedShape=BRAZIL_STATE_SHAPES.find(shape=>shape.code===selectedCode)
+  const rank=Math.max(1,sorted.findIndex(r=>String(r.state)===selectedCode)+1)
+  const share=total?100*(Number(current?.orders)||0)/total:0
+  const top=sorted.slice(0,5)
   return <div className="pp-map-wrap">
     <div className="pp-map-head"><span><span className="pp-live-dot"/> 27 Brazilian states · historical</span><span>2016–2018 Olist records</span></div>
-    <div className="pp-map-field">
-      <div className="pp-map-grid"/>
-      <div className="pp-map-label">BRAZIL <span> / STATE INTELLIGENCE</span></div>
-      <div className="pp-map-outline" aria-hidden="true">BR</div>
-      {rows.filter(r=>statePositions[String(r.state)]).map(r=>{
-        const state=String(r.state),[x,y]=statePositions[state];const count=Number(r.orders)||0
-        return <button key={state} type="button" aria-label={state+': '+num(count)+' historical orders'} title={state+' · '+num(count)+' orders'} className={'pp-map-pin '+(selected===state?'selected':'')} style={{left:x+'%',top:y+'%',width:(10+Math.sqrt(count/max)*17)+'px',height:(10+Math.sqrt(count/max)*17)+'px'}} onClick={()=>setSelected(state)}><span/></button>
-      })}
-      <div className="pp-map-float"><small>{selected?'SELECTED STATE':'LARGEST MARKET'}</small><strong>{String(current?.state??'—')}</strong><span>{num(current?.orders)} orders</span><span>{brl(current?.revenue)} recorded payments</span></div>
-      <span className="pp-map-corner">STATE-LEVEL CARTOGRAM · NOT GPS OR LIVE TRACKING</span>
+    <div className="pp-map-layout">
+      <div className="pp-map-plot">
+        <div className="pp-map-meta"><span>BRAZIL</span><small>ORDER VOLUME CHOROPLETH</small></div>
+        <svg className="pp-brazil-svg" viewBox="0 0 450 460" role="img" aria-label="Historical Olist order volume by Brazilian state">
+          <defs>
+            <filter id="pp-state-selected-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#b7f047" floodOpacity=".34"/>
+            </filter>
+          </defs>
+          {BRAZIL_STATE_SHAPES.map(shape=>{
+            const row=byState.get(shape.code)
+            const orders=Number(row?.orders)||0
+            const isSelected=shape.code===selectedCode
+            return <g key={shape.code} className={`pp-state-shape ${isSelected?'selected':''}`} role="button" tabIndex={0}
+              aria-label={`${shape.name}: ${num(orders)} historical orders`}
+              onClick={()=>setSelected(shape.code)}
+              onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(shape.code)}}}>
+              <path d={shape.d} fill={isSelected?'#b7f047':heatColor(orders,max)} filter={isSelected?'url(#pp-state-selected-glow)':undefined}/>
+              <text x={shape.labelX} y={shape.labelY} textAnchor="middle">{shape.code}</text>
+              <title>{shape.name} · {num(orders)} orders · {brl(row?.revenue)}</title>
+            </g>
+          })}
+        </svg>
+        <div className="pp-map-scale" aria-hidden="true"><span>Lower volume</span><i/><span>Higher volume</span></div>
+      </div>
+      <aside className="pp-map-inspector" aria-live="polite">
+        <div className="pp-map-inspector-overline">STATE DETAIL <span>#{String(rank).padStart(2,'0')}</span></div>
+        <div className="pp-map-state-title"><strong>{selectedCode||'—'}</strong><span>{selectedShape?.name??'Historical market'}</span></div>
+        <div className="pp-map-primary"><strong>{num(current?.orders)}</strong><span>historical orders</span></div>
+        <div className="pp-map-metrics">
+          <div><span>Recorded payments</span><strong>{brl(current?.revenue)}</strong></div>
+          <div><span>Share of orders</span><strong>{num(share,1)}%</strong></div>
+          <div><span>Late-delivery rate</span><strong>{num(current?.late_pct,1)}%</strong></div>
+        </div>
+        <div className="pp-map-ranking"><div className="pp-map-ranking-head"><span>TOP MARKETS</span><span>ORDERS</span></div>{top.map(r=><button key={String(r.state)} type="button" className={String(r.state)===selectedCode?'active':''} onClick={()=>setSelected(String(r.state))}><span>{String(r.state)}</span><i><b style={{width:`${100*(Number(r.orders)||0)/max}%`}}/></i><strong>{compact(r.orders)}</strong></button>)}</div>
+        <p className="pp-map-note">State boundaries are used for historical aggregation only. No live routes, vehicles or GPS positions are shown.</p>
+      </aside>
     </div>
   </div>
 }
@@ -120,7 +163,7 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
         <div className="pp-kpis">
           <div className="pp-kpi pp-kpi-light"><span>Total orders <Package size={15}/></span><strong>{kpi.busy?'···':compact(row.orders)}</strong><small>Verified order-level facts <ArrowUpRight size={13}/></small></div>
           <div className="pp-kpi"><span>On-time delivery <CheckCircle2 size={15}/></span><strong>{kpi.busy?'···':num(row.ontime_pct,1)+'%'}</strong><small>Among known outcomes</small></div>
-          <div className="pp-kpi"><span>Payment revenue <TrendingUp size={15}/></span><strong>{kpi.busy?'···':brl(row.revenue)}</strong><small>Aggregated once per order</small></div>
+          <div className="pp-kpi pp-kpi-revenue"><span>Payment revenue <TrendingUp size={15}/></span><strong title={brl(row.revenue)}>{kpi.busy?'···':brlCompact(row.revenue)}</strong><small title={brl(row.revenue)}>Full total · {kpi.busy?'···':brl(row.revenue)}</small></div>
           <div className="pp-kpi"><span>Avg. delivery <Globe2 size={15}/></span><strong>{kpi.busy?'···':num(row.delivery_days,1)+'d'}</strong><small>Delivered orders with dates</small></div>
         </div>
         <Block title="Delivery outcomes" subtitle="Status across all historical orders" aside={<span className="pp-more">01 / 03</span>}>
