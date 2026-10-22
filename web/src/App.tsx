@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, Play, RefreshCw, ShieldCheck,
+  Layers3, LayoutDashboard, Menu, RefreshCw, ShieldCheck,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
@@ -148,45 +148,53 @@ export function Overview({ db, onNavigate }: { db: Warehouse; onNavigate: (tab: 
 
 const OLAP_OPERATIONS: OlapOperation[] = ['Roll-up', 'Drill-down', 'Slice', 'Dice', 'Pivot']
 const OP_DESCRIPTION: Record<OlapOperation, string> = {
-  'Roll-up': 'Aggregate by hierarchical levels using GROUP BY ROLLUP, including subtotals.',
-  'Drill-down': 'Expand a selected state into individual months.',
-  'Slice': 'Fix one geographic dimension and compare fulfillment statuses.',
-  'Dice': 'Select multiple regions and statuses inside a date interval.',
-  'Pivot': 'Compare two state order counts side-by-side for each month.',
+  'Roll-up': 'Summarize orders and revenue by state and month, including totals.',
+  'Drill-down': 'Explore monthly order and revenue trends within a state.',
+  'Slice': 'Compare order statuses within your selected state.',
+  'Dice': 'Compare statuses across two selected states and a date range.',
+  'Pivot': 'Compare the monthly order counts of two states side by side.',
 }
 function OlapLab({ db }: { db: Warehouse }) {
   const [op, setOp] = useState<OlapOperation>('Roll-up')
   const [filter, setFilter] = useState<OlapFilters>({ start: '2016-01-01', end: '2018-12-31', state: 'SP', secondState: 'RJ' })
-  const [executed, setExecuted] = useState<string | null>(null)
-  const [manualError, setManualError] = useState('')
+  const [error, setError] = useState('')
   const [results, setResults] = useState<RecordRow[]>([])
-  const [working, setWorking] = useState(false)
+  const [working, setWorking] = useState(true)
+  const [hasLoaded, setHasLoaded] = useState(false)
+  // Keep SQL behind the interface: changing any filter refreshes only the results.
   const sql = useMemo(() => { try { return buildOlapQuery(op, filter) } catch (e) { return String(e) } }, [op, filter])
-  const run = useCallback(async () => {
-    setManualError(''); setWorking(true)
-    try { if (!sql.startsWith('SELECT')) throw new Error(sql); setResults(await db.query(sql)); setExecuted(sql) }
-    catch (e) { setManualError(String(e)) }
-    finally { setWorking(false) }
-  }, [sql, db])
-  useEffect(() => { void run() }, [run])
+  useEffect(() => {
+    let active = true
+    setError('')
+    setResults([])
+    setHasLoaded(false)
+    setWorking(true)
+    if (!sql.startsWith('SELECT')) {
+      setError(sql)
+      setWorking(false)
+      return () => { active = false }
+    }
+    void db.query(sql)
+      .then(rows => { if (active) { setResults(rows); setHasLoaded(true) } })
+      .catch(e => { if (active) setError(String(e)) })
+      .finally(() => { if (active) setWorking(false) })
+    return () => { active = false }
+  }, [db, sql])
   return <div className="content-stack">
-    <div className="section-eyebrow"><Layers3 size={14}/> LIVE SQL OPERATIONS</div>
-    <div className="intro"><div><h2>Explore data. <span className="accent-text">Run real SQL.</span></h2><p>Every operation runs a real SQL query against the exported dimensional warehouse inside your browser.</p></div><div className="year-pill"><Database size={15}/> DuckDB-Wasm</div></div>
-    <div className="olap-ops">{OLAP_OPERATIONS.map(item => <button key={item} className={`op-tab ${op === item ? 'selected' : ''}`} onClick={() => setOp(item)}>{item}</button>)}</div>
-    <Panel title={`${op} operation`} sub={OP_DESCRIPTION[op]} action={<span className="micro-tag">EXECUTABLE SQL</span>}>
+    <div className="section-eyebrow"><Layers3 size={14}/> INTERACTIVE DATA EXPLORER</div>
+    <div className="intro"><div><h2>Explore data. <span className="accent-text">Find the patterns.</span></h2><p>Choose an analysis and adjust the filters. Results update automatically from historical warehouse records, without needing to write queries.</p></div><div className="year-pill"><Database size={15}/> Olist · 2016–2018</div></div>
+    <div className="olap-ops" role="group" aria-label="Analysis operation">{OLAP_OPERATIONS.map(item => <button key={item} type="button" aria-pressed={op === item} className={`op-tab ${op === item ? 'selected' : ''}`} onClick={() => setOp(item)}>{item}</button>)}</div>
+    <Panel title="Filters" sub={OP_DESCRIPTION[op]} action={<span className="micro-tag">AUTO REFRESH</span>}>
       <div className="filter-grid">
         <label>From<input type="date" value={filter.start} onChange={e => setFilter(s => ({ ...s, start: e.target.value }))}/></label>
         <label>To<input type="date" value={filter.end} onChange={e => setFilter(s => ({ ...s, end: e.target.value }))}/></label>
         <label>State<select value={filter.state} onChange={e => setFilter(s => ({ ...s, state: e.target.value }))}>{['SP','RJ','MG','RS','PR','BA','SC','DF','GO','PE'].map(s => <option key={s}>{s}</option>)}</select></label>
         <label>Compare with<select value={filter.secondState} onChange={e => setFilter(s => ({ ...s, secondState: e.target.value }))}>{['RJ','SP','MG','RS','PR','BA','SC','DF','GO','PE'].map(s => <option key={s}>{s}</option>)}</select></label>
       </div>
-      <div className="sql-header"><span><Database size={15}/> Query preview</span><span>READ ONLY</span></div>
-      <pre className="sql-code"><code>{sql}</code></pre>
-      <div className="sql-actions"><button className="primary-btn" onClick={() => void run()} disabled={working}><Play size={14}/>{working ? 'Running...' : 'Execute SQL'}</button><span>{working ? 'Executing locally...' : 'No external query server'}</span></div>
-      {manualError && <Notice message={manualError}/>}
+      {error && <Notice message={error}/>}
     </Panel>
-    <Panel title="Query results" sub={executed ? `${results.length} rows returned · data loaded from warehouse Parquet` : 'Run an operation above'} action={<button className="ghost-btn" disabled={!results.length} onClick={() => downloadCsv(results, `promisepulse-${op.toLowerCase()}.csv`)}><Download size={15}/> Export CSV</button>}>
-      {working ? <Loader title="Running OLAP query…"/> : <Table rows={results} />}
+    <Panel title="Results" sub={hasLoaded ? `${results.length} rows · Historical Olist warehouse` : 'Updates automatically when you change filters'} action={<button className="ghost-btn" disabled={working || !results.length} onClick={() => downloadCsv(results, `promisepulse-${op.toLowerCase()}.csv`)}><Download size={15}/> Export CSV</button>}>
+      {working ? <Loader title="Updating results…"/> : !error ? <Table rows={results} /> : <Empty title="No results to display" description="Correct the filters to see your data."/>}
     </Panel>
   </div>
 }
