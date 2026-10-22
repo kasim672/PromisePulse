@@ -72,7 +72,7 @@ function Bars({rows,label,value,format='number',limit=7}:{rows:RecordRow[],label
     <div className="pp-bar-track"><div style={{width:Math.max(0,Number(r[value])||0)/max*100+'%'}}/></div>
   </div>)}</div>
 }
-const palette=['#afef38','#8859ff','#c6a7ff','#f4f5ef']
+const palette=['#237a48','#1d4f87','#bcd4f2','#e4e7e4']
 function Donut({rows}:{rows:RecordRow[]}){
   const items=rows.filter(r=>Number(r.orders)>0), total=items.reduce((s,r)=>s+Number(r.orders),0)
   let offset=0
@@ -89,7 +89,7 @@ function MonthlySpark({data}:{data:RecordRow[]}){
 }
 const heatColor=(value:number,max:number)=>{
   const t=max>0?Math.pow(Math.max(0,value)/max,.34):0
-  const start=[39,37,47],end=[137,88,255]
+  const start=[230,239,243],end=[36,95,150]
   const rgb=start.map((v,i)=>Math.round(v+(end[i]-v)*t))
   return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]})`
 }
@@ -113,7 +113,7 @@ function Geo({rows}:{rows:RecordRow[]}){
         <svg className="pp-brazil-svg" viewBox="0 0 450 460" role="img" aria-label="Historical Olist order volume by Brazilian state">
           <defs>
             <filter id="pp-state-selected-glow" x="-30%" y="-30%" width="160%" height="160%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#b7f047" floodOpacity=".34"/>
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#1d4f87" floodOpacity=".34"/>
             </filter>
           </defs>
           {BRAZIL_STATE_SHAPES.map(shape=>{
@@ -124,7 +124,7 @@ function Geo({rows}:{rows:RecordRow[]}){
               aria-label={`${shape.name}: ${num(orders)} historical orders`}
               onClick={()=>setSelected(shape.code)}
               onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(shape.code)}}}>
-              <path d={shape.d} fill={isSelected?'#b7f047':heatColor(orders,max)} filter={isSelected?'url(#pp-state-selected-glow)':undefined}/>
+              <path d={shape.d} fill={isSelected?'#bcd4f2':heatColor(orders,max)} filter={isSelected?'url(#pp-state-selected-glow)':undefined}/>
               <text x={shape.labelX} y={shape.labelY} textAnchor="middle">{shape.code}</text>
               <title>{shape.name} · {num(orders)} orders · {brl(row?.revenue)}</title>
             </g>
@@ -174,7 +174,7 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
             <div className="pp-revenue-top"><strong>{brl(row.revenue)}</strong><span><ArrowUpRight size={13}/> Historical total</span></div>
             <Trend rows={trends.rows}/></Loading>
         </Block>
-        <button className="pp-upgrade" onClick={()=>onNavigate('OLAP Lab')}><div className="pp-upgrade-top"><span className="pp-upgrade-icon">✳</span><span>EXPLORE <ChevronRight size={15}/></span></div><strong>Go deeper with SQL.</strong><small>Live OLAP, slice, dice & drill-down <ArrowUpRight size={15}/></small></button>
+        <button className="pp-upgrade" onClick={()=>onNavigate('OLAP Lab')}><div className="pp-upgrade-top"><span className="pp-upgrade-icon">✳</span><span>EXPLORE <ChevronRight size={15}/></span></div><strong>Explore the warehouse.</strong><small>Filter, slice, dice & drill-down <ArrowUpRight size={15}/></small></button>
       </div>
       <div className="pp-right">
         <Block title="Geographic delivery intelligence" subtitle="Historical order volume by customer state · select a state to inspect" className="pp-map-card" aside={<MapPinned size={20}/>}>
@@ -191,7 +191,7 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
       <Block title="Top product categories" subtitle="Item-grain merchandise sales, not payment revenue" aside={<Export rows={categories.rows} name="category-sales"/>}><Loading data={categories}><Bars rows={categories.rows} label="category" value="sales" format="money" limit={8}/></Loading></Block>
       <Block title="Order activity" subtitle="Monthly order count, historical" aside={<ArrowDownRight size={16}/>}><Loading data={trends}><MonthlySpark data={trends.rows}/><div className="pp-callout"><strong>{compact(row.orders)} orders</strong><span>Browse annual variation with the period selector above.</span></div></Loading></Block>
     </div>
-    <div className="pp-provenance"><CheckCircle2 size={16}/><span>Source: <a target="_blank" rel="noreferrer" href={db.manifest.dataset.url}>Brazilian E-Commerce Public Dataset by Olist</a>. Analyses run locally on historical Parquet facts. Map markers are abstract state positions, not live vehicles, roads, or geocoded addresses.</span></div>
+    <div className="pp-provenance"><CheckCircle2 size={16}/><span>Source: <a target="_blank" rel="noreferrer" href={db.manifest.dataset.url}>Brazilian E-Commerce Public Dataset by Olist</a>. Analyses run locally on historical Parquet facts. Brazilian state boundaries show historical aggregates. No live vehicles, routes or GPS positions are displayed.</span></div>
   </div>
 }
 export function PremiumIntelligence({db}:{db:Warehouse}){

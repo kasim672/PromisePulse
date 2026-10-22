@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, RefreshCw, ShieldCheck,
+  Layers3, LayoutDashboard, RefreshCw, ShieldCheck,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
@@ -249,7 +249,6 @@ function DataCatalog({ db }: { db: Warehouse }) {
     </Panel>
     <Panel title="Interactive warehouse browser" sub="SQL query against real Parquet tables in your browser" action={<span className="micro-tag">NO DATABASE SERVER</span>}>
       <div className="table-selector"><label>Choose table<select value={table} onChange={e => setTable(e.target.value as WarehouseTable)}>{WAREHOUSE_TABLES.map(t => <option key={t}>{t}</option>)}</select></label><span>{nfmt(db.manifest.warehouse[table])} total rows</span></div>
-      <pre className="sql-code compact"><code>SELECT * FROM {table} LIMIT 25</code></pre>
       {preview.loading ? <Loader/> : <Table rows={preview.rows} max={25} />}
     </Panel>
   </div>
@@ -281,23 +280,24 @@ export default function App() {
   const [db, setDb] = useState<Warehouse | null>(null)
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
-  const [mobileNav, setMobileNav] = useState(false)
   const [reloading, setReloading] = useState(false)
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
     loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
     return () => { alive = false; if (current) void current.close() }
   }, [reloading])
-  const changePage = (tab: Tab) => { setActive(tab); setMobileNav(false); window.scrollTo({top:0,behavior:'smooth'}) }
+  const changePage = (tab: Tab) => { setActive(tab); window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}) }
   return <div className="app-shell">
+    <a href="#main-content" className="skip-link">Skip to content</a>
     <header className="site-header">
       <div className="header-inner">
         <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
-        <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => <button key={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}>{item.label}</button>)}</nav>
-        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore SQL <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+
+        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE READY' : pending ? 'CONNECTING WAREHOUSE' : 'WAREHOUSE UNAVAILABLE'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Open explorer <ArrowRight size={15}/></button></div>
       </div>
     </header>
-    <main className="main-content" id="main-content">
+    <nav className="main-nav" aria-label="Primary workspace">{NAV.map(item => { const Icon = item.icon; return <button key={item.label} type="button" aria-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-caption" aria-hidden="true">{item.label}</span></button> })}</nav>
+    <main className="main-content" id="main-content" tabIndex={-1}>
       {pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {!pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
       {db && <>
