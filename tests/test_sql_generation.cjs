@@ -1,10 +1,8 @@
-/** Run using the globally installed TypeScript compiler with:
- *  node tests/test_sql_generation.cjs
- */
+/** Run after installing web dependencies: node tests/test_sql_generation.cjs */
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
-const ts = require(require.resolve('typescript', { paths: [process.env.HOME + '/.nvm/versions/node/v22.16.0/lib/node_modules', '/opt/nvm/versions/node/v22.16.0/lib/node_modules'] }))
+const ts = require(require.resolve('typescript', { paths: [path.join(__dirname, '../web')] }))
 const Module = module.constructor
 const filename = path.join(__dirname, '../web/src/queries.ts')
 const js = ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText

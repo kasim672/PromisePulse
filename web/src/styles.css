@@ -99,9 +99,10 @@ strong,h1,h2,h3{font-weight:800}
 .geo-list{min-width:0}
 .header-online.offline{background:#F59E0B;box-shadow:0 0 0 3px #FEF3C7}
 
-/* Official PromisePulse logo lockup: header & footer */
-.brand-logo-image {display:block;width:224px;height:auto;max-height:55px;object-fit:contain;}
-.footer-logo-image {display:block;width:180px;height:auto;max-height:44px;object-fit:contain;}
-@media(max-width:1230px){.brand-logo-image{width:202px}}
-@media(max-width:720px){.brand-logo-image{width:179px}.footer-logo-image{width:166px}}
-@media(max-width:390px){.brand-logo-image{width:155px}}
+/* PromisePulse neon lockup: shared by every route through the global header/footer */
+.brand-logo-image{display:block;width:184px;height:auto;max-height:58px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(132,82,255,.20));transition:filter .2s ease,transform .2s ease}
+.footer-logo-image{display:block;width:158px;height:auto;max-height:48px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(132,82,255,.16));transition:filter .2s ease,transform .2s ease}
+.brand:hover .brand-logo-image,.footer-brand:hover .footer-logo-image{filter:drop-shadow(0 0 16px rgba(183,240,71,.24));transform:translateY(-1px)}
+@media(max-width:1230px){.brand-logo-image{width:165px}}
+@media(max-width:720px){.brand-logo-image{width:145px}.footer-logo-image{width:140px}}
+@media(max-width:390px){.brand-logo-image{width:128px}}

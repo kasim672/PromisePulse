@@ -1,7 +1,7 @@
 # PromisePulse — E-Commerce Intelligence & Delivery Risk Analytics
 
 <div align="center">
-  <img src="web/public/promisepulse-logo.png" alt="PromisePulse Logo" width="380" />
+  <img src="web/public/promisepulse-logo.webp" alt="PromisePulse Logo" width="380" />
   <p><strong>Enterprise-grade Data Warehousing, In-Browser OLAP Analytics & Historical Delivery Risk Mining</strong></p>
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -598,7 +598,7 @@ promisepulse-react-mvp/
     ├── package.json              # Node dependencies (@duckdb/duckdb-wasm, Lucide)
     ├── vite.config.ts            # Vite build configuration
     ├── public/
-    │   ├── promisepulse-logo.png # High-resolution brand logo
+    │   ├── promisepulse-logo.webp # Optimized neon brand logo
     │   ├── favicon.png           # Browser tab icon
     │   └── data/                 # Exported Parquet tables & manifest.json
     │       ├── dim_customer.parquet
