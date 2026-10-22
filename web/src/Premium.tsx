@@ -56,10 +56,10 @@ function Trend({rows,value='revenue',color='lime',height=168}:{rows:RecordRow[],
   const coords=points.map((p,i)=>({x:10+i/Math.max(1,points.length-1)*780,y:height-18-p/peak*(height-36)}))
   if(!coords.length)return null
   const d=coords.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ')
-  const shade=color==='lime'?'#b5f13b':'#8859ff'
+  const shade=color==='lime'?'#237a48':'#1d4f87'
   return <div className="pp-trend"><svg viewBox={'0 0 800 '+height} role="img" aria-label={value+' trend from '+rows.length+' historical periods'} preserveAspectRatio="none">
     <defs><linearGradient id={'pp-fill-'+color} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={shade} stopOpacity=".2"/><stop offset="1" stopColor={shade} stopOpacity="0"/></linearGradient></defs>
-    {[.25,.5,.75].map(n=><line key={n} x1="0" x2="800" y1={n*height} y2={n*height} stroke="#414141" strokeDasharray="4 9" opacity=".5"/>)}
+    {[.25,.5,.75].map(n=><line key={n} x1="0" x2="800" y1={n*height} y2={n*height} stroke="#c6ced0" strokeDasharray="4 9" opacity=".7"/>)}
     <path d={d+' L '+coords[coords.length-1].x+' '+(height-8)+' L 10 '+(height-8)+' Z'} fill={'url(#pp-fill-'+color+')'}/>
     <path d={d} fill="none" stroke={shade} strokeWidth="3.25" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round"/>
     {coords.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r="11" fill="transparent"><title>{String(rows[i].period)}: {num(rows[i][value])}</title></circle>)}
