@@ -43,8 +43,19 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
   useEffect(()=>{setSelected(null);setChartMode(metric.shape)},[metric.id,metric.shape])
   const n=rows.length
   const values=rows.map(r=>r[metric.field]==null?null:Number(r[metric.field])).map(v=>v!=null&&Number.isFinite(v)?v:null)
-  const points=values.map((v,i)=>({valid:v!=null,value:v??0,label:labelFor(lens,rows[i].label),x:37+(i+.5)*(640-64)/Math.max(1,n),y:196-(v??0)/Math.max(1,...values.filter((p):p is number=>p!=null))*161}))
-  const top=Math.max(1,...values.filter((p):p is number=>p!=null))
+  // Exploratory Wilson intervals for observed lateness fractions. The label
+  // counts come directly from SQL; these do not account for customer clustering.
+  const intervals=rows.map(row=>{
+    if(metric.field!=='late_pct')return null
+    const total=Number(row.labeled_orders),late=Number(row.late_orders)
+    if(!Number.isFinite(total)||!Number.isFinite(late)||total<1||late<0||late>total)return null
+    const z=1.96,p=late/total,z2=z*z,den=1+z2/total
+    const center=(p+z2/(2*total))/den
+    const half=z*Math.sqrt(p*(1-p)/total+z2/(4*total*total))/den
+    return {lo:100*Math.max(0,center-half),hi:100*Math.min(1,center+half),n:total}
+  })
+  const top=Math.max(1,...values.filter((p):p is number=>p!=null),...intervals.map(x=>x?.hi??0))
+  const points=values.map((v,i)=>({valid:v!=null,value:v??0,label:labelFor(lens,rows[i].label),x:37+(i+.5)*(640-64)/Math.max(1,n),y:196-(v??0)/top*161}))
   const ix=Math.min(n-1,Math.max(0,selected??(n-1)))
   const chosen=n?rows[ix]:null
   const valid=points.filter(p=>p.valid)
@@ -55,8 +66,8 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
   return <div className="atlas-plot-wrap">
     <div className="atlas-chart-tools">
       <div className="atlas-chart-selector" aria-label={'Chart style for '+metric.title}>
-        {(['bars','line','dots'] as const).map(mode=><button key={mode} type="button" className={chartMode===mode?'active':''}
-          aria-pressed={chartMode===mode} title={'Display as '+mode} onClick={()=>setChartMode(mode)}>{mode==='bars'?'Bars':mode==='line'?'Line':'Dots'}</button>)}
+        {(['bars','line','area','dots'] as const).map(mode=><button key={mode} type="button" className={chartMode===mode?'active':''}
+          aria-pressed={chartMode===mode} title={'Display as '+mode} onClick={()=>setChartMode(mode)}>{mode==='bars'?'Bars':mode==='line'?'Line':mode==='area'?'Area':'Dots'}</button>)}
       </div>
       <button className="atlas-export" type="button" onClick={()=>saveCsv(rows,'promisepulse-'+metric.id)} disabled={!n} title="Download computed aggregate CSV" aria-label={'Export '+metric.title+' CSV'}><Download size={15}/></button>
     </div>
@@ -66,6 +77,10 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
         {[0,.5,1].map((t,i)=><g key={i}><line x1="32" x2="614" y1={35+t*161} y2={35+t*161} stroke="var(--atlas-grid)" strokeDasharray="3 7"/><text x="26" y={39+t*161} textAnchor="end" className="atlas-tick">{numeral(top*(1-t),metric.unit).slice(0,11)}</text></g>)}
         {chartMode==='area'&&area&&<path d={area} fill={'url(#'+uid+')'}/>}
         {(chartMode==='line'||chartMode==='area')&&<path d={path} stroke="var(--atlas-series)" strokeWidth="2.8" fill="none" strokeLinejoin="round" strokeLinecap="round"/>}
+        {points.map((p,i)=>{
+          const ci=intervals[i]
+          return ci&&p.valid?<g key={'ci-'+i} className="atlas-ci" aria-hidden="true"><line x1={p.x} x2={p.x} y1={196-ci.hi/top*161} y2={196-ci.lo/top*161}/><line x1={p.x-4} x2={p.x+4} y1={196-ci.hi/top*161} y2={196-ci.hi/top*161}/><line x1={p.x-4} x2={p.x+4} y1={196-ci.lo/top*161} y2={196-ci.lo/top*161}/></g>:null
+        })}
         {points.map((p,i)=>p.valid?
           isBars?<rect key={i} role="button" tabIndex={0} aria-label={p.label+': '+numeral(values[i],metric.unit)} x={p.x-((640-64)/Math.max(1,n))*.33} y={p.y} width={Math.max(2,((640-64)/Math.max(1,n))*.66)} height={Math.max(1,baseY-p.y)}
             fill={selected===i?'var(--atlas-selected)':'var(--atlas-series)'} rx="3" onFocus={()=>setSelected(i)} onMouseEnter={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(i)}}}><title>{p.label} · {numeral(values[i],metric.unit)}</title></rect>
@@ -74,7 +89,8 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
         :null)}
         {n>0&&[0,Math.floor((n-1)/2),n-1].filter((v,i,a)=>a.indexOf(v)===i).map((i,j)=><text key={i} x={points[i].x} y="225" textAnchor={j===0?'start':j===2?'end':'middle'} className="atlas-tick">{points[i].label.length>13?points[i].label.slice(0,12)+'…':points[i].label}</text>)}
       </svg>
-      <div className="atlas-selection" aria-live="polite"><span>{chosen?labelFor(lens,chosen.label):'Choose an observation'}</span><strong>{chosen?numeral(chosen[metric.field],metric.unit):'—'}</strong><span>{values.filter(v=>v!=null).length}/{n} bins measured</span></div>
+      <div className="atlas-selection" aria-live="polite"><span>{chosen?labelFor(lens,chosen.label):'Choose an observation'}</span><strong>{chosen?numeral(chosen[metric.field],metric.unit):'—'}</strong><span>{intervals[ix] ? 'n = '+intervals[ix]?.n.toLocaleString()+' labeled · 95% Wilson '+intervals[ix]?.lo.toFixed(1)+'–'+intervals[ix]?.hi.toFixed(1)+'%' : values.filter(v=>v!=null).length+'/'+n+' bins measured'}</span></div>
+      {metric.field==='late_pct'&&<p className="atlas-ci-note">Vertical whiskers indicate exploratory 95% Wilson intervals for observed labeled deliveries; they do not adjust for clustering, selection bias or confounding.</p>}
       <details className="atlas-data-detail"><summary>Inspect {n} source aggregates</summary><div className="atlas-raw-table"><table><thead><tr>{Object.keys(rows[0]).map(x=><th key={x}>{x.replaceAll('_',' ')}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i}>{Object.values(r).map((x,j)=><td key={j}>{x??'—'}</td>)}</tr>)}</tbody></table></div></details>
     </>}
   </div>
