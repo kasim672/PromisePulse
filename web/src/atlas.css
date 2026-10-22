@@ -106,3 +106,6 @@ html[data-theme="dark"] .atlas-error{color:#ffb5ab}
 @media(max-width:780px){.atlas-panel-grid{grid-template-columns:1fr}.atlas-topbar{padding:14px}.atlas-filter{flex:1 1 175px}.atlas-group-intro{flex-direction:column;align-items:flex-start;gap:10px}.atlas-chart-card{padding:17px}}
 @media(max-width:480px){.atlas-page .pp-page-top h1{font-size:28px}.atlas-topbar{gap:10px}.atlas-filter{flex:1 1 100%}.atlas-filter-note{font-size:11px}.atlas-chart-heading{min-height:103px}.atlas-chart-heading h3{font-size:16px}.atlas-chart-selector button{padding:7px 9px}.atlas-heat-cell{padding:7px 4px}.atlas-chart-card{min-height:320px}}
 @media(prefers-reduced-motion:reduce){.atlas-heat-cell{transition:none!important;transform:none!important}}
+
+.atlas-ci line{stroke:var(--atlas-selected);stroke-width:1.7;stroke-linecap:round;opacity:.83;pointer-events:none}
+.atlas-ci-note{color:var(--atlas-muted);font:500 10.5px/1.5 'Urbanist',sans-serif;margin:-1px 0 5px}
