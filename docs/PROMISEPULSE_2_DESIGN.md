@@ -18,7 +18,9 @@ All figures shown in the interface must be attributable to the project's officia
 Each Intelligence chart is computed with its own read-only SQL in `web/src/premiumQueries.ts`. Charts do not inject arbitrary values to fill missing observations. SQL aggregates use **one row per order** for payments, **one row per item** for product/seller merchandise sales, and **one row per unique individual** when computing repeat purchasing.
 
 ## Geographic visualization
-The large central visualization is deliberately a **state-level abstract cartogram** with clickable Brazilian state abbreviations sized by real historical order count. Marker positions are hand-arranged to improve readability; they are **not latitude/longitude coordinates**, point deliveries, road maps, true area projection, or vehicle locations. The marker tooltip and click panel use warehouse-calculated state orders and revenue. More advanced geographic density maps may be added only when suitably attributed geographic source data are available.
+The command center uses a **real 27-state Brazil SVG choropleth**. Each state polygon is interactive and its visual intensity is driven by historical Olist order volume for that state. Selecting a state reveals order count, recorded payment revenue, share of orders, late-delivery rate, and its rank among state markets.
+
+The state SVG geometry is adapted from Lucas Bassetti's MIT-licensed `mapa-brasil-svg`; the required notice is retained in `docs/THIRD_PARTY_NOTICES.md`. This layer is intended for dashboard presentation, not survey-grade GIS work. PromisePulse does **not** depict live vehicles, GPS pings, delivery routes, or real-time operational locations.
 
 ## Data provenance and model limits
 - Official source: [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce).
