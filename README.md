@@ -1,7 +1,7 @@
 # PromisePulse — E-Commerce Intelligence & Delivery Risk Analytics
 
 <div align="center">
-  <img src="web/public/promisepulse-logo.png" alt="PromisePulse Logo" width="380" />
+  <img src="web/public/promisepulse-logo.webp" alt="PromisePulse Logo" width="380" />
   <p><strong>Enterprise-grade Data Warehousing, In-Browser OLAP Analytics & Historical Delivery Risk Mining</strong></p>
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

@@ -292,7 +292,7 @@ export default function App() {
   return <div className="app-shell">
     <header className="site-header">
       <div className="header-inner">
-        <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><span className="pp-brand-symbol" aria-hidden="true">✳</span><span className="pp-brand-name">promise<span>pulse.</span></span></button>
+        <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
         <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => <button key={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}>{item.label}</button>)}</nav>
         <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore SQL <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
@@ -309,6 +309,6 @@ export default function App() {
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
       </>}
     </main>
-    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse overview" onClick={()=>changePage('Overview')}><span className="pp-brand-symbol" aria-hidden="true">✳</span><span className="pp-brand-name">promise<span>pulse.</span></span></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
+    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse overview" onClick={()=>changePage('Overview')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
 }
