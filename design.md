@@ -67,3 +67,19 @@ Files: `web/src/measured-glass.css` is loaded **after** `styles.css` and `premiu
 Run `cd web && npm ci && npm run build` and existing SQL regression tests. Review desktop and mobile at 1920, 1440, 1099, 760, 480, 374 and 320px. Check no text overlaps in revenue tiles or Brazilian state inspector, all six nav destinations, keyboard focus, CSV export and every OLAP filter. The provided capture does not tell us hover/motion durations; our chosen transitions are not claimed as measured.
 
 This is an adaptation for PromisePulse, not a Cadra clone.
+
+## Light and dark themes (PromisePulse implementation; **not** Cadra measurements)
+
+The Cadra capture only measured a light interface. PromisePulse additionally provides an **original dark appearance**, inspired by charcoal glass with lime/violet highlights. Do not attribute its colors or behavior to the captured Cadra page.
+
+- **Light:** the measured #efefec canvas, translucent white cards, black dock, #bcd4f2 accents.
+- **Dark:** #0d1018 page canvas, #1e232e translucent cards, light #f4f6f8 text, muted #b4bac6 labels, #c4ea84 controls and lime/violet/blue data-series accents.
+- **Single global control:** header theme toggle applies to every one of the six pages, loading and error states, tables, filters, charts, map inspector, command search and footer.
+- **Persistence:** `promisepulse-theme` in localStorage stores the explicit choice; default is OS preference when no choice is stored. The `web/index.html` bootstrap applies the initial theme before the React application paints. Storage failures fall back to in-memory operation.
+- **Cross-tab:** storage events synchronize explicit mode changes. Meta theme-color and CSS `color-scheme` update for native controls.
+- **Theme-aware SVG:** charts and 27-state choropleth read `--pp-chart-*` and `--pp-map-*` variables rather than frozen bright/light colors. Only presentation changes; all underlying order counts, risk metrics and aggregate SQL remain untouched.
+- **Accessibility:** the switch has an action-oriented accessible name, focus outline; reduced-motion preference applies to its transitions. Contrast and mobile overflow still require real-device/browser evaluation.
+
+Implementation: `web/src/theme.css` must be loaded **last** after `measured-glass.css`. Theme state lives in `web/src/App.tsx`. Regression coverage lives in `tests/test_theme.cjs` and the GitHub Actions workflow.
+
+Verify locally: `cd web && npm ci && npm run build && node ../tests/test_theme.cjs`. In a browser, toggle between light/dark and revisit Overview, Intelligence, OLAP Lab, Risk Center, Data Catalog and Pipeline & Quality; reload; open another tab; verify chart labels, date inputs, exports and table scrolling.
