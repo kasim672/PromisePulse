@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, RefreshCw, Search, ShieldCheck,
+  Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
@@ -79,11 +79,11 @@ export function RevenueChart({ rows }: { rows: RecordRow[] }) {
   return <div className="revenue-chart">
     <div className="chart-highlight"><div><span className="chart-highlight-label">Selected month</span><strong>{money(data[index].payment_revenue)}</strong><span className="chart-period">{String(data[index].period)}</span></div><span className="chart-key"><i/> Payment revenue</span></div>
     <svg viewBox={`0 0 ${width} ${height}`} className="revenue-svg" role="img" aria-label="Revenue by month; select a point to view its exact value">
-      <defs><linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2563EB" stopOpacity=".19"/><stop offset="100%" stopColor="#2563EB" stopOpacity="0"/></linearGradient></defs>
-      {[0,.25,.5,.75,1].map((v,i) => <line key={i} x1="15" x2="825" y1={top+(bottom-top)*v} y2={top+(bottom-top)*v} stroke="#EAF0F7" strokeDasharray={i===4?'0':'5 7'}/>)}
-      <path d={area} fill="url(#revenueArea)"/><path d={line} stroke="#2563EB" fill="none" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <line x1={point.x} x2={point.x} y1={top} y2={bottom} stroke="#93C5FD" strokeDasharray="4 5" />
-      {coords.map((c,i) => <circle key={i} cx={c.x} cy={c.y} r={i===index?6:9} fill={i===index?'#2563EB':'transparent'} stroke={i===index?'white':'transparent'} strokeWidth="3" role="button" tabIndex={0} aria-label={`${String(data[i].period)} ${money(data[i].payment_revenue)}`} onFocus={()=>setSelected(i)} onMouseEnter={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(i)}}}/>) }
+      <defs><linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--pp-chart-blue)" stopOpacity=".19"/><stop offset="100%" stopColor="#2563EB" stopOpacity="0"/></linearGradient></defs>
+      {[0,.25,.5,.75,1].map((v,i) => <line key={i} x1="15" x2="825" y1={top+(bottom-top)*v} y2={top+(bottom-top)*v} stroke="var(--pp-chart-grid)" strokeDasharray={i===4?'0':'5 7'}/>)}
+      <path d={area} fill="url(#revenueArea)"/><path d={line} stroke="var(--pp-chart-blue)" fill="none" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1={point.x} x2={point.x} y1={top} y2={bottom} stroke="var(--pp-chart-sky)" strokeDasharray="4 5" />
+      {coords.map((c,i) => <circle key={i} cx={c.x} cy={c.y} r={i===index?6:9} fill={i===index?'var(--pp-chart-blue)':'transparent'} stroke={i===index?'white':'transparent'} strokeWidth="3" role="button" tabIndex={0} aria-label={`${String(data[i].period)} ${money(data[i].payment_revenue)}`} onFocus={()=>setSelected(i)} onMouseEnter={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(i)}}}/>) }
     </svg>
     <div className="chart-axis"><span>{String(data[0].period)}</span><span>{String(data[Math.floor((data.length-1)/2)].period)}</span><span>{String(data[data.length-1].period)}</span></div>
   </div>
@@ -276,7 +276,19 @@ function PipelineQuality({ db }: { db: Warehouse }) {
   </div>
 }
 
+type Theme = 'light' | 'dark'
+const THEME_KEY = 'promisepulse-theme'
+
+function initialTheme(): Theme {
+  try {
+    const saved = window.localStorage.getItem(THEME_KEY)
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch { /* Private browsing can block storage; theme still works in memory. */ }
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export default function App() {
+  const [theme, setTheme] = useState<Theme>(initialTheme)
   const [active, setActive] = useState<Tab>('Overview')
   const [db, setDb] = useState<Warehouse | null>(null)
   const [loadError, setLoadError] = useState('')
@@ -285,6 +297,21 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.documentElement.style.colorScheme = theme
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0d1018' : '#efefec')
+    try { window.localStorage.setItem(THEME_KEY, theme) } catch { /* Non-persistent fallback. */ }
+  }, [theme])
+  useEffect(() => {
+    const syncTheme = (event: StorageEvent) => {
+      if (event.key === THEME_KEY && (event.newValue === 'dark' || event.newValue === 'light')) {
+        setTheme(event.newValue)
+      }
+    }
+    window.addEventListener('storage', syncTheme)
+    return () => window.removeEventListener('storage', syncTheme)
+  }, [])
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
     loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
@@ -316,7 +343,7 @@ export default function App() {
       <div className="header-inner">
         <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
         
-        <div className="header-actions"><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+        <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
       <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
     </header>
