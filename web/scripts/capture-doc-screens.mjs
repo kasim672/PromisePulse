@@ -26,6 +26,19 @@ const routes=[
   ['Data Catalog','data-catalog'],
   ['Pipeline & Quality','pipeline-quality']
 ]
+async function waitForRenderedData(page){
+  // Wait for active historical SQL results in *all* visible blocks, not just
+  // the initial DuckDB connection. A connected header can precede SQL results.
+  await page.waitForFunction(() => {
+    const loadingCopy=Array.from(document.querySelectorAll('.pp-placeholder'))
+      .some(el => (el.textContent || '').includes('Querying historical warehouse'))
+    const atlasLoad=document.querySelector('.atlas-loading')
+    const placeholder=document.querySelector('.spinner')
+    const kpi=document.querySelector('.pp-dashboard .pp-kpi strong')
+    const pendingKpi=!!kpi && /[·.]{3}/.test(kpi.textContent || '')
+    return !loadingCopy && !atlasLoad && !placeholder && !pendingKpi
+  },null,{timeout:120000})
+}
 async function newPage(viewport,theme){
   const context=await browser.newContext({viewport,deviceScaleFactor:1,colorScheme:theme,reducedMotion:'reduce',locale:'en-US'})
   await context.addInitScript(choice=>{
@@ -36,13 +49,14 @@ async function newPage(viewport,theme){
   await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000})
   // The header status is hidden by responsive CSS on mobile; verify the actual content instead.
   await page.locator('.pp-dashboard').waitFor({state:'visible',timeout:120000})
+  await waitForRenderedData(page)
   return {page,context}
 }
 async function navigate(page,title){
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:title,exact:true}).click()
   await page.locator('main').getByText(title,{exact:false}).first().waitFor({timeout:10000}).catch(()=>{})
   // Wait for the active route rather than taking a screenshot of a spinner.
-  await page.locator('.loading,.atlas-loading').first().waitFor({state:'hidden',timeout:2500}).catch(()=>{})
+  await waitForRenderedData(page)
 }
 async function save(page,filename,selector){
   if(selector) await page.locator(selector).first().waitFor({state:'visible',timeout:40000})
@@ -50,6 +64,7 @@ async function save(page,filename,selector){
     await document.fonts.ready
     window.scrollTo({top:0,left:0,behavior:'instant'})
   })
+  await waitForRenderedData(page)
   const errors=await page.locator('.atlas-error,.pp-error').allTextContents()
   if(errors.length)throw new Error(filename+' has visible errors: '+errors.join(' | '))
   // Snapshot is the actual rendered route, retaining all data-source disclosures.
