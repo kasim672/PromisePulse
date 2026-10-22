@@ -28,3 +28,11 @@ Do not touch historical metric definitions or dataset loading just for appearanc
 Review desktop + mobile, keyboard tab/focus, buttons, table overflow and reduced motion before claiming complete usability.
 
 Refer to `design.md` for the measured palette, typographic roles, layout and verification notes.
+
+## Appearance implementation
+
+The original reference measured only light mode. Our dark palette is an **original PromisePulse choice**, not a source measurement. Read `web/src/theme.css` *after* `web/src/measured-glass.css`; do not remove the dark overrides when adjusting the design.
+
+Preserve the single accessible header switch, saved `promisepulse-theme` preference, first-paint bootstrap in `web/index.html`, and CSS variables for charts/maps. Theme changes must work across all six routes, including command search, filters, tables, risk slider, data catalog, and pipeline screens. Do not recompute or mutate SQL/ETL/ML data to change appearance.
+
+Run `node tests/test_theme.cjs` alongside `cd web && npm run build`. Always visually review both themes, desktop and mobile, since these static tests cannot establish runtime contrast or usability.
