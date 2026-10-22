@@ -598,7 +598,7 @@ promisepulse-react-mvp/
     ├── package.json              # Node dependencies (@duckdb/duckdb-wasm, Lucide)
     ├── vite.config.ts            # Vite build configuration
     ├── public/
-    │   ├── promisepulse-logo.png # High-resolution brand logo
+    │   ├── promisepulse-logo.webp # Optimized neon brand logo
     │   ├── favicon.png           # Browser tab icon
     │   └── data/                 # Exported Parquet tables & manifest.json
     │       ├── dim_customer.parquet
