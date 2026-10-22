@@ -1,0 +1,108 @@
+/*
+ * Analytics Atlas is additive. The original overview, geographic map and six
+ * destination designs are deliberately not restyled by this file.
+ * All colors use existing light/dark appearance variables.
+ */
+.atlas-page{
+ --atlas-series:#2563a8;
+ --atlas-selected:#6f8f1c;
+ --atlas-grid:#d9e0e5;
+ --atlas-surface:#f8f8f6;
+ --atlas-heat-low:#eef4f4;
+ --atlas-heat-high:#1d4f87;
+ --atlas-divider:rgba(17,17,17,.12);
+ --atlas-ink:#111;
+ --atlas-muted:#5c5c5a;
+}
+html[data-theme="dark"] .atlas-page{
+ --atlas-series:#9abffe;
+ --atlas-selected:#c4ea84;
+ --atlas-grid:#445265;
+ --atlas-surface:#1e232e;
+ --atlas-heat-low:#1c2b3b;
+ --atlas-heat-high:#9bc6f0;
+ --atlas-divider:#414e60;
+ --atlas-ink:#f4f6f8;
+ --atlas-muted:#b4bac6;
+}
+.atlas-page .pp-page-top{margin-bottom:7px}
+.atlas-page .pp-page-top>div>p{max-width:770px}
+.atlas-topbar{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:16px 20px}
+.atlas-filter{display:flex;flex-direction:column;gap:7px;flex:0 1 210px}
+.atlas-filter label{color:var(--atlas-muted);font:600 12px/1.4 'Urbanist',sans-serif}
+.atlas-filter select{width:100%;padding:10px 33px 10px 12px;background:var(--cadra-glass-2);color:var(--atlas-ink);border:1px solid var(--atlas-divider);border-radius:10px;min-height:42px;font:600 13px 'Urbanist',sans-serif}
+.atlas-filter select:focus-visible{outline:3px solid var(--atlas-selected);outline-offset:2px}
+.atlas-filter-note{display:flex;align-items:center;gap:11px;margin-left:auto;max-width:450px;color:var(--atlas-muted);font:500 12px/1.5 'Urbanist',sans-serif}
+.atlas-filter-note svg{color:var(--atlas-selected);flex:none}
+.atlas-layout{display:grid;grid-template-columns:218px minmax(0,1fr);gap:18px;align-items:start}
+.atlas-lenses{position:sticky;top:103px;display:flex;flex-direction:column;gap:4px;padding:8px;background:var(--cadra-glass);border:1px solid var(--cadra-rim);border-radius:22px;box-shadow:var(--cadra-shadow)}
+.atlas-lens{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;text-align:left;padding:10px 11px;color:var(--atlas-muted);background:transparent;border:1px solid transparent;border-radius:12px;font:600 12.5px 'Urbanist',sans-serif}
+.atlas-lens svg{flex:none}
+.atlas-lens span{flex:1;min-width:0}
+.atlas-lens strong{font:600 10px 'Urbanist',sans-serif;opacity:.7}
+.atlas-lens.active{background:#111;color:#f7f7f5}
+.atlas-lens:hover:not(.active){color:var(--atlas-ink);background:var(--cadra-glass-2)}
+html[data-theme="dark"] .atlas-lens.active{background:#c4ea84;color:#182618}
+.atlas-content{display:grid;gap:16px}
+.atlas-group-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:7px 3px}
+.atlas-group-intro>div>p{font:700 10px 'Urbanist',sans-serif;color:var(--atlas-selected);letter-spacing:.13em;margin-bottom:7px}
+.atlas-group-intro h2{color:var(--atlas-ink);font:600 clamp(23px,2.5vw,30px)/1.1 'Urbanist',sans-serif;letter-spacing:-.02em}
+.atlas-group-intro>div>span{display:block;color:var(--atlas-muted);font:500 13px 'Urbanist',sans-serif;margin-top:9px}
+.atlas-grain{display:flex;align-items:center;gap:8px;color:var(--atlas-muted);border:1px solid var(--atlas-divider);border-radius:999px;background:var(--cadra-glass);padding:9px 13px;white-space:normal;max-width:280px;font:600 11px 'Urbanist',sans-serif}
+.atlas-grain svg{color:var(--atlas-selected);flex:none}
+.atlas-count-line{display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--atlas-muted);font:600 12px 'Urbanist',sans-serif}
+.atlas-panel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.atlas-chart-card{display:flex;flex-direction:column;gap:9px;padding:20px;min-height:360px}
+.atlas-chart-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;min-height:91px}
+.atlas-mini-label{display:block;color:var(--atlas-selected);font:700 9.5px/1.4 'Urbanist',sans-serif;letter-spacing:.115em}
+.atlas-chart-heading h3{font:600 17px/1.22 'Urbanist',sans-serif;color:var(--atlas-ink);margin:8px 0 7px}
+.atlas-chart-heading p{color:var(--atlas-muted);font:500 11.5px/1.5 'Urbanist',sans-serif;max-width:48ch}
+.atlas-chart-kind{flex:none;border:1px solid var(--atlas-divider);border-radius:999px;padding:5px 8px;color:var(--atlas-muted);font:700 9px 'Urbanist',sans-serif}
+.atlas-chart-tools{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.atlas-chart-selector{display:flex;gap:2px;background:var(--cadra-glass);border-radius:999px;padding:3px;border:1px solid var(--atlas-divider)}
+.atlas-chart-selector button{border:0;border-radius:999px;background:transparent;color:var(--atlas-muted);padding:7px 11px;font:600 11px 'Urbanist',sans-serif}
+.atlas-chart-selector button.active{background:var(--atlas-ink);color:var(--atlas-surface)}
+.atlas-chart-selector button:hover:not(.active){background:var(--cadra-glass-2);color:var(--atlas-ink)}
+.atlas-export{display:inline-flex;align-items:center;justify-content:center;width:35px;height:35px;border:1px solid var(--atlas-divider);border-radius:10px;color:var(--atlas-ink);background:var(--cadra-glass-2);flex:none}
+.atlas-export:hover{background:var(--atlas-ink);color:var(--atlas-surface)}
+.atlas-export:disabled{opacity:.45;cursor:not-allowed}
+.atlas-svg{display:block;width:100%;height:auto;overflow:visible}
+.atlas-svg [role="button"]{cursor:pointer}
+.atlas-svg [role="button"]:focus-visible{outline:none;stroke:var(--atlas-selected);stroke-width:3}
+.atlas-tick{font:600 11px 'Urbanist',sans-serif;fill:var(--atlas-muted)}
+.atlas-selection{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-radius:13px;background:var(--cadra-glass);padding:10px 12px;color:var(--atlas-muted);font:500 11px 'Urbanist',sans-serif}
+.atlas-selection strong{font:650 14px 'Urbanist',sans-serif;color:var(--atlas-ink);font-variant-numeric:tabular-nums}
+.atlas-empty,.atlas-error{font:500 13px/1.7 'Urbanist',sans-serif;color:var(--atlas-muted);padding:24px 3px}
+.atlas-error{color:#bf3644;overflow-wrap:anywhere}
+html[data-theme="dark"] .atlas-error{color:#ffb5ab}
+.atlas-loading{display:flex;align-items:center;gap:12px;color:var(--atlas-muted);font:500 12px 'Urbanist',sans-serif;min-height:140px}
+.atlas-data-detail{margin-top:4px;color:var(--atlas-muted);font:500 11px 'Urbanist',sans-serif}
+.atlas-data-detail summary{cursor:pointer;width:fit-content;padding:5px 0}
+.atlas-data-detail summary:hover{color:var(--atlas-ink)}
+.atlas-raw-table{max-width:100%;overflow:auto;border:1px solid var(--atlas-divider);border-radius:11px;margin-top:9px;max-height:240px}
+.atlas-raw-table table{border-collapse:collapse;width:max-content;min-width:100%;font:500 11px 'Urbanist',sans-serif}
+.atlas-raw-table td,.atlas-raw-table th{padding:8px 12px;border-bottom:1px solid var(--atlas-divider);color:var(--atlas-ink);text-align:left;white-space:nowrap}
+.atlas-raw-table th{position:sticky;top:0;background:var(--atlas-surface);color:var(--atlas-muted);font-weight:650}
+.atlas-methodology{display:flex;align-items:flex-start;gap:11px;padding:14px 17px;border:1px solid var(--atlas-divider);border-radius:15px;color:var(--atlas-muted);font:500 12px/1.6 'Urbanist',sans-serif}
+.atlas-methodology strong{color:var(--atlas-ink)}
+.atlas-methodology svg{color:var(--atlas-selected);flex:none;margin-top:2px}
+.atlas-lab-grid{grid-template-columns:1fr}
+.atlas-matrix-card{overflow:hidden;min-height:260px}
+.atlas-matrix-card .atlas-chart-heading{min-height:85px}
+.atlas-heatmap-scroll{width:100%;overflow:auto;max-height:620px;border:1px solid var(--atlas-divider);border-radius:13px}
+.atlas-matrix-table{border-collapse:separate;border-spacing:3px;width:100%;min-width:560px;font:600 10px 'Urbanist',sans-serif}
+.atlas-matrix-table th{color:var(--atlas-muted);padding:7px 5px;position:sticky;top:0;background:var(--atlas-surface);white-space:nowrap}
+.atlas-matrix-table td{padding:0}
+.atlas-matrix-table tbody th{position:sticky;left:0;z-index:1}
+.atlas-heat-cell{display:block;border:1px solid transparent;border-radius:5px;min-width:30px;width:100%;padding:9px 5px;background:color-mix(in srgb,var(--atlas-heat-high) var(--atlas-intensity),var(--atlas-heat-low));color:var(--atlas-ink);font:600 9px 'Urbanist',sans-serif;white-space:nowrap;text-align:center}
+.atlas-heat-cell:hover,.atlas-heat-cell:focus-visible{outline:2px solid var(--atlas-selected);outline-offset:-2px;border-color:var(--atlas-ink);transform:scale(1.03);z-index:2;position:relative}
+.atlas-calibration{display:block;width:min(100%,640px);margin:0 auto;max-height:320px}
+.atlas-calibration [role="button"]{cursor:pointer}
+.atlas-calibration [role="button"]:focus-visible{outline:none;stroke:var(--atlas-selected);stroke-width:4}
+.atlas-caveat{font:500 11px/1.6 'Urbanist',sans-serif;color:var(--atlas-muted);padding:5px 0}
+@media(max-width:1380px){.atlas-layout{grid-template-columns:180px minmax(0,1fr)}.atlas-lens{padding:9px 8px;gap:8px;font-size:12px}}
+@media(max-width:1190px){.atlas-panel-grid{grid-template-columns:1fr}.atlas-chart-card{min-height:340px}}
+@media(max-width:900px){.atlas-layout{display:block}.atlas-lenses{position:static;display:flex;flex-direction:row;overflow-x:auto;gap:5px;margin-bottom:18px;padding:8px;scroll-snap-type:x proximity;border-radius:15px}.atlas-lens{flex:none;width:auto;min-height:39px;scroll-snap-align:start;padding:9px 12px}.atlas-lens strong{display:none}.atlas-panel-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.atlas-panel-grid{grid-template-columns:1fr}.atlas-topbar{padding:14px}.atlas-filter{flex:1 1 175px}.atlas-group-intro{flex-direction:column;align-items:flex-start;gap:10px}.atlas-chart-card{padding:17px}}
+@media(max-width:480px){.atlas-page .pp-page-top h1{font-size:28px}.atlas-topbar{gap:10px}.atlas-filter{flex:1 1 100%}.atlas-filter-note{font-size:11px}.atlas-chart-heading{min-height:103px}.atlas-chart-heading h3{font-size:16px}.atlas-chart-selector button{padding:7px 9px}.atlas-heat-cell{padding:7px 4px}.atlas-chart-card{min-height:320px}}
+@media(prefers-reduced-motion:reduce){.atlas-heat-cell{transition:none!important;transform:none!important}}
