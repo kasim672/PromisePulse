@@ -1,6 +1,6 @@
 import {useEffect,useId,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
-import {Activity,BarChart3,CalendarDays,CheckCircle2,ChevronRight,Database,Download,Filter,MapPinned,Microscope,TrendingUp} from 'lucide-react'
+import {Activity,BarChart3,CalendarDays,CheckCircle2,Database,Download,Filter,MapPinned,Microscope,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
 import type {RecordRow} from './types'
 import {ATLAS_CHART_COUNT,ATLAS_GROUPS,ATLAS_STATES,atlasLabQueries,atlasQuery} from './atlasQueries'
@@ -161,14 +161,13 @@ export function AnalyticsAtlas({db}:{db:Warehouse}){
         const id=lens+year+state
         const cached=cache.current.get(id)
         if(cached){setResult({rows:cached,loading:false,error:''})}
-        else void db.query(atlasQuery(lens,year,state,evaluated)).then(rows=>{
+        else void db.query(atlasQuery(lens,year,state)).then(rows=>{
           cache.current.set(id,rows);if(active)setResult({rows,loading:false,error:''})
         }).catch(e=>{if(active)setResult({rows:[],loading:false,error:String(e)})})
       }catch(e){setResult({rows:[],loading:false,error:String(e)})}
     }
     return ()=>{active=false}
   },[db,lens,year,state,evaluated])
-  const labKeys=['weekhour','statemonth','reviewlate','calibration'] as const
   const labInfo=[
     ['Purchase heatmap · weekday × hour','Orders by weekday and local timestamp hour.','weekhour'],
     ['State-by-month seasonality','Customer-state order counts over months, filtered by period.','statemonth'],
