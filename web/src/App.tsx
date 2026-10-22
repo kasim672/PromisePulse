@@ -10,12 +10,14 @@ import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
 import { PremiumOverview, PremiumIntelligence } from './Premium'
+import { AnalyticsAtlas } from './AnalyticsAtlas'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
 import type { OlapFilters, OlapOperation, WarehouseTable } from './queries'
 
 const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] = [
   { label: 'Overview', icon: LayoutDashboard, description: 'Executive overview' },
   { label: 'Intelligence', icon: BarChart3, description: 'Historical analytical intelligence' },
+  { label: 'Analytics Atlas', icon: TrendingUp, description: '36 historical interactive analytical views' },
   { label: 'OLAP Lab', icon: Layers3, description: 'Run multidimensional SQL' },
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
@@ -361,6 +363,7 @@ export default function App() {
       {db && <>
         {active === 'Overview' && <PremiumOverview db={db} onNavigate={changePage}/>}
         {active === 'Intelligence' && <PremiumIntelligence db={db}/>}
+        {active === 'Analytics Atlas' && <AnalyticsAtlas db={db}/>}
         {active === 'OLAP Lab' && <OlapLab db={db}/>}
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
