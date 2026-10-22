@@ -52,5 +52,7 @@ jobs:
           git add docs/screenshots/v3/
           if ! git diff --cached --quiet; then
             git commit -m "docs(ui): capture authentic light/dark/mobile app screenshots"
+            git fetch --no-tags origin feat/promisepulse-3-measured-glass
+            git rebase FETCH_HEAD
             git push origin HEAD:refs/heads/feat/promisepulse-3-measured-glass
           fi
