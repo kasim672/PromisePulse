@@ -56,10 +56,10 @@ function Trend({rows,value='revenue',color='lime',height=168}:{rows:RecordRow[],
   const coords=points.map((p,i)=>({x:10+i/Math.max(1,points.length-1)*780,y:height-18-p/peak*(height-36)}))
   if(!coords.length)return null
   const d=coords.map((p,i)=>(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)).join(' ')
-  const shade=color==='lime'?'#b5f13b':'#8859ff'
+  const shade=color==='lime'?'#6f8f1c':'#2563a8'
   return <div className="pp-trend"><svg viewBox={'0 0 800 '+height} role="img" aria-label={value+' trend from '+rows.length+' historical periods'} preserveAspectRatio="none">
     <defs><linearGradient id={'pp-fill-'+color} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={shade} stopOpacity=".2"/><stop offset="1" stopColor={shade} stopOpacity="0"/></linearGradient></defs>
-    {[.25,.5,.75].map(n=><line key={n} x1="0" x2="800" y1={n*height} y2={n*height} stroke="#414141" strokeDasharray="4 9" opacity=".5"/>)}
+    {[.25,.5,.75].map(n=><line key={n} x1="0" x2="800" y1={n*height} y2={n*height} stroke="#bdc5c6" strokeDasharray="4 9" opacity=".5"/>)}
     <path d={d+' L '+coords[coords.length-1].x+' '+(height-8)+' L 10 '+(height-8)+' Z'} fill={'url(#pp-fill-'+color+')'}/>
     <path d={d} fill="none" stroke={shade} strokeWidth="3.25" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round"/>
     {coords.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r="11" fill="transparent"><title>{String(rows[i].period)}: {num(rows[i][value])}</title></circle>)}
@@ -72,7 +72,7 @@ function Bars({rows,label,value,format='number',limit=7}:{rows:RecordRow[],label
     <div className="pp-bar-track"><div style={{width:Math.max(0,Number(r[value])||0)/max*100+'%'}}/></div>
   </div>)}</div>
 }
-const palette=['#afef38','#8859ff','#c6a7ff','#f4f5ef']
+const palette=['#6f8f1c','#2563a8','#9bbbd6','#c9542b']
 function Donut({rows}:{rows:RecordRow[]}){
   const items=rows.filter(r=>Number(r.orders)>0), total=items.reduce((s,r)=>s+Number(r.orders),0)
   let offset=0
@@ -89,7 +89,7 @@ function MonthlySpark({data}:{data:RecordRow[]}){
 }
 const heatColor=(value:number,max:number)=>{
   const t=max>0?Math.pow(Math.max(0,value)/max,.34):0
-  const start=[39,37,47],end=[137,88,255]
+  const start=[209,224,228],end=[45,95,115]
   const rgb=start.map((v,i)=>Math.round(v+(end[i]-v)*t))
   return `rgb(${rgb[0]} ${rgb[1]} ${rgb[2]})`
 }
