@@ -43,7 +43,7 @@ export const ATLAS_GROUPS:AtlasGroup[]=[
     metric('state-volume','Historical orders by state','orders','number','bars','Customer state is not a live vehicle coordinate.'),
     metric('state-payment','Recorded payment by state','payment_revenue','brl','area','No payment-to-item join; totals remain reconciled.'),
     metric('state-late','Observed late share by state','late_pct','percent','dots','Small regions can have unstable rates; inspect sample counts.'),
-    metric('state-speed','Delivery duration by state','delivery_days','days','Purchase-to-receipt means on observed valid deliveries.')
+    metric('state-speed','Delivery duration by state','delivery_days','days','line','Purchase-to-receipt means on observed valid deliveries.')
   ]},
   {id:'delivery',title:'Fulfillment anatomy',subtitle:'Nonnegative observed purchase-to-receipt duration buckets',grain:'Delivered orders with two timestamps',metrics:[
     metric('duration-volume','Delivery-time distribution','orders','number','bars','Observational duration bands; missing timestamps are excluded.'),
@@ -55,7 +55,7 @@ export const ATLAS_GROUPS:AtlasGroup[]=[
     metric('review-volume','Orders by rounded review score','orders','number','bars','Scores are grouped into 1–5 integer buckets, using rounded mean reviews.'),
     metric('review-payment','Payments by review score','payment_revenue','brl','area','Payment is at order grain; no item-level multiplication.'),
     metric('review-late','Late share by review score','late_pct','percent','dots','Associational only: late deliveries may coincide with poor reviews.'),
-    metric('review-speed','Duration by review score','delivery_days','days','Only observed nonnegative delivery durations enter means.')
+    metric('review-speed','Duration by review score','delivery_days','days','line','Only observed nonnegative delivery durations enter means.')
   ]},
   {id:'category',title:'Product economics',subtitle:'Item sales and shipping costs without mixing payment grain',grain:'One item per row · translated product category',metrics:[
     metric('cat-items','Items sold by category','items','number','bars','Counts order-item rows rather than distinct orders.'),
@@ -94,7 +94,7 @@ COUNT(o.is_late) AS labeled_orders,
 ROUND(100.0*COUNT(*) FILTER(WHERE o.is_late=true)/NULLIF(COUNT(o.is_late),0),2) AS late_pct,
 ROUND(AVG(${duration}) FILTER(WHERE o.delivered_ts>=o.purchase_ts AND o.purchase_ts IS NOT NULL),2) AS delivery_days`
 
-export function atlasQuery(lens:AtlasLens,year:AtlasYear,state:AtlasState,modelEvaluated=false):string{
+export function atlasQuery(lens:AtlasLens,year:AtlasYear,state:AtlasState):string{
   const f=validated(year,state)
   const wh=`WHERE o.purchase_ts IS NOT NULL AND ${f.year} AND ${f.state}`
   switch(lens){
