@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, RefreshCw, ShieldCheck,
+  Layers3, LayoutDashboard, Menu, RefreshCw, Search, ShieldCheck,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
@@ -282,21 +282,52 @@ export default function App() {
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
   const [mobileNav, setMobileNav] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
     loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
     return () => { alive = false; if (current) void current.close() }
   }, [reloading])
-  const changePage = (tab: Tab) => { setActive(tab); setMobileNav(false); window.scrollTo({top:0,behavior:'smooth'}) }
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setSearchOpen(current => !current)
+      }
+      if (event.key === 'Escape') setSearchOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+  const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
+  const changePage = (tab: Tab) => {
+    setActive(tab)
+    setMobileNav(false)
+    setSearchOpen(false)
+    setNavQuery('')
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({top:0,behavior:reduced?'auto':'smooth'})
+  }
   return <div className="app-shell">
+    <a className="skip-link" href="#main-content">Skip to main content</a>
     <header className="site-header">
       <div className="header-inner">
         <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
-        <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
-        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+        
+        <div className="header-actions"><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
+      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
     </header>
+    {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
+      <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
+        <div className="command-search"><Search size={20} aria-hidden="true"/><input autoFocus value={navQuery} onChange={event => setNavQuery(event.target.value)} placeholder="Search pages, insights, warehouse tools..." aria-label="Search sections"/><kbd>ESC</kbd></div>
+        <div className="command-section-label">JUMP TO A WORKSPACE</div>
+        <div className="command-results">{matchingNav.length ? matchingNav.map(item => { const Icon = item.icon; return <button type="button" key={item.label} className="command-result" onClick={() => changePage(item.label)}><span className="command-result-icon"><Icon size={18} aria-hidden="true"/></span><span><strong>{item.label}</strong><small>{item.description}</small></span><ArrowRight size={16} aria-hidden="true"/></button> }) : <p className="command-no-results">No matching sections. Try “risk”, “OLAP”, or “catalog”.</p>}</div>
+        <p className="command-hint">Search navigates between existing analytical pages. All warehouse results remain historical and data-backed.</p>
+      </div>
+    </div>}
     <main className="main-content" id="main-content">
       {pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {!pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
