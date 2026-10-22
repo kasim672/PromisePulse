@@ -256,3 +256,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[r
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* Accessibility and touch refinements: deliberate PromisePulse choices, not observed Cadra measurements. */
+.skip-link{position:fixed;top:8px;left:100px;z-index:100;background:#111;color:#fff;padding:10px 18px;border-radius:10px;transform:translateY(-150%);font-size:13px}
+.skip-link:focus{transform:translateY(0)}
+#main-content:focus{outline:none}
+.pp-map-inspector-overline,.pp-map-metrics span,.pp-map-ranking-head{font-size:10px;letter-spacing:.035em}
+.pp-map-metrics strong,.pp-map-ranking button>span,.pp-map-ranking button>strong{font-size:11px}
+.pp-map-state-title span,.pp-map-primary span{font-size:11px}
+.pp-map-ranking button{min-height:32px}
+.pp-order-table th,.pp-order-table td,.table-scroll th,.table-scroll td{font-size:12.5px;line-height:1.55}
+.pp-order-filters button,.op-tab{min-height:36px}
+.pp-order-filters button:focus-visible,.op-tab:focus-visible{outline:3px solid #2563a8;outline-offset:2px}
+.pp-kpi-revenue strong{font-size:clamp(21px,2.25vw,32px);overflow-wrap:anywhere;word-break:normal}
+.pp-kpi-revenue small{min-width:0;overflow-wrap:anywhere}
+.pp-donut>div{color:#111}
+.pp-order-table,.table-scroll table{width:100%}
+@media (max-width:900px){.skip-link{left:12px}.main-nav{bottom:max(10px,env(safe-area-inset-bottom));}}
