@@ -274,3 +274,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[r
 .pp-donut>div{color:#111}
 .pp-order-table,.table-scroll table{width:100%}
 @media (max-width:900px){.skip-link{left:12px}.main-nav{bottom:max(10px,env(safe-area-inset-bottom));}}
+
+/* Post-screenshot visual QA: order IDs must meet readable contrast on glass. */
+.pp-order-table td:nth-child(1){color:#1d4f87;font-weight:600}
+@media (max-width:480px){.brand-logo-image{width:152px}}
+@media (max-width:374px){.brand-logo-image{width:126px}}
