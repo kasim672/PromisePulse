@@ -1,0 +1,27 @@
+{
+  "source": "Actual PromisePulse React/Vite app running the repository Parquet files, headless Chromium/Playwright",
+  "base_url": "localhost (not a public demonstration server)",
+  "captured_utc": "2026-10-22T22:37:28.745Z",
+  "viewport_desktop": "1440x900",
+  "viewport_mobile": "390x844",
+  "screenshots": [
+    "overview-light.png",
+    "intelligence-light.png",
+    "atlas-commerce-light.png",
+    "olap-lab-light.png",
+    "risk-center-light.png",
+    "data-catalog-light.png",
+    "pipeline-quality-light.png",
+    "atlas-laboratory-light.png",
+    "overview-dark.png",
+    "intelligence-dark.png",
+    "atlas-commerce-dark.png",
+    "olap-lab-dark.png",
+    "risk-center-dark.png",
+    "data-catalog-dark.png",
+    "pipeline-quality-dark.png",
+    "atlas-laboratory-dark.png",
+    "overview-mobile-light.png",
+    "atlas-commerce-mobile-light.png"
+  ]
+}

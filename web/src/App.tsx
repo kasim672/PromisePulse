@@ -3,19 +3,21 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, RefreshCw, ShieldCheck,
+  Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
 import { PremiumOverview, PremiumIntelligence } from './Premium'
+import { AnalyticsAtlas } from './AnalyticsAtlas'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
 import type { OlapFilters, OlapOperation, WarehouseTable } from './queries'
 
 const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] = [
   { label: 'Overview', icon: LayoutDashboard, description: 'Executive overview' },
   { label: 'Intelligence', icon: BarChart3, description: 'Historical analytical intelligence' },
+  { label: 'Analytics Atlas', icon: TrendingUp, description: '36 historical interactive analytical views' },
   { label: 'OLAP Lab', icon: Layers3, description: 'Run multidimensional SQL' },
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
@@ -79,11 +81,11 @@ export function RevenueChart({ rows }: { rows: RecordRow[] }) {
   return <div className="revenue-chart">
     <div className="chart-highlight"><div><span className="chart-highlight-label">Selected month</span><strong>{money(data[index].payment_revenue)}</strong><span className="chart-period">{String(data[index].period)}</span></div><span className="chart-key"><i/> Payment revenue</span></div>
     <svg viewBox={`0 0 ${width} ${height}`} className="revenue-svg" role="img" aria-label="Revenue by month; select a point to view its exact value">
-      <defs><linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2563EB" stopOpacity=".19"/><stop offset="100%" stopColor="#2563EB" stopOpacity="0"/></linearGradient></defs>
-      {[0,.25,.5,.75,1].map((v,i) => <line key={i} x1="15" x2="825" y1={top+(bottom-top)*v} y2={top+(bottom-top)*v} stroke="#EAF0F7" strokeDasharray={i===4?'0':'5 7'}/>)}
-      <path d={area} fill="url(#revenueArea)"/><path d={line} stroke="#2563EB" fill="none" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-      <line x1={point.x} x2={point.x} y1={top} y2={bottom} stroke="#93C5FD" strokeDasharray="4 5" />
-      {coords.map((c,i) => <circle key={i} cx={c.x} cy={c.y} r={i===index?6:9} fill={i===index?'#2563EB':'transparent'} stroke={i===index?'white':'transparent'} strokeWidth="3" role="button" tabIndex={0} aria-label={`${String(data[i].period)} ${money(data[i].payment_revenue)}`} onFocus={()=>setSelected(i)} onMouseEnter={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(i)}}}/>) }
+      <defs><linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--pp-chart-blue)" stopOpacity=".19"/><stop offset="100%" stopColor="#2563EB" stopOpacity="0"/></linearGradient></defs>
+      {[0,.25,.5,.75,1].map((v,i) => <line key={i} x1="15" x2="825" y1={top+(bottom-top)*v} y2={top+(bottom-top)*v} stroke="var(--pp-chart-grid)" strokeDasharray={i===4?'0':'5 7'}/>)}
+      <path d={area} fill="url(#revenueArea)"/><path d={line} stroke="var(--pp-chart-blue)" fill="none" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1={point.x} x2={point.x} y1={top} y2={bottom} stroke="var(--pp-chart-sky)" strokeDasharray="4 5" />
+      {coords.map((c,i) => <circle key={i} cx={c.x} cy={c.y} r={i===index?6:9} fill={i===index?'var(--pp-chart-blue)':'transparent'} stroke={i===index?'white':'transparent'} strokeWidth="3" role="button" tabIndex={0} aria-label={`${String(data[i].period)} ${money(data[i].payment_revenue)}`} onFocus={()=>setSelected(i)} onMouseEnter={()=>setSelected(i)} onClick={()=>setSelected(i)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelected(i)}}}/>) }
     </svg>
     <div className="chart-axis"><span>{String(data[0].period)}</span><span>{String(data[Math.floor((data.length-1)/2)].period)}</span><span>{String(data[data.length-1].period)}</span></div>
   </div>
@@ -276,33 +278,92 @@ function PipelineQuality({ db }: { db: Warehouse }) {
   </div>
 }
 
+type Theme = 'light' | 'dark'
+const THEME_KEY = 'promisepulse-theme'
+
+function initialTheme(): Theme {
+  try {
+    const saved = window.localStorage.getItem(THEME_KEY)
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch { /* Private browsing can block storage; theme still works in memory. */ }
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export default function App() {
+  const [theme, setTheme] = useState<Theme>(initialTheme)
   const [active, setActive] = useState<Tab>('Overview')
   const [db, setDb] = useState<Warehouse | null>(null)
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
   const [mobileNav, setMobileNav] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.documentElement.style.colorScheme = theme
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0d1018' : '#efefec')
+    try { window.localStorage.setItem(THEME_KEY, theme) } catch { /* Non-persistent fallback. */ }
+  }, [theme])
+  useEffect(() => {
+    const syncTheme = (event: StorageEvent) => {
+      if (event.key === THEME_KEY && (event.newValue === 'dark' || event.newValue === 'light')) {
+        setTheme(event.newValue)
+      }
+    }
+    window.addEventListener('storage', syncTheme)
+    return () => window.removeEventListener('storage', syncTheme)
+  }, [])
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
     loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
     return () => { alive = false; if (current) void current.close() }
   }, [reloading])
-  const changePage = (tab: Tab) => { setActive(tab); setMobileNav(false); window.scrollTo({top:0,behavior:'smooth'}) }
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setSearchOpen(current => !current)
+      }
+      if (event.key === 'Escape') setSearchOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+  const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
+  const changePage = (tab: Tab) => {
+    setActive(tab)
+    setMobileNav(false)
+    setSearchOpen(false)
+    setNavQuery('')
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({top:0,behavior:reduced?'auto':'smooth'})
+  }
   return <div className="app-shell">
+    <a className="skip-link" href="#main-content">Skip to main content</a>
     <header className="site-header">
       <div className="header-inner">
         <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
-        <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => <button key={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}>{item.label}</button>)}</nav>
-        <div className="header-actions"><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore SQL <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+        
+        <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
+      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
     </header>
+    {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
+      <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
+        <div className="command-search"><Search size={20} aria-hidden="true"/><input autoFocus value={navQuery} onChange={event => setNavQuery(event.target.value)} placeholder="Search pages, insights, warehouse tools..." aria-label="Search sections"/><kbd>ESC</kbd></div>
+        <div className="command-section-label">JUMP TO A WORKSPACE</div>
+        <div className="command-results">{matchingNav.length ? matchingNav.map(item => { const Icon = item.icon; return <button type="button" key={item.label} className="command-result" onClick={() => changePage(item.label)}><span className="command-result-icon"><Icon size={18} aria-hidden="true"/></span><span><strong>{item.label}</strong><small>{item.description}</small></span><ArrowRight size={16} aria-hidden="true"/></button> }) : <p className="command-no-results">No matching sections. Try “risk”, “OLAP”, or “catalog”.</p>}</div>
+        <p className="command-hint">Search navigates between existing analytical pages. All warehouse results remain historical and data-backed.</p>
+      </div>
+    </div>}
     <main className="main-content" id="main-content">
       {pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {!pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
       {db && <>
         {active === 'Overview' && <PremiumOverview db={db} onNavigate={changePage}/>}
         {active === 'Intelligence' && <PremiumIntelligence db={db}/>}
+        {active === 'Analytics Atlas' && <AnalyticsAtlas db={db}/>}
         {active === 'OLAP Lab' && <OlapLab db={db}/>}
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}

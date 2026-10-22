@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#09090b" />
+    <meta name="theme-color" content="#efefec" />
+    <script>
+      // Apply the saved or system appearance before React/CSS paints.
+      (function () {
+        var theme = 'light';
+        try {
+          var saved = localStorage.getItem('promisepulse-theme');
+          theme = saved === 'dark' || (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        } catch (e) { /* Light fallback when storage is blocked. */ }
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#0d1018' : '#efefec');
+      }());
+    </script>
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png?v=20261023" />
     <meta name="description" content="PromisePulse — historical e-commerce intelligence, SQL OLAP and delivery risk analysis, powered by real Olist data." />
     <title>PromisePulse — E-Commerce Intelligence</title>

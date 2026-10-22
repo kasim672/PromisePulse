@@ -1,0 +1,32 @@
+name: Keep only main after PromisePulse 3.0 merge
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cleanup-feature-branches.yml'
+permissions:
+  contents: write
+jobs:
+  clean-merged-feature-branches:
+    if: github.repository == 'kasim672/PromisePulse'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Delete the two explicitly reviewed non-main branches
+        run: |
+          set -euo pipefail
+          for branch in \
+            'feat/promisepulse-3-measured-glass' \
+            'feat/cadra-measured-glass-workspace'
+          do
+            if git ls-remote --heads origin "$branch" | grep -q .; then
+              git push origin --delete "$branch"
+              echo "Deleted origin/$branch"
+            else
+              echo "Already absent: origin/$branch"
+            fi
+          done
+          echo 'Remaining remote branch heads:'
+          git ls-remote --heads origin

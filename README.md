@@ -23,12 +23,16 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 
 ---
 
-## Hero Dashboard
+## Hero Dashboard — PromisePulse 3.0
 
 <div align="center">
-  <img src="docs/screenshots/overview.png" alt="PromisePulse Overview Dashboard" width="100%" />
-  <p><em>Figure 1: PromisePulse Executive Overview Dashboard rendering live KPIs, monthly payment revenue curves, category breakdowns, and geographic footprint from 99,441 verified order facts using browser-embedded DuckDB-Wasm.</em></p>
+  <img src="docs/screenshots/v3/overview-light.png" alt="PromisePulse 3.0 light-mode executive overview with historical Brazil state choropleth" width="100%" />
+  <p><em>Figure 1: Authentic Chromium capture of the React/DuckDB-Wasm dashboard displaying historical Olist metrics, an interactive Brazilian customer-state choropleth, and descriptive analytics. This is not a live shipment map.</em></p>
+  <img src="docs/screenshots/v3/overview-dark.png" alt="PromisePulse 3.0 dark-mode historical executive overview" width="100%" />
+  <p><em>Figure 2: The same verified historical analytics rendered using the accessible charcoal-glass appearance.</em></p>
 </div>
+
+See the [18-image, real-browser UI gallery](docs/SCREENSHOT_GALLERY.md) for every workspace, dark mode, research laboratory and mobile layouts.
 
 ---
 
@@ -53,25 +57,61 @@ The Brazilian E-Commerce Public Dataset provided by Olist contains 100,000 real 
 
 ## Key Features
 
-* **Executive Performance Overview**: Real-time evaluation of aggregate order volume (99,441 facts), total payment revenue (R$ 16.01M), average basket size (R$ 160.99), and empirical late delivery rate (6.8%).
+For a complete walkthrough see the [User Guide](docs/USER_GUIDE.md), [Research Reproducibility](docs/RESEARCH_REPRODUCIBILITY.md), and [Screenshot Gallery](docs/SCREENSHOT_GALLERY.md).
+
+* **Executive Performance Overview**: Interactive historical evaluation of aggregate order volume (99,441 facts), total payment revenue (R$ 16.01M), average basket size (R$ 160.99), and empirical late delivery rate (6.8%).
 * **Interactive In-Browser OLAP Lab**: First-class support for multi-dimensional operations (`ROLLUP`, Drill-down, Slice, Dice, and Pivot) executing standard SQL in milliseconds via WebAssembly.
 * **Predictive Delivery-Risk Investigation**: Interactive triage center featuring adjustable probability decision thresholds, dynamic client-side confusion matrix recalculation, and CSV investigation export.
-* **Audited Data Catalog**: Comprehensive provenance documentation detailing source CSV bytes and record counts, table grain definitions, and interactive live SQL table previews.
+* **Audited Data Catalog**: Comprehensive provenance documentation detailing source CSV bytes and record counts, table grain definitions, and interactive local read-only SQL table previews.
 * **Automated Data Quality & Reconciliation**: Strict zero-tolerance assertions guaranteeing primary key uniqueness, referential foreign-key completeness, and exact penny-level revenue reconciliation.
-* **Responsive Modern Luxury Interface**: Clean design language built with CSS custom properties, accessible contrast ratios, full mobile drawer navigation, and zero third-party UI framework bloat.
+* **Responsive Modern Glass Interface**: Warm-light and charcoal-dark modes with the floating desktop icon dock, adaptive bottom dock, reusable card tokens, keyboard search and no additional UI component framework.
 
 ---
 
-## Dashboard Gallery
+## Analytics Atlas — 36 Reproducible Interactive Charts
 
-| View | Screenshot | Description |
-| :--- | :--- | :--- |
-| **Interactive OLAP Lab (`ROLLUP`)** | [![OLAP Roll-up](docs/screenshots/olap-rollup.png)](docs/screenshots/olap-rollup.png) | Multidimensional hierarchical aggregation computing customer state and monthly sub-totals via SQL `GROUP BY ROLLUP`. |
-| **Historical Risk Investigation** | [![Risk Center](docs/screenshots/risk-center.png)](docs/screenshots/risk-center.png) | Historical model triage queue displaying validation-selected decision thresholds, precision/recall curves, and risk-ranked orders. |
-| **Data Catalog & Grain Explorer** | [![Data Catalog](docs/screenshots/data-catalog.png)](docs/screenshots/data-catalog.png) | Provenance catalog showing raw file counts, license terms, dimensional schema definitions, and live SQL table inspection. |
-| **Data Quality & Reconciliation** | [![Data Quality](docs/screenshots/data-quality.png)](docs/screenshots/data-quality.png) | Pipeline lineage diagram, warehouse record metrics, and mathematical balance checks validating zero grain inflation. |
-| **Revenue & Sales Analytics** | [![Revenue Analytics](docs/screenshots/revenue-analytics.png)](docs/screenshots/revenue-analytics.png) | SVG area charts depicting seasonal payment velocity and category bar distributions across Olist product lines. |
-| **Mobile Responsive Layout** | [![Mobile Layout](docs/screenshots/mobile-overview.png)](docs/screenshots/mobile-overview.png) | Fully responsive adaptive layout with collapsible navigation drawer for mobile and tablet inspection. |
+The optional **Analytics Atlas** workspace adds a single dock destination while preserving the existing dashboard, Brazilian state choropleth, OLAP Lab, Risk Center, and both themes. Its 36 views comprise 32 grouped trend/ranking/distribution plots and four advanced research plots, with one lens loaded on demand.
+
+| Research lens | Interactive views | Unit of observation |
+| --- | ---: | --- |
+| Commercial pulse | 4 | Purchase month, one row per order |
+| Weekly behavior | 4 | Purchase weekday, one row per order |
+| Hourly demand | 4 | Purchase hour, one row per order |
+| Regional comparisons | 4 | Customer state, one row per order |
+| Fulfillment anatomy | 4 | Nonnegative observed delivery-duration bands |
+| Customer experience | 4 | Orders with recorded review score |
+| Product economics | 4 | Item facts grouped by product category |
+| Seller geography | 4 | Order-item facts grouped by seller state |
+| Research laboratory | 4 | Weekday×hour / state×month / review×punctuality matrices and held-out calibration |
+
+Use the global **Year** and **Customer state** filters to query DuckDB-Wasm Parquet aggregations; navigate each figure by keyboard, inspect selected bins, switch line/bar/area/dot representation, expand underlying aggregate tables and download CSVs. Late-rate plots include labeled-outcome denominators and exploratory **95% Wilson** interval whiskers, which do not adjust for confounding or clustered customer orders. Risk calibration uses the model's actual held-out cohort rather than the year filter; no fabricated live logistics data is present.
+
+**Technical appendix:** [Figure inventory, SQL lineage, denominators, exclusions and publication limits](docs/ANALYTICS_ATLAS_METHODOLOGY.md). **Code:** `web/src/AnalyticsAtlas.tsx`, `web/src/atlasQueries.ts`, `web/src/atlas.css`. **Verification:** `node tests/test_atlas.cjs`.
+
+These interactive visualizations support exploratory research; they do **not** establish novel scientific findings, causal effects or journal acceptance.
+
+---
+
+## Dashboard Gallery — Verified PromisePulse 3.0 Capture
+
+All gallery images are generated from the running React application and the published historical Parquet export. They are not Cadra screenshots or synthesized/mock charts.
+
+| Workspace | Light theme | Dark theme | Primary task |
+| --- | --- | --- | --- |
+| **Overview** | [View](docs/screenshots/v3/overview-light.png) | [View](docs/screenshots/v3/overview-dark.png) | Aggregate orders, payments and the historical state choropleth |
+| **Intelligence** | [View](docs/screenshots/v3/intelligence-light.png) | [View](docs/screenshots/v3/intelligence-dark.png) | Historical order and delivery patterns |
+| **Analytics Atlas** | [View](docs/screenshots/v3/atlas-commerce-light.png) | [View](docs/screenshots/v3/atlas-commerce-dark.png) | Four linked views in the commerce lens; 36 figures across nine lenses |
+| **Research laboratory** | [View](docs/screenshots/v3/atlas-laboratory-light.png) | [View](docs/screenshots/v3/atlas-laboratory-dark.png) | Historical multidimensional cross-tabs and held-out calibration |
+| **OLAP Lab** | [View](docs/screenshots/v3/olap-lab-light.png) | [View](docs/screenshots/v3/olap-lab-dark.png) | Roll-up, drill-down, slice, dice, pivot and query result tables |
+| **Risk Center** | [View](docs/screenshots/v3/risk-center-light.png) | [View](docs/screenshots/v3/risk-center-dark.png) | Historical held-out classification threshold analysis |
+| **Data Catalog** | [View](docs/screenshots/v3/data-catalog-light.png) | [View](docs/screenshots/v3/data-catalog-dark.png) | Dataset provenance and warehouse relations |
+| **Pipeline & Quality** | [View](docs/screenshots/v3/pipeline-quality-light.png) | [View](docs/screenshots/v3/pipeline-quality-dark.png) | ETL lineage, quality checks and reconciliation |
+
+Mobile captures: [Overview](docs/screenshots/v3/overview-mobile-light.png) · [Analytics Atlas](docs/screenshots/v3/atlas-commerce-mobile-light.png).
+
+**More information:** [Full screenshot gallery](docs/SCREENSHOT_GALLERY.md) · [Capture manifest](docs/screenshots/v3/CAPTURE_MANIFEST.json) · [User guide](docs/USER_GUIDE.md) · [Research reproducibility](docs/RESEARCH_REPRODUCIBILITY.md).
+
+**Reminder:** visualizations are descriptive; publication and Q1-journal acceptance require additional statistically validated research and venue-specific assessment.
 
 ---
 
@@ -561,67 +601,57 @@ This project serves as a comprehensive reference implementation for university c
 ## Project Structure
 
 ```text
-promisepulse-react-mvp/
-├── .gitignore                    # Comprehensive Git exclusion rules
-├── LICENSE                       # MIT Open-Source License
-├── README.md                     # Project documentation & reference manual
-├── requirements-export.txt       # Python dependencies (DuckDB, Pandas, scikit-learn)
+PromisePulse/
+├── .github/workflows/
+│   ├── web-checks.yml                  # Build, SQL, theme and Atlas checks
+│   ├── capture-screenshots.yml         # One-shot genuine Chromium screenshots
+│   └── cleanup-feature-branches.yml   # Feature branch cleanup after final merge
+├── .agents/skills/measured-design-reference/SKILL.md
+├── README.md                           # Main project documentation
+├── design.md                           # Measured light UI reference and dark adaptation
 ├── docs/
-│   ├── ADD_TO_EXISTING_PROJECT.md # Migration instructions for legacy pipelines
-│   └── screenshots/              # High-resolution genuine dashboard captures
-│       ├── overview.png
-│       ├── revenue-analytics.png
-│       ├── olap-rollup.png
-│       ├── olap-drilldown.png
-│       ├── olap-slice.png
-│       ├── olap-dice.png
-│       ├── olap-pivot.png
-│       ├── risk-center.png
-│       ├── risk-predictions-queue.png
-│       ├── model-evaluation.png
-│       ├── data-catalog.png
-│       ├── warehouse-tables.png
-│       ├── data-quality.png
-│       ├── data-reconciliation.png
-│       └── mobile-overview.png
+│   ├── USER_GUIDE.md                   # Seven workspace instructions and examples
+│   ├── RESEARCH_REPRODUCIBILITY.md     # ETL, model, metrics and scientific caveats
+│   ├── ANALYTICS_ATLAS_METHODOLOGY.md # Figure-to-query registry and exclusions
+│   ├── SCREENSHOT_GALLERY.md           # Authentic light/dark/mobile gallery
+│   ├── THIRD_PARTY_NOTICES.md
+│   └── screenshots/
+│       ├── v3/                         # Current genuine app screenshots and manifest
+│       └── *.png                       # Earlier-version screenshots/architecture diagrams
 ├── scripts/
-│   ├── build_web_data.py         # Offline DuckDB ETL & Parquet exporter
-│   ├── train_risk.py             # Chronological ML training & scoring pipeline
-│   ├── verify_export.py          # Automated dataset integrity & metric assertions
-│   └── capture_screenshots.py    # Playwright browser automation script
+│   ├── build_web_data.py               # Historical CSV → DuckDB → Parquet ETL
+│   ├── train_risk.py                   # Chronological classification
+│   └── verify_export.py               # Published export checks
 ├── tests/
-│   ├── test_exporter.py          # Pytest suite verifying manifest & table grains
-│   └── test_sql_generation.cjs   # Unit tests validating SQL OLAP templates
-├── warehouse/                    # Local DuckDB database directory (.duckdb)
-└── web/                          # React + TypeScript SPA frontend
-    ├── index.html                # HTML entry point with Plus Jakarta Sans fonts
-    ├── package.json              # Node dependencies (@duckdb/duckdb-wasm, Lucide)
-    ├── vite.config.ts            # Vite build configuration
-    ├── public/
-    │   ├── promisepulse-logo.webp # Optimized neon brand logo
-    │   ├── favicon.png           # Browser tab icon
-    │   └── data/                 # Exported Parquet tables & manifest.json
-    │       ├── dim_customer.parquet
-    │       ├── dim_date.parquet
-    │       ├── dim_product.parquet
-    │       ├── dim_seller.parquet
-    │       ├── fact_order_items.parquet
-    │       ├── fact_orders.parquet
-    │       ├── risk_predictions.parquet
-    │       └── manifest.json
-    └── src/
-        ├── App.tsx               # Main application component & tab routing
-        ├── db.ts                 # DuckDB-Wasm connection & Parquet registration
-        ├── queries.ts            # Dynamic SQL builders & parameterized templates
-        ├── styles.css            # Responsive custom luxury styling
-        └── types.ts              # TypeScript analytical schema interfaces
+│   ├── test_exporter.py
+│   ├── test_sql_generation.cjs
+│   ├── test_theme.cjs
+│   └── test_atlas.cjs
+├── web/
+│   ├── scripts/capture-doc-screens.mjs # Real browser screenshots (Playwright)
+│   ├── src/
+│   │   ├── App.tsx                     # App shell, navigation and original workspaces
+│   │   ├── Premium.tsx                 # Original dashboard, plots and state choropleth
+│   │   ├── AnalyticsAtlas.tsx          # 36 interactive chart definitions rendered
+│   │   ├── atlasQueries.ts             # Allowlists and read-only analytical SQL
+│   │   ├── queries.ts                  # OLAP and historical risk query builders
+│   │   ├── premiumQueries.ts           # Original dashboard queries
+│   │   ├── db.ts                       # DuckDB-Wasm browser query runtime
+│   │   ├── measured-glass.css          # Adapted measured light UI
+│   │   ├── theme.css                   # Global dark/light styling
+│   │   └── atlas.css                   # Theme-responsive chart layouts
+│   └── public/
+│       ├── promisepulse-logo.webp
+│       ├── favicon.png
+│       └── data/                       # Static Parquet export and manifest
+└── requirements-export.txt
 ```
 
 ---
 
 ## Testing and Verification Status
 
-The project was audited, built, and verified end-to-end in this environment:
+GitHub Actions provides the current build and static-query verification; the screenshots in `docs/screenshots/v3/` are captured through the actual browser workflow. Independent field testing and statistical review remain separate:
 
 | Verification Phase | Command / Tool | Status | Result / Notes |
 | :--- | :--- | :--- | :--- |
@@ -630,7 +660,9 @@ The project was audited, built, and verified end-to-end in this environment:
 | **Data Integrity Verification** | `python scripts/verify_export.py` | **PASSED** | All 7 tables, grains, license attribution, and metric outputs validated. |
 | **TypeScript Type Checks** | `tsc -b` | **PASSED** | Zero type errors across all TS/TSX modules. |
 | **Production Web Build** | `vite build` | **PASSED** | Production bundle compiled in 2.83s with DuckDB-Wasm assets included. |
-| **Browser Execution (Playwright)** | `scripts/capture_screenshots.py` | **PASSED** | Chromium headless session executed; 15 genuine high-res screenshots captured. |
+| **Browser Screenshot Capture** | `web/scripts/capture-doc-screens.mjs` | **See capture manifest** | 18 planned real-app screenshots across seven workspaces, two themes and mobile viewport; generated by a separate GitHub Actions capture workflow. |
+| **Atlas Query Integrity** | `node tests/test_atlas.cjs` | **CI PASSED** | Registry count, allowlisted date/state filters, order/item-grain safeguards and interactive component wiring. |
+| **Theme Contract** | `node tests/test_theme.cjs` | **CI PASSED** | Global color mode persistence and chart/map token use. |
 
 ---
 
