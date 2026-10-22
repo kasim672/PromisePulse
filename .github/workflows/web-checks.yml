@@ -25,3 +25,5 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/web/node_modules
         run: node ../tests/test_sql_generation.cjs
+      - name: Verify light and dark theme coverage
+        run: node ../tests/test_theme.cjs
