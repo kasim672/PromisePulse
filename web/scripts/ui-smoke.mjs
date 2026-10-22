@@ -36,8 +36,9 @@ try {
     page.on('pageerror',e=>errors.push(e.message))
     await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000})
     await page.getByRole('navigation',{name:'Primary workspace'}).waitFor()
-    await page.getByText('WAREHOUSE READY').waitFor({timeout:120000})
-    await page.locator('.pp-home').first().waitFor({timeout:45000})
+    await page.locator('.pp-home').first().waitFor({timeout:120000})
+    const warehouseText = await page.locator('.header-version').textContent()
+    ensure(warehouseText?.includes('WAREHOUSE READY'), viewport.name+' warehouse did not load')
     ensure(await page.locator('nav.main-nav button').count()===6,'Expected exactly six navigation items')
     for (const route of routes) {
       await page.getByRole('navigation',{name:'Primary workspace'}).getByRole('button',{name:route,exact:true}).click()
