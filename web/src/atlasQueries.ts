@@ -91,6 +91,7 @@ const duration=`date_diff('day',o.purchase_ts,o.delivered_ts)`
 const measures=`COUNT(*) AS orders, ROUND(SUM(o.payment_total),2) AS payment_revenue,
 ROUND(AVG(o.payment_total),2) AS avg_payment,
 COUNT(o.is_late) AS labeled_orders,
+COUNT(*) FILTER(WHERE o.is_late=true) AS late_orders,
 ROUND(100.0*COUNT(*) FILTER(WHERE o.is_late=true)/NULLIF(COUNT(o.is_late),0),2) AS late_pct,
 ROUND(AVG(${duration}) FILTER(WHERE o.delivered_ts>=o.purchase_ts AND o.purchase_ts IS NOT NULL),2) AS delivery_days`
 
