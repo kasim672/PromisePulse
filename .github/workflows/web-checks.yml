@@ -27,3 +27,5 @@ jobs:
         run: node ../tests/test_sql_generation.cjs
       - name: Verify light and dark theme coverage
         run: node ../tests/test_theme.cjs
+      - name: Validate Analytics Atlas chart registry and SQL semantics
+        run: node ../tests/test_atlas.cjs
