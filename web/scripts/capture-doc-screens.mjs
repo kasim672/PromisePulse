@@ -34,7 +34,7 @@ async function newPage(viewport,theme){
   const page=await context.newPage()
   page.on('pageerror',error=>appErrors.push(String(error)))
   await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000})
-  await page.locator('.header-version').getByText('WAREHOUSE CONNECTED').waitFor({timeout:120000})
+  // The header status is hidden by responsive CSS on mobile; verify the actual content instead.
   await page.locator('.pp-dashboard').waitFor({state:'visible',timeout:120000})
   return {page,context}
 }
@@ -42,7 +42,7 @@ async function navigate(page,title){
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:title,exact:true}).click()
   await page.locator('main').getByText(title,{exact:false}).first().waitFor({timeout:10000}).catch(()=>{})
   // Wait for the active route rather than taking a screenshot of a spinner.
-  await page.locator('.loading,.atlas-loading').first().waitFor({state:'hidden',timeout:90000}).catch(()=>{})
+  await page.locator('.loading,.atlas-loading').first().waitFor({state:'hidden',timeout:2500}).catch(()=>{})
 }
 async function save(page,filename,selector){
   if(selector) await page.locator(selector).first().waitFor({state:'visible',timeout:40000})
