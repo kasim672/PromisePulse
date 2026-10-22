@@ -1,0 +1,56 @@
+name: Capture authentic UI screenshots
+on:
+  push:
+    branches: ['feat/promisepulse-3-measured-glass']
+    paths: ['docs/SCREENSHOT_CAPTURE_REQUEST.md']
+permissions:
+  contents: write
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install Vite application
+        working-directory: web
+        run: npm ci
+      - name: Install temporary browser runner
+        working-directory: web
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Start app serving REAL repository Parquet
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/promisepulse-vite.log 2>&1 &
+          for i in {1..70}; do
+            if curl --fail --silent http://127.0.0.1:4173/data/manifest.json > /dev/null; then
+              echo "Real-data Vite app ready"; exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/promisepulse-vite.log
+          exit 1
+      - name: Capture all seven routes, research matrix and mobile views
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/capture-doc-screens.mjs
+      - name: Verify and commit genuine screenshots to PR branch
+        run: |
+          test -f docs/screenshots/v3/CAPTURE_MANIFEST.json
+          test "$(find docs/screenshots/v3 -name '*.png' | wc -l)" -ge 16
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/v3/
+          if ! git diff --cached --quiet; then
+            git commit -m "docs(ui): capture authentic light/dark/mobile app screenshots"
+            git push origin HEAD:refs/heads/feat/promisepulse-3-measured-glass
+          fi
