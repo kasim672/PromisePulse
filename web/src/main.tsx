@@ -6,6 +6,7 @@ import './premium.css'
 import './measured-glass.css'
 import './theme.css'
 import './atlas.css'
+import './expansion.css'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,
