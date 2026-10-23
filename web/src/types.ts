@@ -1,6 +1,6 @@
 export type Primitive = string | number | boolean | null
 export type RecordRow = Record<string, Primitive>
-export type Tab = 'Overview' | 'OLAP Lab' | 'Risk Center' | 'Data Catalog' | 'Pipeline & Quality' | 'Intelligence' | 'Analytics Atlas'
+export type Tab = 'Overview' | 'OLAP Lab' | 'Risk Center' | 'Data Catalog' | 'Pipeline & Quality' | 'Intelligence' | 'Analytics Atlas' | 'Welcome' | 'Customer Cohorts' | 'Delivery Lab' | 'Research Studio' | 'AI Studio'
 
 export interface RawFile {
   file: string
