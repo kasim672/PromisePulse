@@ -1,0 +1,54 @@
+name: PromisePulse 4 real-data browser and screenshot verification
+on:
+  push:
+    branches: ['feat/promisepulse-4-research-expansion']
+    paths:
+      - 'docs/V4_CAPTURE_REQUEST.md'
+permissions:
+  contents: write
+jobs:
+  chromium-end-to-end:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install application and Chromium runner
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Start real warehouse in browser
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-v4.log 2>&1 &
+          for i in {1..90}; do
+            if curl --fail --silent http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pp-v4.log
+          exit 1
+      - name: Assert actual SQL-backed charts and capture light/dark/mobile
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/capture-v4.mjs
+      - name: Attach real screenshots and provenance to branch
+        run: |
+          set -euo pipefail
+          test -s docs/screenshots/v4/CAPTURE_MANIFEST.json
+          test "$(find docs/screenshots/v4 -name '*.png' | wc -l)" -ge 12
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/v4/
+          git commit -m "docs(v4): add verified light/dark/mobile research and landing screenshots"
+          git fetch --no-tags origin feat/promisepulse-4-research-expansion
+          git rebase FETCH_HEAD
+          git push origin HEAD:refs/heads/feat/promisepulse-4-research-expansion
