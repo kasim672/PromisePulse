@@ -368,7 +368,7 @@ export default function App() {
       </div>
     </div>}
     <main className="main-content" id="main-content">
-      {active === 'Welcome' && <Welcome db={db} onNavigate={changePage}/>}
+      {active === 'Welcome' && <Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>}
       {active !== 'Welcome' && pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {active !== 'Welcome' && !pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
       {db && active !== 'Welcome' && <>
