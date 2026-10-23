@@ -95,7 +95,7 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
     </>}
   </div>
 }
-function ChartCard({rows,metric,lens,loading,error}:{rows:RecordRow[];metric:AtlasMetric;lens:AtlasLens;loading:boolean;error:string}){
+export function ChartCard({rows,metric,lens,loading,error}:{rows:RecordRow[];metric:AtlasMetric;lens:AtlasLens;loading:boolean;error:string}){
   return <section className="pp-block atlas-chart-card" aria-label={metric.title}>
     <div className="atlas-chart-heading"><div><span className="atlas-mini-label">VISUAL ANALYSIS · {metric.id.toUpperCase().replaceAll('-',' ')}</span><h3>{metric.title}</h3><p>{metric.insight}</p></div><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span></div>
     {loading?<div className="atlas-loading"><span className="spinner"/> Querying actual Parquet aggregates…</div>:error?<p className="atlas-error" role="alert">{error}</p>:<MetricPlot rows={rows} metric={metric} lens={lens}/>}
