@@ -26,7 +26,7 @@ const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] =
   { label: 'Analytics Atlas', icon: TrendingUp, description: `${ATLAS_CHART_COUNT} historical interactive analytical views` },
   { label: 'Customer Cohorts', icon: UsersRound, description: 'Six cohort and repeat-activity charts' },
   { label: 'Delivery Lab', icon: Truck, description: 'Six promised-window fulfillment charts' },
-  { label: 'Research Studio', icon: FlaskConical, description: 'Twelve basket and freight research charts' },
+  { label: 'Research Studio', icon: FlaskConical, description: `Twelve basket/freight charts · ${NEW_CHART_COUNT} new research figures` },
   { label: 'AI Studio', icon: Sparkles, description: 'Transparent model analysis and six new evaluation charts' },
   { label: 'OLAP Lab', icon: Layers3, description: 'Run multidimensional SQL' },
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
