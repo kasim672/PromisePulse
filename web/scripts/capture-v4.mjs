@@ -43,9 +43,9 @@ async function capture(theme,viewport,mobile=false){
  page.on('pageerror',e=>pageErrors.push(String(e)))
  await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000})
  await page.locator('.pp-welcome').waitFor({state:'visible',timeout:100000})
- await page.locator('.welcome-history svg').waitFor({state:'visible',timeout:120000})
+ await page.locator('.welcome-history svg[role="img"]').waitFor({state:'visible',timeout:120000})
  const suffix=mobile?'-mobile-'+theme:'-'+theme
- await save(page,'welcome'+suffix,'.welcome-history svg')
+ await save(page,'welcome'+suffix,'.welcome-history svg[role="img"]')
  await research(page,'Customer Cohorts','customer-cohorts'+suffix)
  if(!mobile){
   await research(page,'Delivery Lab','delivery-lab'+suffix)
