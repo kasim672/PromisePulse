@@ -5,7 +5,7 @@ import type {RecordRow,Tab} from './types'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 
-type WelcomeProps={db:Warehouse|null;onNavigate:(tab:Tab)=>void}
+type WelcomeProps={db:Warehouse|null;onNavigate:(tab:Tab)=>void;warehouseError?:string;pending?:boolean}
 const num=(value:unknown)=>typeof value==='number'?new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(value):'—'
 function MiniHistory({rows}:{rows:RecordRow[]}){
  const values=rows.map(x=>Number(x.orders)||0)
@@ -32,7 +32,7 @@ const features=[
  {name:'Fulfillment science',sub:'Delivery and promise-window measurement',icon:Activity,page:'Delivery Lab' as Tab},
  {name:'Reproducible lineage',sub:'Two fact grains, verified export and model audit',icon:Database,page:'Pipeline & Quality' as Tab},
 ]
-export function Welcome({db,onNavigate}:WelcomeProps){
+export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeProps){
  const [monthly,setMonthly]=useState<RecordRow[]>([])
  const [error,setError]=useState(false)
  useEffect(()=>{
@@ -56,7 +56,8 @@ export function Welcome({db,onNavigate}:WelcomeProps){
      <div className="welcome-visual-top"><div><span className="welcome-visual-diamond"><Layers3 size={21}/></span><strong>INSIGHT ATLAS</strong></div><span className="welcome-verified"><i/> HISTORICAL DATA</span></div>
      <div className="welcome-number-grid"><div><span>ORDER FACTS</span><strong>{num(manifest?.warehouse.fact_orders)}</strong><small>Order-grain transactions</small></div><div><span>ANALYTICAL FIGURES</span><strong>{ATLAS_CHART_COUNT+NEW_CHART_COUNT}</strong><small>SQL-backed definitions</small></div><div><span>ITEM FACTS</span><strong>{num(manifest?.warehouse.fact_order_items)}</strong><small>Item-grain merchandise</small></div></div>
      <MiniHistory rows={monthly}/>
-     <div className="welcome-visual-bottom"><span><ShieldCheck size={16}/> Sources before stories</span><button onClick={()=>onNavigate('Data Catalog')}>Explore lineage <ChevronRight size={17}/></button></div>
+     {!pending && warehouseError && <div className="welcome-chart-error" role="alert">Warehouse data could not load. Open the command center to view the setup instructions: {warehouseError}</div>}
+   <div className="welcome-visual-bottom"><span><ShieldCheck size={16}/> Sources before stories</span><button onClick={()=>onNavigate('Data Catalog')}>Explore lineage <ChevronRight size={17}/></button></div>
      {error&&<p className="welcome-chart-error">Monthly trend unavailable; the warehouse was not replaced with simulated values.</p>}
    </div>
   </div>
