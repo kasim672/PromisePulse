@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
-import {Activity,ArrowRight,BarChart3,BookOpen,BrainCircuit,Database,Download,FlaskConical,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
+import {Activity,ArrowRight,BookOpen,BrainCircuit,Database,Download,FlaskConical,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
 import type {Warehouse} from './db'
 import type {RecordRow} from './types'
 import type {AtlasState,AtlasYear} from './atlasQueries'
