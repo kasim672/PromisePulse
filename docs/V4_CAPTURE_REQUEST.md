@@ -10,3 +10,5 @@ Capture actual running React UI with bundled Olist Parquet in:
 - Save screenshot files and provenance manifest in `docs/screenshots/v4/`
 
 This is an explicit evidence-generation trigger, not a claim that the browser or source-data checks already passed.
+
+Re-run screenshot capture with the finalized landing readiness condition: wait for the plotted monthly historical fact SVG, not the always-visible decorative icon; verify populated actual order/merchandise counts before release.
