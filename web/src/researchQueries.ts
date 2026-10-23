@@ -49,7 +49,7 @@ export const RESEARCH_GROUPS:ResearchGroup[]=[
   M('model-observed','Observed late frequency by band','observed_pct','percent','dots','Actual fraction of delivered-late labels in a probability band.'),
   M('model-predicted','Mean model risk by band','predicted_pct','percent','line','Average held-out predicted probability within each band.'),
   M('model-lift','Observed lift versus test prevalence','lift','number','area','Observed late frequency divided by overall test prevalence for the selected state.'),
-  M('model-capture','Share of all late outcomes by band','capture_pct','percent','Fraction of observed late events falling inside each bin; not cumulative recall.')
+  M('model-capture','Share of all late outcomes by band','capture_pct','percent','dots','Fraction of observed late events falling inside each bin; not cumulative recall.')
  ]}
 ]
 export const NEW_CHART_COUNT=RESEARCH_GROUPS.reduce((n,g)=>n+g.metrics.length,0)
