@@ -17,10 +17,15 @@ For a clean production build, run `npm run build`. No PostgreSQL/MySQL server, e
 
 ### Main navigation
 
-The black icon dock on wide screens contains seven destinations. At tablet/mobile widths, the dock moves to the bottom. Buttons provide accessible labels and keyboard focus; navigate using the dock or the Search command palette.
+The black icon dock on wide screens contains **12 destinations** in PromisePulse 4.0. The new first destination is **Welcome**, which opens by default and displays actual historical Olist month-trend data and navigation into the research workspaces. At tablet/mobile widths, the dock moves to the bottom and scrolls horizontally to keep targets readable. Buttons provide accessible labels and keyboard focus; navigate using the dock or the Search command palette.
 
 | Destination | Purpose | Helpful inspection |
 | --- | --- | --- |
+| **Welcome** | Premium research landing, real monthly activity, quick entry into every lab | Explore the historic trend and select Launch Command Center or Research Studio |
+| **Customer Cohorts** | Six first-observed customer cohort charts | Compare repeats, value, frequency and reviews, while accounting for uneven follow-up |
+| **Delivery Lab** | Six promised-window and delivery-duration charts | Filter observed delivered orders and compare actual vs estimated lead times |
+| **Research Studio** | Twelve basket and product-weight research plots | Switch Basket vs Weight & Freight to preserve correct order/item financial grains |
+| **AI Studio** | Six held-out model evaluation charts and a deterministic evidence assistant | Compare predicted vs observed risk, inspect lift and change evidence questions; not an LLM |
 | **Overview** | KPI summary, monthly payment patterns, state choropleth, high-level delivery and category indicators | Change the purchase year; select a Brazilian state on the historical map; compare order counts and late outcomes |
 | **Intelligence** | Historical trends and descriptive comparisons | Look for differences by weekday, delivery periods, ratings and categories |
 | **Analytics Atlas** | 36 focused charts across nine analysis lenses | Filter by purchase year and customer state; switch chart forms; inspect individual bins and export source aggregates |
@@ -29,7 +34,9 @@ The black icon dock on wide screens contains seven destinations. At tablet/mobil
 | **Data Catalog** | Physical warehouse tables, their columns and source provenance | Preview actual selected table rows and consult source counts |
 | **Pipeline & Quality** | ETL stages, data lineage and validation | Check deduplication, foreign-key coverage and reconciliation facts |
 
-These are separate analysis views, **not separate data providers**. The application works from the same historical Olist source and verified Parquet export.
+These are separate analysis views, **not separate data providers**. The application works from the same historical Olist source and verified Parquet export. The **66 registered research chart definitions** comprise the original 36 Atlas views plus 30 new empirical views; changing a chart form does not create a distinct research figure.
+
+For the four new analysis destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
 
 ## Light mode, dark mode and search
 
