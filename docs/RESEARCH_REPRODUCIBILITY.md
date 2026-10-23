@@ -1,5 +1,7 @@
 # PromisePulse 3.0 — Architecture, Evaluation and Research Reproducibility
 
+**Latest extension:** [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) adds 30 chart definitions and a grounded model explanation module. The original warehouse and classifier are unchanged. See [V4 screenshot evidence](SCREENSHOT_GALLERY_V4.md).
+
 **Status:** documented implementation and descriptive analytics, **not** evidence of journal acceptance, statistical significance or validated production predictive performance.
 
 ## 1. Research framing

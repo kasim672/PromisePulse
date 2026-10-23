@@ -1,0 +1,28 @@
+{
+  "source": "Verified running PromisePulse React+DuckDB-Wasm with bundled Olist Parquet, captured by Playwright Chromium",
+  "generated_at_utc": "2026-10-23T06:42:34.308Z",
+  "count": 16,
+  "images": [
+    "welcome-light.png",
+    "customer-cohorts-light.png",
+    "delivery-lab-light.png",
+    "research-basket-light.png",
+    "research-weight-light.png",
+    "ai-studio-light.png",
+    "overview-preserved-light.png",
+    "welcome-dark.png",
+    "customer-cohorts-dark.png",
+    "delivery-lab-dark.png",
+    "research-basket-dark.png",
+    "research-weight-dark.png",
+    "ai-studio-dark.png",
+    "overview-preserved-dark.png",
+    "welcome-mobile-light.png",
+    "customer-cohorts-mobile-light.png"
+  ],
+  "checks": "All 4 new research routes rendered six real queried charts per active lens; AI source questions and browser runtime verified; reference overview preserved.",
+  "viewports": [
+    "1440x900 light/dark",
+    "390x844 light"
+  ]
+}

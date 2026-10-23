@@ -4,6 +4,7 @@ import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
   Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
+  Compass, UsersRound, Truck, FlaskConical, Sparkles,
   Table2, TrendingUp, X,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
@@ -11,13 +12,22 @@ import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
 import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { AnalyticsAtlas } from './AnalyticsAtlas'
+import { Welcome } from './Welcome'
+import { ResearchWorkspace } from './ResearchWorkspace'
+import {ATLAS_CHART_COUNT} from './atlasQueries'
+import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
 import type { OlapFilters, OlapOperation, WarehouseTable } from './queries'
 
 const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] = [
+  { label: 'Welcome', icon: Compass, description: 'Research landing and guided discovery' },
   { label: 'Overview', icon: LayoutDashboard, description: 'Executive overview' },
   { label: 'Intelligence', icon: BarChart3, description: 'Historical analytical intelligence' },
-  { label: 'Analytics Atlas', icon: TrendingUp, description: '36 historical interactive analytical views' },
+  { label: 'Analytics Atlas', icon: TrendingUp, description: `${ATLAS_CHART_COUNT} historical interactive analytical views` },
+  { label: 'Customer Cohorts', icon: UsersRound, description: 'Six cohort and repeat-activity charts' },
+  { label: 'Delivery Lab', icon: Truck, description: 'Six promised-window fulfillment charts' },
+  { label: 'Research Studio', icon: FlaskConical, description: `Twelve basket/freight charts · ${NEW_CHART_COUNT} new research figures` },
+  { label: 'AI Studio', icon: Sparkles, description: 'Transparent model analysis and six new evaluation charts' },
   { label: 'OLAP Lab', icon: Layers3, description: 'Run multidimensional SQL' },
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
@@ -291,7 +301,7 @@ function initialTheme(): Theme {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>(initialTheme)
-  const [active, setActive] = useState<Tab>('Overview')
+  const [active, setActive] = useState<Tab>('Welcome')
   const [db, setDb] = useState<Warehouse | null>(null)
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
@@ -343,7 +353,7 @@ export default function App() {
     <a className="skip-link" href="#main-content">Skip to main content</a>
     <header className="site-header">
       <div className="header-inner">
-        <button className="brand" aria-label="PromisePulse home" onClick={() => changePage('Overview')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
+        <button className="brand" aria-label="PromisePulse landing page" onClick={() => changePage('Welcome')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
         
         <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
@@ -358,18 +368,23 @@ export default function App() {
       </div>
     </div>}
     <main className="main-content" id="main-content">
-      {pending && <Loader title="Initializing local DuckDB warehouse…"/>}
-      {!pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
-      {db && <>
+      {active === 'Welcome' && <Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>}
+      {active !== 'Welcome' && pending && <Loader title="Initializing local DuckDB warehouse…"/>}
+      {active !== 'Welcome' && !pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
+      {db && active !== 'Welcome' && <>
         {active === 'Overview' && <PremiumOverview db={db} onNavigate={changePage}/>}
         {active === 'Intelligence' && <PremiumIntelligence db={db}/>}
         {active === 'Analytics Atlas' && <AnalyticsAtlas db={db}/>}
+        {active === 'Customer Cohorts' && <ResearchWorkspace db={db} destination="cohorts"/>}
+        {active === 'Delivery Lab' && <ResearchWorkspace db={db} destination="promise"/>}
+        {active === 'Research Studio' && <ResearchWorkspace db={db} destination="studio"/>}
+        {active === 'AI Studio' && <ResearchWorkspace db={db} destination="model"/>}
         {active === 'OLAP Lab' && <OlapLab db={db}/>}
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
       </>}
     </main>
-    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse overview" onClick={()=>changePage('Overview')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
+    <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
 }

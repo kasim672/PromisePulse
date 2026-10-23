@@ -29,3 +29,5 @@ jobs:
         run: node ../tests/test_theme.cjs
       - name: Validate Analytics Atlas chart registry and SQL semantics
         run: node ../tests/test_atlas.cjs
+      - name: Verify 12-route research expansion and 30 additional figures
+        run: node ../tests/test_research_expansion.cjs
