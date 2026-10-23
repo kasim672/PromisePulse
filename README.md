@@ -23,6 +23,45 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 
 ---
 
+## PromisePulse 4.0 — Landing, AI Evidence, 12 Destinations & 66 Research Charts
+
+**New in the research expansion (feature branch):** a premium **Welcome** page now opens first; the existing premium dashboard, geographic Brazil choropleth, light/dark modes, AI risk classifier, original Atlas and OLAP modules remain intact. The floating left navigation has expanded from 7 to **12 accessible destinations**, with a scrollable mobile dock. No unrelated UI redesign or fake operational feed has been introduced.
+
+<div align="center">
+  <a href="docs/screenshots/v4/welcome-light.png"><img alt="PromisePulse 4.0 editorial landing showing verified 99,441 Olist orders and actual purchase month trend" width="100%" src="docs/screenshots/v4/welcome-light.png" /></a>
+  <p><em>New opening screen. Figures are based on the bundled Olist Parquet manifest and DuckDB-Wasm month grouping, not stock artwork or fabricated data.</em></p>
+</div>
+
+| Component | Quantified addition | Key purpose |
+| --- | ---: | --- |
+| Existing Analytics Atlas | 36 views, preserved | Nine historical lenses of four source-backed charts each |
+| Customer Cohorts | +6 | Repeat ordering, observed customer-value / review cohorts |
+| Delivery Lab | +6 | Actual versus promised delivery outcomes and durations |
+| Research Studio — Basket | +6 | Order-grain basket size, paid value, freight and reviews |
+| Research Studio — Product Weight & Freight | +6 | Item-grain weight bands, merchandise value and listed freight |
+| AI Studio | +6 | Evaluated hold-out model risk, calibration, lift and late-case concentration |
+| **Research chart definitions** | **66 total** | 36 original + 30 additional; each supports chart modes, source table and CSV export |
+| Floating navigation | **12 destinations** | Welcome, Overview, Intelligence, Atlas, Cohorts, Delivery, Research, AI, OLAP, Risk, Catalog and Pipeline |
+
+**AI Studio** includes an accessible question selector that generates transparent, deterministic answers from historical `risk_predictions` and the published evaluation manifest. **It is not a generative AI chatbot or a newly trained model.** The old model's weak minority-class precision and historical evaluation limits remain explicitly disclosed.
+
+<details>
+<summary><strong>View proof of the new research and AI screens</strong></summary>
+
+| Light mode | Dark mode |
+| --- | --- |
+| [![AI evidence light](docs/screenshots/v4/ai-studio-light.png)](docs/screenshots/v4/ai-studio-light.png) | [![AI evidence dark](docs/screenshots/v4/ai-studio-dark.png)](docs/screenshots/v4/ai-studio-dark.png) |
+| [![Cohorts light](docs/screenshots/v4/customer-cohorts-light.png)](docs/screenshots/v4/customer-cohorts-light.png) | [![Cohorts dark](docs/screenshots/v4/customer-cohorts-dark.png)](docs/screenshots/v4/customer-cohorts-dark.png) |
+| [![Delivery light](docs/screenshots/v4/delivery-lab-light.png)](docs/screenshots/v4/delivery-lab-light.png) | [![Delivery dark](docs/screenshots/v4/delivery-lab-dark.png)](docs/screenshots/v4/delivery-lab-dark.png) |
+
+</details>
+
+**New documentation:** [16 authentic V4 screenshots](docs/SCREENSHOT_GALLERY_V4.md) · [Detailed V4 research methods and all chart definitions](docs/RESEARCH_EXPANSION_V4.md) · [Existing 36-chart methodology](docs/ANALYTICS_ATLAS_METHODOLOGY.md) · [Original 18-screen V3 gallery](docs/SCREENSHOT_GALLERY.md).
+
+**Validation:** `npm run build` + original SQL/theme/Atlas checks + `node tests/test_research_expansion.cjs`; `web/scripts/capture-v4.mjs` also opens the real browser application, queries all new figures, checks AI explanation controls and takes real desktop/mobile screenshots. Larger figure count is not a substitute for independent scientific inference or acceptance by a Q1 journal.
+
+---
+
 ## Hero Dashboard — PromisePulse 3.0
 
 <div align="center">
