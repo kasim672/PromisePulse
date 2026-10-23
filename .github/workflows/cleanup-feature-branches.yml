@@ -1,4 +1,4 @@
-name: Keep only main after PromisePulse 3.0 merge
+name: Keep only main after PromisePulse merges
 on:
   push:
     branches: [main]
@@ -14,12 +14,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Delete the two explicitly reviewed non-main branches
+      - name: Delete the reviewed and merged non-main branches
         run: |
           set -euo pipefail
           for branch in \
             'feat/promisepulse-3-measured-glass' \
-            'feat/cadra-measured-glass-workspace'
+            'feat/cadra-measured-glass-workspace' \
+            'feat/promisepulse-4-research-expansion'
           do
             if git ls-remote --heads origin "$branch" | grep -q .; then
               git push origin --delete "$branch"
