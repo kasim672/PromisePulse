@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useState} from 'react'
 import type {ReactNode,CSSProperties} from 'react'
-import {BookOpen,Database,Download,FlaskConical,ShieldCheck} from 'lucide-react'
+import {BookOpen,Download,FlaskConical,ShieldCheck} from 'lucide-react'
 import {ChartCard} from './AnalyticsAtlas'
 import type {AtlasMetric} from './atlasQueries'
 import type {RecordRow} from './types'
