@@ -6,3 +6,5 @@ The six newly added syllabus routes must be checked using the actual Olist-based
 - Preserved existing Overview in light and dark
 
 Verify non-loading SVG chart data, actual PCA and Ward dendrogram segments, mined rule table, interactive selection, maintained original dashboard and no browser errors. Save authentic screenshots to docs/screenshots/v5 with JSON capture manifest. Do not generate or substitute placeholder numbers.
+
+Final screenshot refresh after browser QA: vertically stacked academic headings, signed-log1p box-plot display disclosure, association percentages and millisecond algorithm timings. Re-verify original Overview and 390px mobile pages.
