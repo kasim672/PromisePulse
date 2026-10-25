@@ -13,7 +13,7 @@ type Evidence={
  classification:{metrics:Row[];calibration:Row[];train_rows:number;test_rows:number;test_start:string;base_late_rate_pct:number;selection:string};
  regression:{metrics:Row[];notes:string};
  clustering:{sample_size:number;population_size:number;chosen_k:number;k_search:Row[];algorithms:Row[];profiles:Row[];points:Row[];dendrogram:Row[];dendrogram_sample:number;caveats:string};
- patterns:{available:boolean;reason?:string;eligible:number;multiple_category_orders:number;algorithms:Row[];rules:Row[];frequent_itemsets:Row[];caveats:string}
+ patterns:{available:boolean;reason?:string;eligible:number;multiple_category_orders:number;algorithms:Row[];rules:Row[];frequent_itemsets:Row[];closed_itemsets:Row[];closed_itemsets_total:number;caveats:string}
 }
 const sequence:SyllabusModule[]=['Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining']
 const hours=[8,3,5,5,4,5]
@@ -183,7 +183,9 @@ function Rules({d}:{d:Evidence}){
    <Plot title="Top association confidences (%)" rows={rulePercent.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="confidence_pct" label="index" unit="percent" note="Conditional percentage among eligible baskets"/>
    <Plot title="Frequent itemset support (%)" rows={itemsets.slice(0,20).map(r=>({...r,support_pct:Math.round(Number(r.support)*100000)/1000}))} field="support_pct" label="itemset" unit="percent" note="Share of eligible multi-category baskets"/>
    <Plot title="Association support distribution (%)" rows={rulePercent.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="support_pct" label="index" unit="percent" note="Observed basket co-occurrence percentage"/>
+   <Plot title="Closed frequent-itemset support (%)" rows={(p.closed_itemsets||[]).slice(0,20).map(r=>({...r,support_pct:Math.round(Number(r.support)*100000)/1000}))} field="support_pct" label="itemset" unit="percent" note="A closed set has no proper frequent superset with identical observed support"/>
   </div>
+  <Panel title="Closed frequent itemsets" note="Computed from all Apriori candidate results: no proper frequent superset has exactly the same observed support."><p className="syllabus-note">Total closed itemsets: {n(p.closed_itemsets_total,0)}. These are derived from the verified Apriori mining output, not a separately named mining algorithm.</p><Table rows={p.closed_itemsets||[]} cols={[[ 'itemset','Closed itemset'],['size','Set size'],['support','Observed support']]} limit={40}/><Export rows={p.closed_itemsets||[]} name="closed-frequent-itemsets"/></Panel>
   <Panel title="Interactive rule network" note="Select actual directed category associations; links show statistical co-occurrence, not recommendations or causal purchase behavior.">
    <div className="syllabus-rule-network">{rules.slice(0,20).map((r,i)=><button key={i} type="button" className={focus===r?'active':''} onClick={()=>setFocus(r)}><span>{String(r.lhs)}</span><span>→</span><span>{String(r.rhs)}</span><strong>{n(r.lift)}×</strong></button>)}</div>
    <p className="syllabus-note">{focus?'Support '+n(Number(focus.support)*100,3)+'% · Confidence '+n(Number(focus.confidence)*100,2)+'% · Lift '+n(focus.lift):'Select an edge to inspect confidence, support and lift.'}</p><p className="syllabus-note">{p.caveats}</p>
