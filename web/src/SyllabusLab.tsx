@@ -87,7 +87,7 @@ function Exploration({d}:{d:Evidence}){
     <div className="syllabus-stat-grid">{[['Observed','n'],['Mean','mean'],['Std. deviation','std'],['Minimum','min'],['First quartile','q1'],['Median','median'],['Third quartile','q3'],['95th percentile','p95'],['Maximum','max']].map(([label,key])=><div key={key}><span>{label}</span><strong>{n(record?.[key])}</strong></div>)}</div>
    </Panel>
    <Panel title="Interactive box-and-whisker summary" note="Box = Q1–Q3, median line, min/max whiskers from actual data; not an IQR outlier classification.">
-    <svg viewBox="0 0 540 155" role="img" aria-label="Observed quartile box plot">{record&&(()=>{const low=Number(record.min)||0,high=Number(record.max)||1,xx=(v:unknown)=>30+(Number(v)-low)/(high-low||1)*470;return <><line x1={xx(record.min)} x2={xx(record.max)} y1="70" y2="70" stroke="var(--atlas-series)" strokeWidth="3"/><rect x={xx(record.q1)} y="40" width={Math.max(1,xx(record.q3)-xx(record.q1))} height="60" fill="var(--atlas-series)" fillOpacity=".23" stroke="var(--atlas-series)" strokeWidth="2"/><line x1={xx(record.median)} x2={xx(record.median)} y1="35" y2="107" stroke="var(--atlas-selected)" strokeWidth="3"/><text x="30" y="135" className="atlas-tick">{n(record.min)}</text><text x="500" y="135" textAnchor="end" className="atlas-tick">{n(record.max)}</text></>})()}</svg>
+    <svg viewBox="0 0 540 155" role="img" aria-label="Observed quartile box plot">{record&&(()=>{const low=Number(record.min)||0,high=Number(record.max)||1,scale=(v:unknown)=>Math.sign(Number(v))*Math.log1p(Math.abs(Number(v))),xx=(v:unknown)=>30+(scale(v)-scale(low))/(scale(high)-scale(low)||1)*470;return <><line x1={xx(record.min)} x2={xx(record.max)} y1="70" y2="70" stroke="var(--atlas-series)" strokeWidth="3"/><rect x={xx(record.q1)} y="40" width={Math.max(1,xx(record.q3)-xx(record.q1))} height="60" fill="var(--atlas-series)" fillOpacity=".23" stroke="var(--atlas-series)" strokeWidth="2"/><line x1={xx(record.median)} x2={xx(record.median)} y1="35" y2="107" stroke="var(--atlas-selected)" strokeWidth="3"/><text x="30" y="135" className="atlas-tick">{n(record.min)}</text><text x="500" y="135" textAnchor="end" className="atlas-tick">{n(record.max)}</text></>})()}</svg><p className="syllabus-note">Signed log1p spacing makes heavy-tailed values legible; quartiles, median and whiskers are still actual values in original units.</p>
    </Panel>
   </div>
   <div className="atlas-panel-grid">
@@ -166,21 +166,23 @@ function Rules({d}:{d:Evidence}){
  const p=d.patterns
  const [support,setSupport]=useState(.005),[confidence,setConfidence]=useState(.2),[focus,setFocus]=useState<Row|null>(null)
  const rules=useMemo(()=>p.rules?.filter(r=>Number(r.support)>=support&&Number(r.confidence)>=confidence)??[],[p.rules,support,confidence])
+ const rulePercent=rules.map(r=>({...r,support_pct:Math.round(Number(r.support)*100000)/1000,confidence_pct:Math.round(Number(r.confidence)*10000)/100}))
+ const timings=(p.algorithms||[]).map(r=>({...r,milliseconds:Math.round(Number(r.seconds)*10000)/10}))
  const itemsets=p.frequent_itemsets?.filter(r=>Number(r.support)>=support)??[]
  if(!p.available)return <Panel title="Baskets not sufficient" note="Rules are suppressed rather than fabricated."><p>{p.reason}</p></Panel>
  return <>
   <div className="syllabus-facts"><span>Eligible baskets <strong>{n(p.eligible,0)}</strong></span><span>Multiple-category orders <strong>{n(p.multiple_category_orders,0)}</strong></span><span>Rule count <strong>{rules.length}</strong></span></div>
   <Panel title="Apriori / FP-Growth / Eclat rule explorer" note="Vary confidence and support on actual exported rules; a control filters results rather than retraining silently.">
    <div className="syllabus-filters"><label>Support ≥ {n(support*100,1)}%<input type="range" min=".005" max=".03" step=".005" value={support} onChange={e=>setSupport(Number(e.target.value))}/></label><label>Confidence ≥ {n(confidence*100,0)}%<input type="range" min=".1" max=".8" step=".05" value={confidence} onChange={e=>setConfidence(Number(e.target.value))}/></label></div>
-   <Table rows={rules} cols={[[ 'lhs','Antecedent'],['rhs','Consequent'],['support','Support'],['confidence','Confidence'],['lift','Lift']]} limit={45}/><Export rows={rules} name="itemset-association-rules"/>
+   <Table rows={rulePercent} cols={[[ 'lhs','Antecedent'],['rhs','Consequent'],['support_pct','Support (%)'],['confidence_pct','Confidence (%)'],['lift','Lift']]} limit={45}/><Export rows={rules} name="itemset-association-rules"/>
   </Panel>
   <div className="atlas-panel-grid">
-   <Plot title="Apriori vs FP-Growth vs Eclat runtime" rows={p.algorithms} field="seconds" label="algorithm" note="Single unreplicated exporter timing; not a rigorous hardware benchmark"/>
+   <Plot title="Mining runtime (milliseconds)" rows={timings} field="milliseconds" label="algorithm" note="Single-run elapsed milliseconds, not a controlled benchmark"/>
    <Plot title="Frequent sets by algorithm" rows={p.algorithms} field="itemsets" label="algorithm" note="Matched basket matrix, minimum support and maximum length"/>
    <Plot title="Top association lifts" rows={rules.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="lift" label="index" note="Relative co-occurrence enrichment"/>
-   <Plot title="Top association confidences" rows={rules.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="confidence" label="index" note="Conditional frequency among eligible baskets"/>
-   <Plot title="Frequent itemset support" rows={itemsets.slice(0,20)} field="support" label="itemset" note="Fraction of eligible multi-category baskets"/>
-   <Plot title="Association support distribution" rows={rules.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="support" label="index" note="Observed itemset co-occurrence probabilities"/>
+   <Plot title="Top association confidences (%)" rows={rulePercent.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="confidence_pct" label="index" unit="percent" note="Conditional percentage among eligible baskets"/>
+   <Plot title="Frequent itemset support (%)" rows={itemsets.slice(0,20).map(r=>({...r,support_pct:Math.round(Number(r.support)*100000)/1000}))} field="support_pct" label="itemset" unit="percent" note="Share of eligible multi-category baskets"/>
+   <Plot title="Association support distribution (%)" rows={rulePercent.slice(0,20).map((r,i)=>({...r,index:i+1}))} field="support_pct" label="index" unit="percent" note="Observed basket co-occurrence percentage"/>
   </div>
   <Panel title="Interactive rule network" note="Select actual directed category associations; links show statistical co-occurrence, not recommendations or causal purchase behavior.">
    <div className="syllabus-rule-network">{rules.slice(0,20).map((r,i)=><button key={i} type="button" className={focus===r?'active':''} onClick={()=>setFocus(r)}><span>{String(r.lhs)}</span><span>→</span><span>{String(r.rhs)}</span><strong>{n(r.lift)}×</strong></button>)}</div>
