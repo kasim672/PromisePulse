@@ -64,3 +64,7 @@ html[data-theme="dark"] .syllabus-control button.active{background:#c4ea84;color
 @media(max-width:760px){.syllabus-module-banner{flex-direction:column;align-items:flex-start}.syllabus-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.syllabus-rule-network{grid-template-columns:1fr}.syllabus-fact{padding:15px 2px}.syllabus-scroll table{min-width:410px}.syllabus-facts>span{white-space:normal}}
 @media(max-width:374px){.syllabus-stat-grid{grid-template-columns:1fr}.syllabus-schema>div:not(.syllabus-fact) span{font-size:9px;padding:9px 2px}}
 @media(prefers-reduced-motion:reduce){.syllabus-page *, .syllabus-page *::before{transition:none!important}}
+
+.syllabus-card>.pp-block-header{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-bottom:18px}
+.syllabus-card>.pp-block-header h3{color:var(--atlas-ink);font:650 18px/1.35 'Urbanist',sans-serif;margin:4px 0 1px}
+.syllabus-card>.pp-block-header p{max-width:80ch;color:var(--atlas-muted);font:500 12px/1.6 'Urbanist',sans-serif}
