@@ -257,12 +257,22 @@ def mining_patterns(items):
                              "support":number(r["support"],5),"confidence":number(r["confidence"],5),
                              "lift":number(r["lift"],4),"antecedent_support":number(r["antecedent support"],5),
                              "consequent_support":number(r["consequent support"],5)})
+    # CLOSED frequent itemset: no proper frequent superset has the exact same
+    # empirical transaction support. Calculated from Apriori's full collection,
+    # not from a truncated UI display or an invented mining run.
+    rows=list(apr.itertuples(index=False))
+    closed=[]
+    for item in rows:
+        if not any(item.itemsets < other.itemsets and abs(float(item.support)-float(other.support))<1e-11 for other in rows):
+            closed.append({"itemset":" + ".join(sorted(item.itemsets)), "size":len(item.itemsets),
+                           "support":number(item.support,5)})
+    closed.sort(key=lambda item:(-item["support"],-item["size"],item["itemset"]))
     pairs=[{"itemset":" + ".join(sorted(row.itemsets)),"size":len(row.itemsets),"support":number(row.support,5)}
           for row in apr.itertuples(index=False) if len(row.itemsets)>=2][:90]
     return {"available":True,"eligible":int(len(filtered)),"multiple_category_orders":len(multiple),
         "all_distinct_order_baskets":len(order_group),"min_support":min_sup,
         "min_confidence":.12,"max_itemset_size":3,"category_limit":max_cats,
-        "algorithms":timings,"frequent_itemsets":pairs,"rules":evidence,
+        "algorithms":timings,"frequent_itemsets":pairs,"closed_itemsets":closed[:110],"closed_itemsets_total":len(closed),"rules":evidence,
         "caveats":"Support denominators use eligible >=2-category baskets among top 36 translated categories. Many Olist orders have one category; do not generalize associations to all purchases. Algorithm timing measured during export hardware only; not a controlled benchmark."}
 
 def lake_and_warehouse(con,source_manifest):
