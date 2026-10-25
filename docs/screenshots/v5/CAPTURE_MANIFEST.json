@@ -1,0 +1,27 @@
+{
+  "source": "Actual Olist Parquet and offline scikit-learn/mlxtend export",
+  "when_utc": "2026-10-25T13:46:37.811Z",
+  "viewports": [
+    "1440x900 light/dark",
+    "390x844 mobile light"
+  ],
+  "screenshots": [
+    "warehouse-etl-light.png",
+    "data-lakes-light.png",
+    "eda-preprocessing-light.png",
+    "classification-regression-light.png",
+    "clustering-dendrogram-light.png",
+    "apriori-fpgrowth-eclat-light.png",
+    "preserved-overview-light.png",
+    "warehouse-etl-dark.png",
+    "data-lakes-dark.png",
+    "eda-preprocessing-dark.png",
+    "classification-regression-dark.png",
+    "clustering-dendrogram-dark.png",
+    "apriori-fpgrowth-eclat-dark.png",
+    "preserved-overview-dark.png",
+    "eda-preprocessing-mobile-light.png",
+    "clustering-dendrogram-mobile-light.png"
+  ],
+  "notes": "Six working syllabus modules, real static experimental figures; original Overview preserved"
+}
