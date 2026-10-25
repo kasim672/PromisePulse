@@ -12,3 +12,5 @@ Requirements:
 - Validate output with `scripts/verify_mining_lab.py` before adding it to `web/public/data/mining_lab.json`
 
 No main branch writes; metrics must be empirical and explicitly labeled with limitations.
+
+Final academically complete rerun: include exact closed frequent itemsets by proper-superset/equal-support filtering of all Apriori results, validate exported counts, and retain original empirical model/clustering/basket results.
