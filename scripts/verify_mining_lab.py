@@ -31,6 +31,8 @@ assert isinstance(basket["available"],bool)
 if basket["available"]:
     assert basket["eligible"]>=25
     assert len(basket["algorithms"])==3
+    assert basket["closed_itemsets_total"]>=len(basket["closed_itemsets"])>=1
+    assert all(0<=item["support"]<=1 for item in basket["closed_itemsets"])
     assert {m["algorithm"] for m in basket["algorithms"]}=={"Apriori","FP-Growth","Eclat"}
     for rule in basket["rules"]:
         assert 0 <= rule["support"] <= 1 and 0 <= rule["confidence"] <= 1 and rule["lift"]>=0
