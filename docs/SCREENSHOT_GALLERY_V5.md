@@ -30,6 +30,6 @@ The completed capture suite checked **six additional syllabus routes**, actual c
 
 - The 950-customer cluster fit and 52-record dendrogram represent deterministic tractability samples, not a hierarchical analysis of all 96,096 observed unique customers.
 - Newly evaluated classifiers have weak minority-class precision. Do not interpret attractive confusion and calibration figures as superior performance or a production risk service.
-- Association support is measured over 649 eligible multi-category baskets for the top-category universe, rather than all orders. Apriori/FP-Growth/Eclat have matching 75-itemset output in the published first export.
+- Association support is measured over 649 eligible multi-category baskets for the top-category universe, rather than all orders. Apriori/FP-Growth/Eclat each identified 75 frequent itemsets, with 74 closed sets derived from the full Apriori collection in the verified latest export.
 - In the Data Lakes module, the raw-data architecture is a documented physical-file/curation representation. No separate object store, managed data lake or stream service has been deployed.
 - A visual depiction of a star/snowflake/constellation is not the deployment of three separate database instances.
