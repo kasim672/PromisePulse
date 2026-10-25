@@ -122,7 +122,7 @@ function Classification({d}:{d:Evidence}){
     <Table rows={d.regression.metrics} cols={[[ 'name','Approach'],['features','Inputs'],['mae_days','MAE days'],['rmse_days','RMSE days'],['r2','R²']]}/>
     <p className="syllabus-note">{d.regression.notes}</p>
   </Panel>
-  <div className="atlas-panel-grid"><Plot title="Regression mean absolute error" rows={d.regression.metrics} field="mae_days" label="name" unit="days" note="Lower MAE better"/><Plot title="Regression R²" rows={d.regression.metrics} field="r2" label="name" note="May be negative for underperforming predictions"/></div>
+  <div className="atlas-panel-grid"><Plot title="Regression mean absolute error" rows={d.regression.metrics} field="mae_days" label="name" unit="days" note="Lower MAE better"/><Plot title="Regression root mean squared error" rows={d.regression.metrics} field="rmse_days" label="name" unit="days" note="Nonnegative out-of-time RMSE; signed R² shown in the results table"/></div>
   <Export rows={all} name="chronological-classification"/>
  </>
 }
