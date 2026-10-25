@@ -104,7 +104,6 @@ def classification(orders):
     d["purchase_weekday"]=d.purchase_ts.dt.dayofweek
     train,test=valid_split(d)
     feats=["payment_total","item_total","freight_total","item_count","purchase_month","purchase_weekday","customer_state"]
-    x=prepare_features(d,feats);x_train=x.loc[train.index] if False else None
     # Reassemble with identical one-hot columns after sorting; avoid index leaks.
     ordered=d.sort_values(["purchase_ts","order_id"]).reset_index(drop=True)
     x=prepare_features(ordered,feats)
@@ -250,7 +249,7 @@ def mining_patterns(items):
         frames[name]=table
         timings.append({"algorithm":name,"seconds":number(duration,4),"itemsets":int(len(table))})
     apr=frames["Apriori"]
-    rules=association_rules(apr,metric="confidence",min_threshold=.12) if not apr.empty else pd.DataFrame()
+    rules=association_rules(apr,num_itemsets=len(x),metric="confidence",min_threshold=.12) if not apr.empty else pd.DataFrame()
     evidence=[]
     if not rules.empty:
         for _,r in rules.sort_values(["lift","support"],ascending=False).head(130).iterrows():
@@ -286,6 +285,7 @@ def main():
     parser.add_argument("--output",type=Path,default=OUT)
     args=parser.parse_args()
     con=duckdb.connect()
+    con.execute("SET threads TO 2")
     for name in ["fact_orders","fact_order_items","dim_customer","dim_product","dim_seller","dim_date"]:
         file=DATA/f"{name}.parquet"
         if not file.exists():raise FileNotFoundError(f"Missing real warehouse data: {file}")
