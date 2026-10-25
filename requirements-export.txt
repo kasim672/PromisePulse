@@ -3,3 +3,6 @@ pandas>=2.2,<3
 numpy>=1.26,<3
 scikit-learn>=1.5,<2
 pytest>=8,<10
+
+scipy>=1.11,<2
+mlxtend>=0.23,<1
