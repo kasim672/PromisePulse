@@ -34,7 +34,7 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 | 3. EDA & Preprocessing | 5 | Seven statistical profiles, histograms, quartile box plots, missingness, 7×7 Pearson matrix, PCA/transformation explanations |
 | 4. Classification Lab | 5 | Trained Decision Tree and Gaussian Naive Bayes; logistic and majority baselines; four regression methods, out-of-time evaluation |
 | 5. Clustering Lab | 4 | K-Means, Ward agglomerative and divisive Bisecting K-Means, **actual dendrogram**, PCA scatter, silhouette and elbow plots |
-| 6. Pattern Mining | 5 | Real Apriori, FP-Growth and Eclat itemsets, support/confidence/lift, association-rule network and mining timing |
+| 6. Pattern Mining | 5 | Real Apriori, FP-Growth and Eclat itemsets, closed itemsets, support/confidence/lift, association-rule network and mining timing |
 | **Total** | **30** | Historical Olist source-backed, reproducible experiments |
 
 **New historical experiment export:** [`web/public/data/mining_lab.json`](web/public/data/mining_lab.json) is generated with `scripts/build_mining_lab.py` from the existing included Olist Parquet files and verified with `scripts/verify_mining_lab.py`. At current export, 950 sampled customers were clustered (a true 52-leaf Ward dendrogram), and 649 eligible multi-category baskets yielded 47 association rules. Classification metrics are explicitly reported as weak, rather than claiming predictive improvements.
