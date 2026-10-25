@@ -6,6 +6,8 @@ Capture script: [`web/scripts/capture-v5.mjs`](../web/scripts/capture-v5.mjs). M
 
 The completed capture suite checked **six additional syllabus routes**, actual chart marks, true Ward dendrogram linkage, the persisted original Overview, both themes, and 390px mobile modules. These screenshots demonstrate browser rendering; they are not an independent scientific peer review.
 
+**Final verified capture:** 2026-10-25 13:59 UTC. All 16 screenshots were regenerated after the 74 verified closed itemsets were added and after mobile card headings, association-rate units, runtime units, and box-plot scale labeling were corrected. [GitHub Actions screenshot smoke passed](https://github.com/kasim672/PromisePulse/actions/runs/40200006679).
+
 | University syllabus module | Light theme | Dark theme | Key empirical evidence |
 | --- | --- | --- | --- |
 | **1. Data Warehouse & ETL** | [![Warehouse light](screenshots/v5/warehouse-etl-light.png)](screenshots/v5/warehouse-etl-light.png) | [![Warehouse dark](screenshots/v5/warehouse-etl-dark.png)](screenshots/v5/warehouse-etl-dark.png) | Conformed dimensions, order/item fact grains, ETL stages, row/byte inventory |
