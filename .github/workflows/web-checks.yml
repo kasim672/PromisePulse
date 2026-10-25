@@ -31,3 +31,5 @@ jobs:
         run: node ../tests/test_atlas.cjs
       - name: Verify 12-route research expansion and 30 additional figures
         run: node ../tests/test_research_expansion.cjs
+      - name: Verify six syllabus modules and empirical algorithms
+        run: node ../tests/test_syllabus_modules.cjs
