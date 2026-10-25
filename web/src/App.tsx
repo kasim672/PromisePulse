@@ -5,7 +5,7 @@ import {
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
   Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
   Compass, UsersRound, Truck, FlaskConical, Sparkles,
-  Table2, TrendingUp, X,
+  Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
@@ -14,6 +14,7 @@ import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { AnalyticsAtlas } from './AnalyticsAtlas'
 import { Welcome } from './Welcome'
 import { ResearchWorkspace } from './ResearchWorkspace'
+import { SyllabusLab } from './SyllabusLab'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
@@ -32,6 +33,12 @@ const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] =
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
   { label: 'Pipeline & Quality', icon: ShieldCheck, description: 'Inspect the lineage & tests' },
+  { label: 'Warehouse & ETL', icon: Database, description: 'Syllabus 1: Dimensional schema, facts, ETL and quality' },
+  { label: 'Data Lakes', icon: Layers3, description: 'Syllabus 2: Raw and curated source comparison' },
+  { label: 'EDA & Preprocessing', icon: ChartNoAxesCombined, description: 'Syllabus 3: Descriptive statistics, distributions, correlation and cleaning' },
+  { label: 'Classification Lab', icon: BrainCircuit, description: 'Syllabus 4: Decision Tree, Naive Bayes and regression experiments' },
+  { label: 'Clustering Lab', icon: GitFork, description: 'Syllabus 5: K-Means, hierarchical clustering and dendrograms' },
+  { label: 'Pattern Mining', icon: Network, description: 'Syllabus 6: Apriori, FP-Growth, Eclat and association rules' },
 ]
 
 const nfmt = (value: unknown, digits = 0) => typeof value === 'number'
@@ -383,6 +390,12 @@ export default function App() {
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
+        {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL"/>}
+        {active === 'Data Lakes' && <SyllabusLab module="Data Lakes"/>}
+        {active === 'EDA & Preprocessing' && <SyllabusLab module="EDA & Preprocessing"/>}
+        {active === 'Classification Lab' && <SyllabusLab module="Classification Lab"/>}
+        {active === 'Clustering Lab' && <SyllabusLab module="Clustering Lab"/>}
+        {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining"/>}
       </>}
     </main>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
