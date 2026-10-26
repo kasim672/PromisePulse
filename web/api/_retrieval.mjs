@@ -8,7 +8,7 @@ const map={
  datasets:['dataset','csv','olist'], used:['dataset','source','olist'],
  ai:['assistant','gemini','model'], bot:['assistant','gemini'], yourself:['assistant','overview','project'],
  architecture:['duckdbwasm','react','vite','parquet'], stack:['architecture','react','vite'],
- insights:['analytics','charts','research'], graph:['charts','atlas'], graphs:['charts','atlas'],
+ insights:['analytics','charts','research'], graph:['charts','atlas'], graphs:['charts','atlas'], plot:['chart','atlas'], plots:['charts','atlas'], visualize:['charts','analytics'], visualizations:['charts','atlas'],
  page:['navigation','workspace'], pages:['navigation','workspace'], features:['workspace','dashboard','mining'],
  dashboard:['analytics','workspace'], reports:['research','analytics'], source:['olist','dataset'],
  algorithm:['classification','clustering','apriori'], algorithms:['classification','clustering','apriori'],
