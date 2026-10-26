@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/live-editorial-smoke.yml'
+      - 'web/src/**'
+      - 'web/scripts/smoke-live-editorial.mjs'
   workflow_dispatch:
 permissions:
   contents: read
