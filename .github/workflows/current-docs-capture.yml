@@ -1,16 +1,24 @@
-name: Refresh current PromisePulse documentation screenshots
+name: Capture current PromisePulse release evidence
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/current-docs-capture.yml'
+      - 'README.md'
+      - 'docs/ARCHITECTURE_V5.md'
+      - 'docs/DEPLOYMENT.md'
+      - 'docs/SCREENSHOT_GALLERY_CURRENT.md'
+      - 'web/scripts/capture-assistant-docs.mjs'
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: current-release-documentation-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  capture-current-ui:
+  real-browser-evidence:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,48 +28,80 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - name: Install real Chromium and React dependencies
+      - name: Install app and Playwright Chromium
         working-directory: web
         run: |
           npm ci
           npm install --no-save --package-lock=false playwright
           npx playwright install --with-deps chromium
-      - name: Start actual source-backed Vite site
+      - name: Verify code, evidence and source-backed data
         working-directory: web
         run: |
+          npm run build
+          node ../tests/test_documentation.cjs
+          node ../tests/test_gemini_assistant.mjs
+          node ../tests/test_soft_cyan_theme.cjs
           test -s public/data/manifest.json
           test -s public/data/fact_orders.parquet
           test -s public/data/mining_lab.json
-          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-docs-v5.log 2>&1 &
+      - name: Start actual local app and AI API
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/promise-release-capture.log 2>&1 &
           for i in {1..90}; do
-            if curl --silent --fail http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
             sleep 1
           done
-          cat /tmp/pp-docs-v5.log
+          cat /tmp/promise-release-capture.log
           exit 1
-      - name: Capture V5 desktop and mobile evidence after typography cleanup
+      - name: Capture research workspaces from actual public data
         working-directory: web
         env:
-          PP_BASE_URL: http://127.0.0.1:4173
+          PP_BASE_URL: http://127.0.0.1:4173/
         run: node scripts/capture-current-docs.mjs
-      - name: Upload current screenshots as an audit artifact
+      - name: Capture all five source-backed teaching walkthroughs
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-algorithms.mjs
+      - name: Capture the live AI drawer in light dark and mobile
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/capture-assistant-docs.mjs
+      - name: Verify image files and capture provenance
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs')
+          const path='docs/screenshots/current/'
+          const data=JSON.parse(fs.readFileSync(path+'CAPTURE_MANIFEST.json'))
+          const lab=JSON.parse(fs.readFileSync(path+'ALGORITHM_CAPTURE_MANIFEST.json'))
+          const ai=JSON.parse(fs.readFileSync(path+'ASSISTANT_CAPTURE_MANIFEST.json'))
+          if(data.images.length!==13||lab.images.length!==15||ai.images.length!==5)throw Error('Unexpected screenshot count')
+          if(data.git_sha!==process.env.GITHUB_SHA||lab.source_sha!==process.env.GITHUB_SHA||ai.source_sha!==process.env.GITHUB_SHA)throw Error('Capture SHA mismatch')
+          for(const name of [...data.images,...lab.images,...ai.images]){
+            if(fs.statSync(path+name).size<15000)throw Error('Missing or invalid screenshot '+name)
+          }
+          console.log('Verified 33 real Chromium screenshots from '+process.env.GITHUB_SHA)
+          NODE
+          node tests/test_documentation.cjs
+      - name: Upload screenshots as review artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: promisepulse-v5-current-website-screenshots
+          name: current-promisepulse-33-actual-screenshots
           path: docs/screenshots/current/
           if-no-files-found: ignore
-      - name: Publish verified screenshots to README gallery on main
+          retention-days: 30
+      - name: Commit genuine screenshots and matching manifests
         run: |
           set -euo pipefail
-          test -s docs/screenshots/current/CAPTURE_MANIFEST.json
-          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 10
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/screenshots/current/
           if git diff --cached --quiet; then
-            echo "Capture unchanged; no commit required."
+            echo "Screenshot files unchanged."
             exit 0
           fi
-          git commit -m "docs: publish verified current V5 desktop and mobile screenshots"
+          git commit -m "docs: publish 33 current source-backed browser screenshots"
           git push origin HEAD:main
