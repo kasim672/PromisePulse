@@ -1,4 +1,4 @@
-import {retrieve} from './knowledge.mjs'
+import {retrieve} from './_knowledge.mjs'
 
 const REFUSAL='I can only answer questions about PromisePulse and its documented historical research. Ask about the dataset, architecture, dashboards, SQL, mining methods or model evaluation.'
 const LIMIT=8
