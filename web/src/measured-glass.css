@@ -59,9 +59,6 @@ a:hover{text-underline-offset:3px}
 .brand:hover .brand-logo-image,.footer-brand:hover .footer-logo-image{filter:none;transform:none}
 .brand:hover,.footer-brand:hover{box-shadow:0 0 0 3px rgba(3,105,161,.19)}
 .header-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
-.header-version{font:600 11px/1.4 'Urbanist',sans-serif;letter-spacing:.02em;color:#5c5c5a;text-transform:none}
-.header-online{background:#0369a1;box-shadow:0 0 0 4px rgba(3,105,161,.12)}
-.header-online.offline{background:#a87406;box-shadow:0 0 0 4px rgba(168,116,6,.13)}
 .header-cta,.primary-btn{background:#111;border:1px solid #111;color:#f7f7f5;box-shadow:none;border-radius:999px;padding:11px 18px;font-size:13px;line-height:1.4;font-weight:600}
 .header-cta:hover,.primary-btn:hover{background:#1d4f87;border-color:#1d4f87;box-shadow:0 8px 22px rgba(29,79,135,.14);color:#fff;transform:translateY(-1px)}
 .main-nav{position:fixed;top:105px;left:20px;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;flex:none;width:64px;padding:8px;background:#111;border:1px solid rgba(255,255,255,.12);border-radius:32px;box-shadow:0 20px 40px -18px rgba(10,20,30,.45)}
@@ -290,7 +287,6 @@ a:hover{text-underline-offset:3px}
  .pp-map-inspector{display:grid;grid-template-columns:1fr 1fr}
  .pp-map-state-title,.pp-map-note,.pp-map-ranking{grid-column:1/-1}
  .pp-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
- .header-version{display:none}
 }
 @media(max-width:760px){
  .pp-page-top,.intro,.hero-intro{align-items:flex-start;flex-direction:column;gap:12px}
