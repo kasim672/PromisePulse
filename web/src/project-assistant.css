@@ -37,7 +37,7 @@
 .project-ai-composer button:disabled{opacity:.45;cursor:not-allowed}
 .project-ai-composer>p{margin:10px 0 0;color:var(--cadra-muted);font:500 11px/1.55 Urbanist,system-ui,sans-serif}
 .project-ai-dialog :is(button,textarea,a):focus-visible,.project-ai-trigger:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}
-@media(max-width:620px){.project-ai-trigger{right:12px;bottom:12px;min-height:45px;padding:12px 14px}.project-ai-trigger span{display:none}.project-ai-backdrop{padding:0}.project-ai-dialog{height:100dvh;width:100%;border-radius:0;border:0}.project-ai-header{padding:13px 14px}.project-ai-messages{padding:14px}}
+@media(max-width:620px){.project-ai-trigger{right:12px;bottom:86px;min-height:45px;padding:12px 14px}.project-ai-trigger span{display:none}.project-ai-backdrop{padding:0}.project-ai-dialog{height:100dvh;width:100%;border-radius:0;border:0}.project-ai-header{padding:13px 14px}.project-ai-messages{padding:14px}}
 @media(prefers-reduced-motion:reduce){.project-ai-dots{animation:none}}
 
 /*
