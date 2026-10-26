@@ -32,7 +32,20 @@ This visual update was merged to **`main`** in [PR #10](https://github.com/kasim
 
 The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
 
-**Configuration required:** this assistant does **not** work until an authorized administrator creates a Gemini key in [Google AI Studio](https://aistudio.google.com/apikey), stores `GEMINI_API_KEY` in Vercel Environment Variables, and successfully deploys the Vercel Function. Vite-only local development does not run `/api/ask`; use `vercel dev` for end-to-end local testing. Do not commit or paste API keys.
+**Local setup:** The normal Vite dev server now serves the same `/api/ask` handler locally. Open a terminal and run:
+
+```bash
+cd ~/PromisePulse
+git switch feat/gemini-project-research-assistant
+cd web
+npm ci
+npm run setup:gemini
+nano .env
+# Add your own private GEMINI_API_KEY to the created file.
+npm run dev
+```
+
+The project commits `web/.env.example` but **never a real `web/.env`**; both Git ignore files exclude secret files. No Vercel account or Vercel CLI is necessary for local Gemini testing. After deployment, set `GEMINI_API_KEY` privately in Vercel Environment Variables as well. Do not paste API keys into GitHub or browser code. See the [complete local setup](docs/GEMINI_RESEARCH_ASSISTANT.md).
 
 Questions and selected project source excerpts are processed by Gemini; avoid entering personal data. The assistant is educational and only as accurate as the curated sources. See the complete [Gemini configuration, security, privacy, rate-limiting and architecture guide](docs/GEMINI_RESEARCH_ASSISTANT.md).
 
