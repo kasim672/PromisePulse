@@ -53,6 +53,7 @@ assert.match(chat,/--ai-surface:\s*#f8fbff/i)
 assert.match(chat,/--ai-panel:\s*#ffffff/i)
 assert.match(chat,/--ai-ink:\s*#10263e/i)
 assert.match(chat,/--ai-muted:\s*#4b6077/i)
+assert.match(chat,/bottom:calc\(86px \+ env\(safe-area-inset-bottom, 0px\)\)/, 'mobile AI trigger must clear the fixed bottom navigation dock')
 function contrast(foreground,background) {
   const lum = (hex) => {
     const rgb = hex.slice(1).match(/.{2}/g).map(x => parseInt(x,16)/255)
