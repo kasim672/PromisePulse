@@ -31,7 +31,12 @@ jobs:
         run: |
           npm ci
           npm install --no-save --package-lock=false playwright
-          npx playwright install --with-deps chromium
+          if command -v google-chrome > /dev/null; then
+            echo "PP_BROWSER_CHANNEL=chrome" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright install chromium
+          fi
       - name: Verify application build, computed teaching mathematics and original research data
         working-directory: web
         run: |
