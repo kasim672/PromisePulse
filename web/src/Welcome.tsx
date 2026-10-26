@@ -52,7 +52,7 @@ export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeP
    </div>
    <div className="welcome-visual">
      <div className="welcome-visual-top"><div><span className="welcome-visual-diamond"><Layers3 size={21}/></span><h2>Analytics overview</h2></div></div>
-     <div className="welcome-number-grid"><div><span>ORDER FACTS</span><strong>{num(manifest?.warehouse.fact_orders)}</strong><small>Order-grain transactions</small></div><div><span>ANALYTICAL FIGURES</span><strong>{ATLAS_CHART_COUNT+NEW_CHART_COUNT}</strong><small>SQL-backed definitions</small></div><div><span>ITEM FACTS</span><strong>{num(manifest?.warehouse.fact_order_items)}</strong><small>Item-grain merchandise</small></div></div>
+     <div className="welcome-number-grid"><div><span>Orders</span><strong>{num(manifest?.warehouse.fact_orders)}</strong><small>Order-grain transactions</small></div><div><span>Charts</span><strong>{ATLAS_CHART_COUNT+NEW_CHART_COUNT}</strong><small>SQL-backed definitions</small></div><div><span>Order items</span><strong>{num(manifest?.warehouse.fact_order_items)}</strong><small>Item-grain merchandise</small></div></div>
      <MiniHistory rows={monthly}/>
      {!pending && warehouseError && <div className="welcome-chart-error" role="alert">Warehouse data could not load. Open the command center to view the setup instructions: {warehouseError}</div>}
    <div className="welcome-visual-bottom"><span><ShieldCheck size={16}/> Sources before stories</span><button onClick={()=>onNavigate('Data Catalog')}>Explore lineage <ChevronRight size={17}/></button></div>
