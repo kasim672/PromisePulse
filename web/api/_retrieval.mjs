@@ -27,7 +27,7 @@ function intent(question){
  return question
 }
 const records=[...SOURCES.map(x=>({...x,curated:true})),...SITE_SOURCES.map(x=>({...x,curated:false}))]
- .map(x=>({...x,body:new Set(words(x.text)),heading:new Set(words(x.title+' '+(x.terms||'')))}))]
+ .map(x=>({...x,body:new Set(words(x.text)),heading:new Set(words(x.title+' '+(x.terms||'')))}))
 export function findEvidence(question,limit=6){
  const canonical=intent(question)
  const original=words(canonical)
