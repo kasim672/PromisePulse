@@ -13,3 +13,6 @@ Final closed-itemset capture after empirical rerun: 74 closed frequent itemsets 
 
 ## Consolidated review branch: refreshed browser evidence
 Capture all six empirical syllabus modules in light and dark, original Overview preserved, two mobile lab views, and **three additional Syllabus Hub screenshots** (desktop light/dark and mobile light). Verify the hub reads its six real evidence counters, links to six modules, changes its academic phase filter, and that visible algorithms/dendrograms are real, not placeholder data. Export JSON now uses train-only model feature fitting. Reject browser exceptions. Commit only confirmed screenshots with a new provenance manifest.
+
+## Final visual correction verification
+Re-capture 19 authentic syllabus and preserved-overview screenshots after the academic hub light/dark tokens were explicitly scoped, ensuring visible nonzero module-hour progress bars and readable labels. Verify responsive navigation and source-backed evidence counters.
