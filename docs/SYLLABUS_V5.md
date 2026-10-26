@@ -1,6 +1,6 @@
 # PromisePulse 5.0 — Full 30-hour Data Warehousing & Data Mining syllabus
 
-**Release status:** feature branch only. This document maps the six university syllabus modules supplied by the student to genuine implementations, clearly separated from conceptual architecture illustrations. All original 12 workspaces, the initial 66 scientific chart definitions, the Brazil state-level geographic map, the AI evidence studio, both visual themes and OLAP tools are preserved. Six syllabus modules add six dock destinations (18 total). No removal or replacement was performed.
+**Release status:** feature branch only. This document maps the six university syllabus modules supplied by the student to genuine implementations, clearly separated from conceptual architecture illustrations. All original 12 workspaces, the initial 66 scientific chart definitions, the Brazil state-level geographic map, the AI evidence studio, both visual themes and OLAP tools are preserved. Six syllabus modules add six dock destinations, plus one syllabus overview hub (**19 total**). No removal or replacement was performed.
 
 ## Module-by-module syllabus coverage
 
@@ -80,7 +80,7 @@ These are empirical results, **not example placeholder numbers**:
 - Frequent mining: **649** eligible multi-category baskets in the bounded item universe; **75** frequent itemsets for each of Apriori, FP-Growth and Eclat, plus **74 empirically closed frequent itemsets** (no proper frequent superset with equal support) and **47** exported association rules meeting original mining criteria. This is a very small selected subset of all marketplace orders: be cautious about support denominators, prevalence and external validity.
 - Single-run algorithm timings are captured for reproducibility but are **not a statistically controlled runtime benchmark**.
 
-The experimental train/test split is **chronological 77/23**, not a random shuffle; the training timestamp and holdout start are in the JSON. Models share a common test set and fixed classification cutoff 0.5. Mean/scale transformations use train-fitted parameters when needed. The classification scope is orders with known late outcomes, and regression is delivered-only; missing statuses must not be silently imputed as on time.
+The experimental train/test split is **chronological 77/23**, not a random shuffle; the training timestamp and holdout start are in the JSON. Models share a common test set and fixed classification cutoff 0.5. **Numeric medians, category one-hot vocabulary and scales are fitted on training rows only**, then applied to the chronological held-out set; new holdout categories map to the all-zero training vocabulary baseline. The classification scope is orders with known late outcomes, and regression is delivered-only; missing statuses must not be silently imputed as on time.
 
 ### Mining terms and mathematics
 
@@ -93,7 +93,7 @@ The experimental train/test split is **chronological 77/23**, not a random shuff
 
 ## UI and academic evaluation
 
-- **18 floating navigation destinations**: 12 previous pages plus six new syllabus pages. Desktop dock scrolls vertically when needed; tablet/mobile dock scrolls horizontally.
+- **19 floating navigation destinations**: 12 previous pages, six new syllabus pages, plus the Syllabus Hub with phase filtering, the 30-hour breakdown, verified source statistics, and direct links. Desktop dock scrolls vertically when needed; tablet/mobile dock scrolls horizontally.
 - Existing glass cards, charts, Brazil map, page structure, website branding, favicon, light/dark colors and routes remain unchanged.
 - Experiments use actual historical data; when the mining JSON cannot be loaded, the module explicitly says so rather than substituting invented numbers.
 - Controls include schema-variant selector, variable profile selector, correlation cell inspection, classifier comparison metric and confusion matrix selector, cluster-algorithm switch, dendrogram focus, and rule support/confidence sliders.
