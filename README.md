@@ -6,11 +6,11 @@
 [![MIT source license](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 [![Olist historical dataset](https://img.shields.io/badge/dataset-Olist%202016--2018-4b779c)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
-**[Live dashboard](https://promise-pulse-rose.vercel.app/)** · **[Architecture](docs/ARCHITECTURE_V5.md)** · **[Deployment guide](docs/DEPLOYMENT.md)** · **[Screenshot gallery](docs/SCREENSHOT_GALLERY_CURRENT.md)** · **[Research methods](docs/RESEARCH_REPRODUCIBILITY.md)**
+**[Website](https://promise-pulse-rose.vercel.app/)** · **[Architecture](docs/ARCHITECTURE_V5.md)** · **[Soft-cyan design system](docs/THEME_SYSTEM.md)** · **[Deployment guide](docs/DEPLOYMENT.md)** · **[Screenshots](docs/SCREENSHOT_GALLERY_CURRENT.md)** · **[Reproducibility](docs/RESEARCH_REPRODUCIBILITY.md)**
 
-![PromisePulse current release homepage](docs/screenshots/current/welcome-light.png)
+![Current PromisePulse homepage with soft cyan #7DD3FC accents](docs/screenshots/current/welcome-dark.png)
 
-*Current PromisePulse 5.0 interface, captured from the real application after the editorial typography update. For image provenance and other views, see the [capture manifest](docs/screenshots/current/CAPTURE_MANIFEST.json).*
+*PromisePulse 5.0, soft-cyan design (`#7DD3FC`). Real Chromium screenshot of the checked-in Olist dashboard; the [capture manifest](docs/screenshots/current/CAPTURE_MANIFEST.json) records the exact source commit and viewport. Screenshots reflect source code, not necessarily the most recent public Vercel deployment.*
 
 ## Overview
 
@@ -19,6 +19,14 @@ PromisePulse explores the **Brazilian E-Commerce Public Dataset by Olist**, a hi
 A separate offline experiment exporter provides six Data Mining Lab sections: warehouse/ETL, data lakes, exploratory preprocessing, classification and regression, clustering, and frequent-pattern mining. The experiments use published historical results, not simulated order activity or models retrained on each visit.
 
 **This is a research and education dashboard, not a live fulfillment tracker or deployed risk-scoring service.** It requires no hosted SQL server, account system, Streamlit application or Python process to serve the public site.
+
+## Current design and release status
+
+The interface uses a **soft-cyan accent (`#7DD3FC`)** in place of fluorescent lime. Cyan appears on navigation selection, calls to action, KPI highlights, chart interactions, the historical Brazil map, Data Mining Lab controls, and the favicon. The dark graphite backgrounds and purple wordmark are retained. The design also provides a light theme, accessible dark-navy text on cyan backgrounds, and responsive layouts.
+
+This visual update was merged to **`main`** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), following the five teaching visualizers and loading/retry changes in [PR #9](https://github.com/kasim672/PromisePulse/pull/9). The theme is presentation-only: it does not modify Olist records, SQL, model evaluation, or mining results.
+
+**GitHub source versus public deployment:** Vercel reported a build-rate-limit failure for the soft-cyan merge on October 26, 2026. Therefore the public URL might still show the earlier lime theme until a successful redeployment. See the [deployment guide](docs/DEPLOYMENT.md) for verifying and retrying the production build. The [design system](docs/THEME_SYSTEM.md) documents colors, contrast, logos, and code ownership.
 
 ## Explore the current release
 
@@ -84,7 +92,7 @@ Loading is also more informative: warehouse initialization reports the manifest,
 | --- | --- |
 | [![Data Mining Lab](docs/screenshots/current/mining-hub-light.png)](docs/screenshots/current/mining-hub-light.png) | [![Clustering and Ward dendrogram](docs/screenshots/current/clustering-light.png)](docs/screenshots/current/clustering-light.png) |
 
-**[See the complete current-release desktop, dark-mode and mobile gallery](docs/SCREENSHOT_GALLERY_CURRENT.md).** Previous [V3](docs/SCREENSHOT_GALLERY.md), [V4](docs/SCREENSHOT_GALLERY_V4.md) and [early V5](docs/SCREENSHOT_GALLERY_V5.md) captures remain archived; some older screenshots predate the typography cleanup.
+**[See the complete soft-cyan desktop, dark-mode and mobile gallery](docs/SCREENSHOT_GALLERY_CURRENT.md).** Previous [V3](docs/SCREENSHOT_GALLERY.md), [V4](docs/SCREENSHOT_GALLERY_V4.md) and [early V5](docs/SCREENSHOT_GALLERY_V5.md) captures remain archived; some older screenshots predate the typography cleanup.
 
 ## System architecture
 
@@ -167,7 +175,7 @@ python scripts/verify_mining_lab.py
 
 ## Deploy on Vercel
 
-The live site is **[promise-pulse-rose.vercel.app](https://promise-pulse-rose.vercel.app/)**. For a new Vercel import of this repository:
+The production domain is **[promise-pulse-rose.vercel.app](https://promise-pulse-rose.vercel.app/)**. Confirm that Vercel deployed the newest `main` commit before assuming the theme is live; deployment was rate-limited after the cyan merge. For a new Vercel import:
 
 | Setting | Value |
 | --- | --- |
@@ -197,6 +205,8 @@ node ../tests/test_syllabus_modules.cjs
 node ../tests/test_mining_export_integrity.cjs
 node ../tests/test_editorial_hierarchy.cjs
 node ../tests/test_algorithm_playground.cjs
+node ../tests/test_soft_cyan_theme.cjs
+node ../tests/test_documentation.cjs
 ```
 
 GitHub Actions runs these checks in [`.github/workflows/web-checks.yml`](.github/workflows/web-checks.yml). Browser navigation tests and capture scripts are in `web/scripts/` and install Playwright separately. The [capture gallery](docs/SCREENSHOT_GALLERY_CURRENT.md) documents the screenshot source, viewport and commit instead of relying on mockups.
@@ -210,6 +220,7 @@ PromisePulse/
 │   ├── ARCHITECTURE_V5.md     # Editable flow, ER and sequence diagrams
 │   ├── architecture.svg       # Standalone overview diagram
 │   ├── DEPLOYMENT.md          # Vercel and local deployment instructions
+│   ├── THEME_SYSTEM.md        # Cyan palette, dark/light mode, logo, contrast
 │   ├── SCREENSHOT_GALLERY_CURRENT.md
 │   ├── SYLLABUS_V5.md         # Method mapping and empirical caveats
 │   ├── RESEARCH_REPRODUCIBILITY.md
@@ -234,7 +245,8 @@ PromisePulse/
 │   │   ├── ResearchWorkspace.tsx
 │   │   ├── SyllabusHub.tsx    # Single-click Data Mining Lab overview
 │   │   ├── SyllabusLab.tsx    # Six analysis areas and clickable tabs
-│   │   └── editorial.css      # Current readable typography refinements
+│   │   ├── editorial.css      # Readable typography refinements
+│   │   └── soft-cyan.css      # Final cyan accent overrides
 │   ├── package.json
 │   └── vite.config.ts
 ├── requirements-export.txt
