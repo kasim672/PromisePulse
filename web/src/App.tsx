@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { loadWarehouse } from './db'
 import type { Warehouse,WarehouseProgress } from './db'
-import {WarehouseLoading,ResourceError} from './DataStates'
+import {WarehouseLoading,ResourceError,QueryLoading} from './DataStates'
 import type { RecordRow, Tab } from './types'
 import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { AnalyticsAtlas } from './AnalyticsAtlas'
@@ -56,7 +56,7 @@ function Panel({ title, sub, action, children, className = '' }: { title: string
   </section>
 }
 function Loader({ title = 'Processing warehouse query…' }: { title?: string }) {
-  return <div className="loading"><span className="spinner" /><span>{title}</span></div>
+  return <QueryLoading label={title}/>
 }
 function Notice({ message, action }: { message: string; action?: ReactNode }) {
   return <div className="notice"><CircleHelp size={18} /><span>{message}</span>{action}</div>
