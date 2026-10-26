@@ -6,7 +6,7 @@
 
 GitHub comparison with `main` documents additive algorithm exporters, generated historical experiment data, six syllabus pages, a syllabus overview hub, documentation, screenshots and tests. Existing premium CSS, the state-level choropleth, the original Analytics Atlas 36 views, Research Workspaces 30 views, original Risk Center, OLAP, homepage, logo and theme implementations are **not replaced**. Only integration points in the original app shell (`App.tsx`, `types.ts`, `main.tsx`) are modified to register and render additional modules; all original dashboards and CSS files are retained, with new styles isolated in `syllabus.css` and `syllabus-hub.css`.
 
-New dock destinations: Warehouse & ETL, Data Lakes, EDA & Preprocessing, Classification Lab, Clustering Lab and Pattern Mining. Total destinations: 12 original + 6 syllabus modules + 1 syllabus hub = **19**. Do not misrepresent the number of empirical visualizations: the retained Atlas + research workspace register **66** chart definitions, while the new syllabus labs add supplementary figures, diagrams, data tables and analytical selectors with different grains.
+Navigation now has the original 12 workspace entries plus one **Data Mining Lab** icon. Clicking it opens the Data Mining Lab overview directly, without a dropdown. All six analysis pages remain available through clickable cards and internal tabs, with an Overview button for returning. Do not misrepresent the number of empirical visualizations: the retained Atlas + research workspace register **66** chart definitions, while the new syllabus labs add supplementary figures, diagrams, data tables and analytical selectors with different grains.
 
 ## The six syllabus modules, implemented and verifiable
 
@@ -90,7 +90,7 @@ Consult `requirements-export.txt` and the script's CLI flags/inputs before regen
 ## Before student approval / merge
 
 1. Open the **draft PR** and compare against `main`. Do not merge on our behalf.
-2. Run the branch locally and select each of the 19 nav destinations; check long-page scrolling and mobile dock interactions.
+2. Run the branch locally and check all original workspaces; open Data Mining Lab via the graduation-cap icon and navigate all six analysis pages using the clickable tab row. Check scrolling and mobile dock interactions.
 3. Change chart selectors, cluster methods, confidence/support filters; export sample aggregate CSVs and verify source labels.
 4. Show the professor the **actual** weak classification and regression results, limited cluster sample, and restricted basket denominator. Consider further experiments rather than presentation-level fixes.
 5. For journal purposes, define a hypothesis, evaluate more suitable baselines, test temporal and geographic transfer, and include uncertainty and limitations.
@@ -99,7 +99,7 @@ Consult `requirements-export.txt` and the script's CLI flags/inputs before regen
 
 ## Consolidated review branch — academic hub and methodological correction
 
-A dedicated `feat/promisepulse-5-full-syllabus-review` branch inherits all six empirical module implementations without modifying `main`. It adds a seventh *academic* navigation destination, **Syllabus Hub**, with the six official syllabus hours (8, 3, 5, 5, 4, 5), clickable module cards, a phase selector and source-backed counters from the published experiment JSON.
+The current consolidated implementation is maintained on `feat/promisepulse-5-syllabus-research-lab`. The Data Mining Lab overview displays analytical workflows, clickable analysis cards, filters and source-backed counters. It no longer displays syllabus-hour graphics, academic module numbers or a separate dropdown.
 
 The original exporter performed median imputation and categorical one-hot encoding across the chronological training and evaluation periods together; this could expose the training transform to future holdout feature distributions. The review branch corrects this by fitting missing-value medians and category vocabulary on training data alone and applying those parameters unchanged to the historical test period. See `tests/test_mining_training_boundary.py` for explicit unseen-category/outlier fixtures. Model classification quality remains weak and must not be exaggerated. The experiment is regenerated from source Parquet and requires independent journal-level replication.
 
@@ -107,4 +107,4 @@ The original exporter performed median imputation and categorical one-hot encodi
 
 The complete review branch was checked with the original `npm run build`, SQL, theme, Analytics Atlas, research expansion and syllabus-integrity tests: [successful GitHub Actions web-validation run](https://github.com/kasim672/PromisePulse/actions/runs/40293545892). A separate scientific Python Action [successfully reran the source exporter and train-only boundary regression test](https://github.com/kasim672/PromisePulse/actions/runs/40293539314), including adversarial unseen holdout categorical values and missing numeric values. The GitHub Actions browser verifier [passed 19 real Chromium screenshots](https://github.com/kasim672/PromisePulse/actions/runs/40293229735) after fixing the hub's light/dark progress-bar and accent contrast; see the screenshot capture manifest for exact image provenance. Machine-generated verification artifacts must remain separate from research claims.
 
-Only **PR #6**, based on `feat/promisepulse-5-full-syllabus-review`, is the recommended consolidated preview for the student. The three prior V5 prototype branches and their draft PR (if any) are not merged or deleted here. `main` stays unmodified until explicit user approval. A final production/CI check for the newest commit should be reviewed in the PR checks before merging.
+The current student-review entry is **draft PR #7**, based on `feat/promisepulse-5-syllabus-research-lab`. The old V5 prototype branches were deleted and their PRs closed without merging. The three prior V5 prototype branches and their draft PR (if any) are not merged or deleted here. `main` stays unmodified until explicit user approval. A final production/CI check for the newest commit should be reviewed in the PR checks before merging.
