@@ -3,13 +3,20 @@ import fs from 'node:fs'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
 import {retrieve,SOURCES} from '../web/api/_knowledge.mjs'
+import {findEvidence} from '../web/api/_retrieval.mjs'
+import {SITE_SOURCES} from '../web/api/_site-index.mjs'
 import handler from '../web/api/ask.js'
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..')
 const source=fs.readFileSync(path.join(repoRoot,'web/src/ProjectAssistant.tsx'),'utf8')
 const api=fs.readFileSync(path.join(repoRoot,'web/api/ask.js'),'utf8')
 const helper=fs.readdirSync(path.join(repoRoot,'web/api'))
-assert.deepEqual(helper.sort(),['_knowledge.mjs','ask.js'])
+assert.deepEqual(helper.sort(),['_knowledge.mjs','_retrieval.mjs','_site-index.mjs','ask.js'])
+assert.ok(SITE_SOURCES.length>=150,'Website index must contain guide and published-data passages')
+for(const q of ['tell me about yourself','tell me about the data used','what pages are on the website?','compare classification models','how do the plots work?'])assert.ok(findEvidence(q).length,'Expected site knowledge for: '+q)
+assert.ok(findEvidence('tell me about the data used').some(x=>/olist|data|warehouse/i.test(x.title+' '+x.text)))
+assert.ok(SITE_SOURCES.some(s=>s.url==='/web/public/data/manifest.json'),'Warehouse manifest should be included')
+assert.ok(SITE_SOURCES.some(s=>s.url==='/web/public/data/mining_lab.json'),'Data mining experimental results should be included')
 assert.ok(SOURCES.length>=15,'Expected current project topics')
 assert.ok(retrieve('What is PromisePulse?').length,'Basic project question should be retrievable')
 assert.ok(retrieve('How does k means clustering work?').some(s=>s.id==='cluster'||s.id==='playground'))
@@ -58,11 +65,12 @@ try{
  assert.equal(result.status,200)
  assert.equal(result.body.mode,'reference')
  assert.match(result.body.answer,/historical|Olist/i)
- assert.match(result.body.notice,/not configured/)
+ assert.match(result.body.notice,/Configure GEMINI_API_KEY/)
  assert.ok(!JSON.stringify(result).includes('undefined'))
  result=await invoke({body:{question:'Tell me a joke about penguins'}})
  assert.equal(result.status,200)
  assert.equal(result.body.grounded,false)
+ assert.match(result.body.answer,/PromisePulse AI/)
  result=await invoke({headers:{origin:'https://other.example'}})
  assert.equal(result.status,403)
  result=await invoke({body:{question:'X'.repeat(451)}})
@@ -88,6 +96,18 @@ try{
  assert.equal(result.body.mode,'gemini')
  assert.ok(result.body.sources.some(s=>s.id==='cluster'||s.id==='playground'))
  assert.match(requests[1].options.body,/clustering algorithms/)
+ result=await invoke({body:{question:'tell me about the data used'}})
+ assert.equal(result.status,200)
+ assert.equal(result.body.mode,'gemini')
+ assert.ok(requests.at(-1).options.body.includes('Olist'))
+ result=await invoke({body:{question:'tell me about yourself'}})
+ assert.equal(result.status,200)
+ assert.equal(result.body.mode,'gemini')
+ result=await invoke({body:{question:'Tell me a joke about penguins'}})
+ assert.equal(result.status,200)
+ assert.equal(result.body.mode,'gemini','General conversation should reach configured Gemini, not hard refusal')
+ assert.equal(result.body.grounded,false)
+ assert.equal(result.body.sources.length,0)
  assert.match(requests[0].url,/generativelanguage\.googleapis\.com/)
  assert.equal(requests[0].options.headers['x-goog-api-key'],'test-key-never-expose')
  assert.ok(!requests[0].options.body.includes('test-key-never-expose'))
@@ -96,7 +116,7 @@ try{
  assert.equal(result.status,200)
  assert.equal(result.body.mode,'reference')
  assert.match(result.body.notice,/usage limit/)
- console.log('PASS Gemini assistant: project-only retrieval, secure server key, citation sources, scoped API errors, no exposed secrets')
+ console.log('PASS Gemini assistant: website-wide evidence, natural conversation, secure server key, source links and graceful reference fallback')
 }finally{
  globalThis.fetch=originalFetch
  if(prior===undefined)delete process.env.GEMINI_API_KEY

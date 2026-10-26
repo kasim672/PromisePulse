@@ -5,10 +5,10 @@ import {ArrowUp,BookOpen,MessageCircle,ShieldCheck,SquareArrowOutUpRight,X} from
 type Source={id:string;title:string;url:string}
 type Message={role:'user'|'assistant';text:string;sources?:Source[];error?:boolean;notice?:string;mode?:'gemini'|'reference'}
 const examples=[
- 'What is PromisePulse and how does it work?',
- 'Explain the DuckDB-Wasm architecture',
- 'How does K-Means work in the Clustering Lab?',
- 'What are the delivery-risk model limitations?'
+ 'Tell me about the data used on this website',
+ 'What can you do?',
+ 'Explain the dashboards and visualizations',
+ 'Compare the classification models'
 ]
 export function ProjectAssistant(){
  const [open,setOpen]=useState(false)
@@ -82,14 +82,14 @@ export function ProjectAssistant(){
   {open&&<div className="project-ai-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
    <div className="project-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="project-ai-title" onKeyDown={trap}>
     <div className="project-ai-header">
-     <div className="project-ai-heading"><span className="project-ai-symbol"><BookOpen size={21} aria-hidden="true"/></span><div><h2 id="project-ai-title">PromisePulse Research Assistant</h2><p>Project-grounded Gemini · Verified reference fallback</p></div></div>
+     <div className="project-ai-heading"><span className="project-ai-symbol"><BookOpen size={21} aria-hidden="true"/></span><div><h2 id="project-ai-title">PromisePulse Research Assistant</h2><p>Conversational Gemini · Website and dataset knowledge</p></div></div>
      <button className="project-ai-close" type="button" aria-label="Close AI assistant" onClick={close}><X size={21}/></button>
     </div>
     <div className="project-ai-messages" role="log" aria-live="polite" aria-label="Assistant conversation">
      {messages.length===0&&<div className="project-ai-intro">
       <ShieldCheck size={27} aria-hidden="true"/>
-      <h3>Ask about the research behind the dashboard</h3>
-      <p>Explore the documented warehouse, Olist dataset, SQL architecture, data-mining labs and model limitations.</p>
+      <h3>Ask anything about PromisePulse</h3>
+      <p>Explore the entire website: datasets, dashboards, warehouse tables, research methods, algorithms and results. When Gemini is configured, you can ask general questions too.</p>
       <div className="project-ai-suggestions">{examples.map(text=><button type="button" key={text} onClick={()=>{void ask(text)}} disabled={working}>{text}</button>)}</div>
      </div>}
      {messages.map((msg,i)=><article key={i} className={'project-ai-message '+msg.role+(msg.error?' is-error':'')}>
@@ -98,13 +98,13 @@ export function ProjectAssistant(){
       {msg.notice&&<small className="project-ai-answer-note" role="status">{msg.notice}</small>}
       {Boolean(msg.sources?.length)&&<div className="project-ai-sources"><span>Related project sources</span>{msg.sources?.map(s=><a href={s.url} target="_blank" rel="noopener noreferrer" key={s.id}>{s.title}<SquareArrowOutUpRight size={12} aria-hidden="true"/></a>)}</div>}
      </article>)}
-     {working&&<div className="project-ai-thinking" role="status"><span className="project-ai-dots" aria-hidden="true"/><span>Checking PromisePulse documentation with Gemini…</span></div>}
+     {working&&<div className="project-ai-thinking" role="status"><span className="project-ai-dots" aria-hidden="true"/><span>Searching website knowledge and preparing an answer…</span></div>}
      <div ref={end}/>
     </div>
     <form className="project-ai-composer" onSubmit={send}>
      <label htmlFor="project-ai-question">Ask a question about PromisePulse</label>
-     <div className="project-ai-composer-row"><textarea ref={entry} id="project-ai-question" rows={2} value={question} maxLength={450} onChange={e=>setQuestion(e.target.value)} onKeyDown={onEntryKey} placeholder="e.g. Why is the model's precision low?" disabled={working}/><button type="submit" aria-label="Send question" disabled={working||question.trim().length<3}><ArrowUp size={19}/></button></div>
-     <p>Project documentation only. Historical data (2016–2018). Avoid sharing personal data or API keys. Your question is sent to Gemini for processing.</p>
+     <div className="project-ai-composer-row"><textarea ref={entry} id="project-ai-question" rows={2} value={question} maxLength={450} onChange={e=>setQuestion(e.target.value)} onKeyDown={onEntryKey} placeholder="Ask about data, charts, models or anything else..." disabled={working}/><button type="submit" aria-label="Send question" disabled={working||question.trim().length<3}><ArrowUp size={19}/></button></div>
+     <p>Historical Olist data (2016–2018). Answers use indexed website guides and published aggregates, not live order records. When Gemini is enabled, your questions are sent to Google. Never share API keys or personal data.</p>
     </form>
    </div>
   </div>}

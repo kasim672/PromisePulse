@@ -23,7 +23,7 @@ async function visit(width,height,theme){
   if(!data||typeof data.question!=='string')throw Error('Missing question')
   const joke=data.question.toLowerCase().includes('penguin')
   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(joke?
-   {grounded:false,answer:'I can only answer questions about PromisePulse and its documented historical research.',sources:[]}
+   {grounded:false,mode:'gemini',answer:'Penguins are flightless birds found mainly in the Southern Hemisphere.',sources:[]}
    :{grounded:true,answer:'PromisePulse uses historical Olist warehouse data and DuckDB-Wasm in the browser.',sources:[{id:'architecture',title:'System architecture',url:'https://github.com/kasim672/PromisePulse/blob/main/docs/ARCHITECTURE_V5.md'}]})})
  })
  try{
@@ -34,14 +34,14 @@ async function visit(width,height,theme){
   await trigger.click()
   const dialog=page.getByRole('dialog',{name:'PromisePulse Research Assistant'})
   await dialog.waitFor({state:'visible'})
-  await dialog.getByRole('button',{name:'What is PromisePulse and how does it work?'}).click()
+  await dialog.getByRole('button',{name:'Tell me about the data used on this website'}).click()
   await dialog.getByText('PromisePulse uses historical Olist warehouse data and DuckDB-Wasm in the browser.').waitFor({state:'visible'})
   const source=dialog.getByRole('link',{name:/System architecture/})
   if((await source.getAttribute('href'))!=='https://github.com/kasim672/PromisePulse/blob/main/docs/ARCHITECTURE_V5.md')throw Error('Missing trusted project reference')
   const entry=dialog.getByRole('textbox',{name:'Ask a question about PromisePulse'})
   await entry.fill('Tell me a joke about penguins')
   await entry.press('Enter')
-  await dialog.getByText('I can only answer questions about PromisePulse and its documented historical research.').waitFor({state:'visible'})
+  await dialog.getByText('Penguins are flightless birds found mainly in the Southern Hemisphere.').waitFor({state:'visible'})
   if(calls!==2)throw Error('Expected two mock requests, got '+calls)
   const screenshot=path.join(dir,'project-assistant-'+width+'-'+theme+'.png')
   await page.screenshot({path:screenshot,animations:'disabled',fullPage:true})
@@ -49,7 +49,7 @@ async function visit(width,height,theme){
   await dialog.waitFor({state:'hidden'})
   await navSearch(page)
   if(errors.length)throw Error('JavaScript errors: '+errors.join(' | '))
-  console.log('PASS Gemini drawer, citations, out-of-scope UI, Escape and navigation, '+width+' '+theme)
+  console.log('PASS Gemini drawer, website citations, general chat UI, Escape and navigation, '+width+' '+theme)
  }finally{await context.close()}
 }
 async function navSearch(page){

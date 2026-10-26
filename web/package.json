@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build --config vite.config.ts",
     "preview": "vite preview --host 127.0.0.1",
     "setup:gemini": "node scripts/setup-local-gemini.mjs",
-    "check:gemini": "node scripts/check-local-gemini.mjs"
+    "check:gemini": "node scripts/check-local-gemini.mjs",
+    "predev": "node scripts/build-assistant-index.mjs",
+    "prebuild": "node scripts/build-assistant-index.mjs",
+    "index:assistant": "node scripts/build-assistant-index.mjs"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.29.0",
