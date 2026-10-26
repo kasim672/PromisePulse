@@ -37,6 +37,7 @@ async function test(theme,width,height){
   ]){
    await lab.getByRole('button',{name:algo,exact:true}).click()
    await lab.getByRole('button',{name:'Next step'}).click()
+   if(algo==='Apriori')await lab.getByRole('button',{name:'Next step'}).click()
    await lab.getByRole('heading',{name:label}).waitFor()
    await capture(name)
   }
