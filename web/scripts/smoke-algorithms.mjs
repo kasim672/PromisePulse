@@ -57,7 +57,8 @@ async function testRecovery(){
   await page.getByRole('button',{name:'Retry loading data'}).waitFor({timeout:90000})
   blockWarehouse=false
   await page.getByRole('button',{name:'Retry loading data'}).click()
-  await page.waitForFunction(()=>document.querySelector('.header-version')?.textContent?.includes('WAREHOUSE CONNECTED'),null,{timeout:90000})
+  // The header status badge was removed; wait for actual data-backed chart output.
+  await page.locator('.welcome-history svg').waitFor({state:'visible',timeout:90000})
   let blockMining=true
   await page.route('**/data/mining_lab.json',route=>blockMining?route.fulfill({status:503,body:'Temporary failure'}):route.continue())
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Data Mining Lab',exact:true}).click()
