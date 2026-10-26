@@ -46,6 +46,13 @@ for(const method of ['decision-tree','k-means','apriori','fp-growth','eclat']){
 }
 const guide=fs.readFileSync(path.join(root,'docs/ALGORITHM_PLAYGROUND.md'),'utf8')
 assert.match(guide,/illustrative/i,'teaching examples must be clearly distinguished from Olist experiments')
+const teaching=JSON.parse(fs.readFileSync(path.join(dir,'ALGORITHM_CAPTURE_MANIFEST.json'),'utf8'))
+assert.ok(teaching.captured_at_utc&&teaching.source_sha,'algorithm screenshots require provenance')
+assert.equal(teaching.images.length,15,'five methods in desktop light/dark and mobile')
+for(const file of teaching.images){
+ assert.match(file,/^((mobile-)?algorithm-)[\w-]+\.png$/)
+ assert.ok(fs.statSync(path.join(dir,file)).size>20_000,'missing verified algorithm screenshot: '+file)
+}
 const readme=fs.readFileSync(path.join(root,'README.md'),'utf8')
 assert.match(readme,/PromisePulse 5\.0/)
 assert.match(readme,/precision ≈ 0\.049/)
