@@ -37,7 +37,7 @@ const topicWords=new Set('promisepulse project olist duckdb kmeans fpgrowth apri
 const distinctiveTerms=new Set('threshold precision recall confusion auc f1 silhouette parquet dashboard datasets dataset cohorts cohort prediction predictive risk payments revenue delivery latency refunds mining apriori association frequent eclat clustering classifier classifiers forecast training testing reconciliation etl warehouse star-schema sql duckdb metadata manifest lineage olap anomaly regression'.split(' '))
 /** Server-side bounded retrieval, never passes external/user-supplied sources to Gemini. */
 export function retrieve(question,limit=4){
- if(/^(?:what can you do|how can you help(?: me)?|what are your capabilities|help)\??$/i.test(question.trim()))return retrieve('PromisePulse project overview architecture dataset analytics mining',limit)
+ if(/^(?:what can you do|how can you help(?: me)?|what are your capabilities|help(?: me)?|hello there)\??$/i.test(question.trim()))return retrieve('PromisePulse project overview architecture dataset analytics mining',limit)
  const ts=tokens(question)
  if(!ts.length)return []
  const expanded=expand(ts)
