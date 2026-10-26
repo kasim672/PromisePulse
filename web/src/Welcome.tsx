@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react'
-import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,Globe2,Layers3,LockKeyhole,PlayCircle,ShieldCheck,TrendingUp} from 'lucide-react'
+import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,Layers3,LockKeyhole,PlayCircle,ShieldCheck,} from 'lucide-react'
 import type {Warehouse} from './db'
+import {WorkspaceShortcuts} from './WorkspaceShortcuts'
 import type {RecordRow,Tab} from './types'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
@@ -24,14 +25,6 @@ function MiniHistory({rows}:{rows:RecordRow[]}){
    <div className="welcome-history-foot"><span>Source: Olist / DuckDB-Wasm</span></div>
  </div>
 }
-const features=[
- {name:'Geographic intelligence',sub:'Brazilian state-level delivery analytics',icon:Globe2,page:'Overview' as Tab},
- {name:'Research visualizations',sub:(ATLAS_CHART_COUNT+NEW_CHART_COUNT)+' interactive, SQL-backed chart definitions',icon:TrendingUp,page:'Analytics Atlas' as Tab},
- {name:'AI evidence studio',sub:'Transparent historical prediction diagnostics',icon:BrainCircuit,page:'AI Studio' as Tab},
- {name:'Cohort observatory',sub:'Repeat demand and customer economics',icon:Layers3,page:'Customer Cohorts' as Tab},
- {name:'Fulfillment science',sub:'Delivery and promise-window measurement',icon:Activity,page:'Delivery Lab' as Tab},
- {name:'Reproducible lineage',sub:'Two fact grains, verified export and model audit',icon:Database,page:'Pipeline & Quality' as Tab},
-]
 export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeProps){
  const [monthly,setMonthly]=useState<RecordRow[]>([])
  const [error,setError]=useState(false)
@@ -61,7 +54,7 @@ export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeP
   </div>
   <div className="welcome-proof"><div><h3>Explore</h3><p>Turn normalized orders into discoverable insights.</p></div><div><h3>Compare</h3><p>Use cohorts, model diagnostics and geographic evidence.</p></div><div><h3>Verify</h3><p>Trace figures to warehouse grains and documented exclusions.</p></div></div>
   <div className="welcome-section-header"><div><h2>A deeper view of <em>the market.</em></h2><p>Explore the dashboards, analytics and data-mining tools in one place.</p></div><button type="button" onClick={()=>onNavigate('Research Studio')}>Open research studio <ArrowRight size={17}/></button></div>
-  <div className="welcome-feature-grid">{features.map(f=>{const Icon=f.icon;return <button type="button" key={f.name} className="welcome-feature" onClick={()=>onNavigate(f.page)}><span className="welcome-feature-icon"><Icon size={22}/></span><span className="welcome-feature-text"><strong>{f.name}</strong><small>{f.sub}</small></span><ArrowRight className="welcome-feature-arrow" size={19}/></button>})}</div>
+   <WorkspaceShortcuts onNavigate={onNavigate}/>
   <section className="welcome-closer"><div><h2>Beautiful enough to explore.<br/><em>Careful enough to question.</em></h2><p>The interactive dashboard is a research instrument, not proof of journal acceptance or causality. Every chart has a real source, a labeled measurement, and limits worth understanding.</p><button type="button" onClick={()=>onNavigate('AI Studio')}>Inspect the AI evidence <ArrowDownRight size={19}/></button></div><div className="welcome-closer-art" aria-hidden="true"><div className="welcome-art-orbit a"/><div className="welcome-art-orbit b"/><div className="welcome-art-orbit c"/><span className="welcome-art-center"><BrainCircuit size={57}/></span></div></section>
   <div className="welcome-footnote"><span><Database size={16}/> Source: Brazilian E-Commerce Public Dataset by Olist. Observational, 2016–2018.</span></div>
  </div>
