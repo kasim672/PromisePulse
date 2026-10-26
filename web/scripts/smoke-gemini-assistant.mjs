@@ -32,7 +32,6 @@ async function visit(width,height,theme){
   await dialog.getByRole('button',{name:'What is PromisePulse and how does it work?'}).click()
   await dialog.getByText('PromisePulse uses historical Olist warehouse data and DuckDB-Wasm in the browser.').waitFor({state:'visible'})
   const source=dialog.getByRole('link',{name:/System architecture/})
-  if(!await source.getAttribute('href')?.then?.(x=>x)){} // keep source separately accessible
   if((await source.getAttribute('href'))!=='https://github.com/kasim672/PromisePulse/blob/main/docs/ARCHITECTURE_V5.md')throw Error('Missing trusted project reference')
   const entry=dialog.getByRole('textbox',{name:'Ask a question about PromisePulse'})
   await entry.fill('Tell me a joke about penguins')
