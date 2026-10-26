@@ -42,6 +42,15 @@ Every lab panel reads the published `mining_lab.json` export produced offline fr
 
 For current verified screenshots (including desktop, dark and mobile), see [the PromisePulse 5.0 gallery](SCREENSHOT_GALLERY_CURRENT.md). For the backend/public distinction see [Architecture](ARCHITECTURE_V5.md).
 
+### Interactive algorithms: navigate and interpret
+
+The Classification Lab includes a sample **Decision Tree path**; the Clustering Lab includes a computed **K-Means** plot; Pattern Mining offers **Apriori**, **FP-Growth**, and **Eclat** demonstrations. The teaching interface has **Next step**, **Previous**, **Restart** and numbered buttons. For pattern miners, choose the algorithm first. All example inputs are shown on screen.
+
+Do not treat those steps as outputs from the fitted Olist methods. The genuine Olist metrics and analytical charts are below each visualizer. See [Algorithm Playground](ALGORITHM_PLAYGROUND.md) for exact worked data and equations.
+
+**Loading:** A visible warehouse status displays manifest/engine stages and the number of registered Parquet tables. Chart queries show labeled progress without inventing an overall percentage. If the historical file cannot be read, click **Retry loading data**; expanded technical details can identify a missing URL. An error never triggers made-up analytics.
+
+
 These are separate analysis views, **not separate data providers**. The application works from the same historical Olist source and verified Parquet export. The **66 registered research chart definitions** comprise the original 36 Atlas views plus 30 new empirical views; changing a chart form does not create a distinct research figure.
 
 For the four originally added research destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
