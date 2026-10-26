@@ -62,3 +62,12 @@ html[data-theme="dark"] .syllabus-hub-open:hover{background:#c4ea84;color:#17231
 @media(max-width:700px){.syllabus-hub-grid{grid-template-columns:1fr}.syllabus-hub-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.syllabus-hub-hero{gap:12px}.syllabus-hub-integrity{flex-direction:column;align-items:flex-start}.syllabus-hub-card{min-height:0}.syllabus-hub-hours{padding:18px}.syllabus-hub-filters{border-radius:17px}.syllabus-hub-heading{flex-direction:column;align-items:flex-start}}
 @media(max-width:374px){.syllabus-hub-hours{grid-template-columns:1fr}.syllabus-hub-stat-grid{grid-template-columns:1fr}.syllabus-hub-filters button{padding:8px}}
 @media(prefers-reduced-motion:reduce){.syllabus-hub *{transition:none!important}}
+
+
+/* Nested course navigation; scoped so existing PromisePulse dock remains intact. */
+.syllabus-nav-group{position:relative;display:flex;align-items:center;flex:0 0 auto}
+.syllabus-nav-group>.header-nav-item{display:flex;align-items:center;gap:5px}
+.syllabus-nav-submenu{position:absolute;z-index:80;top:calc(100% + 8px);right:0;min-width:245px;max-width:min(90vw,360px);padding:8px;background:var(--panel-bg,var(--surface,#fff));color:var(--text-primary,inherit);border:1px solid var(--border-color,rgba(127,127,127,.3));border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.20);display:grid;gap:3px}
+.syllabus-nav-submenu button{border:0;background:transparent;color:inherit;text-align:left;font:inherit;font-size:13px;padding:11px 12px;border-radius:9px;cursor:pointer}
+.syllabus-nav-submenu button:hover,.syllabus-nav-submenu button:focus-visible,.syllabus-nav-submenu button.active{background:var(--accent-soft,rgba(90,150,195,.16));outline-offset:2px}
+@media(max-width:760px){.syllabus-nav-group{width:100%;display:block}.syllabus-nav-submenu{position:static;min-width:0;max-width:none;width:100%;box-shadow:none;margin:4px 0 10px}.syllabus-nav-group>.header-nav-item{width:100%}}
