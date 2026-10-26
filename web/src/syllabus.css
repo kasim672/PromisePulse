@@ -10,7 +10,7 @@
 .syllabus-tabs>button:hover{background:var(--cadra-glass);border-color:var(--atlas-selected)}
 .syllabus-tabs>button.active,.syllabus-tabs>button[aria-current="page"]{background:#111;border-color:#111;color:#f7f7f5}
 .syllabus-tabs>button:focus-visible{outline:2px solid var(--atlas-selected);outline-offset:2px}
-html[data-theme="dark"] .syllabus-tabs>button.active,html[data-theme="dark"] .syllabus-tabs>button[aria-current="page"]{background:#c4ea84;border-color:#c4ea84;color:#182618}
+html[data-theme="dark"] .syllabus-tabs>button.active,html[data-theme="dark"] .syllabus-tabs>button[aria-current="page"]{background:#7dd3fc;border-color:#7dd3fc;color:#082f49}
 html[data-theme="dark"] .syllabus-tabs>button:hover:not(.active){background:#344358;color:#f6f9fc}
 .syllabus-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
 .syllabus-scroll{width:100%;overflow:auto;max-height:450px;border:1px solid var(--atlas-divider);border-radius:13px}
@@ -22,7 +22,7 @@ html[data-theme="dark"] .syllabus-tabs>button:hover:not(.active){background:#344
 .syllabus-control label{font:650 12px 'Urbanist',sans-serif;color:var(--atlas-muted)}
 .syllabus-control button,.syllabus-control select{font:650 12px 'Urbanist',sans-serif;background:var(--cadra-glass-2);border:1px solid var(--atlas-divider);color:var(--atlas-ink);padding:10px 13px;border-radius:999px;cursor:pointer}
 .syllabus-control button.active{background:#111;color:#f7f7f5}
-html[data-theme="dark"] .syllabus-control button.active{background:#c4ea84;color:#182618}
+html[data-theme="dark"] .syllabus-control button.active{background:#7dd3fc;color:#082f49}
 .syllabus-fact{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:32px 5px}
 .syllabus-fact span{background:var(--atlas-ink);color:var(--atlas-surface);font:700 12px 'Urbanist',sans-serif;border-radius:13px;padding:13px 18px}
 .syllabus-schema{display:grid;gap:12px;margin:18px 0;padding:18px;border:1px solid var(--atlas-divider);border-radius:15px;background:var(--cadra-glass)}

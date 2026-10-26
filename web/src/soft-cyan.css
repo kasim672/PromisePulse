@@ -1,0 +1,69 @@
+/*
+ * PromisePulse soft-cyan theme, feature branch only.
+ * Primary #7DD3FC; hover #BAE6FD; deep contrast ink #082F49.
+ * This file is loaded after component styles to protect the palette.
+ * Underlying historical warehouse, SQL, charts, and interaction logic do not change.
+ */
+:root {
+  --pp-accent-cyan:#7DD3FC;
+  --pp-accent-cyan-hover:#BAE6FD;
+  --pp-accent-cyan-ink:#082F49;
+  --pp-accent-cyan-text:#0369A1;
+}
+html[data-theme="dark"] {
+  --pp-accent-cyan-text:#7DD3FC;
+}
+
+/* Target only green pixels of the existing raster logo, preserving its purple mark
+   and white/purple wordmark. Filter is defined in the React application shell. */
+.brand-logo-image,.footer-logo-image,
+.brand:hover .brand-logo-image,.footer-brand:hover .footer-logo-image {
+  filter:url(#pp-brand-cyan);
+}
+
+/* Primary accent and selected state remain legible in light and dark contexts. */
+html[data-theme="dark"] .header-cta,
+html[data-theme="dark"] .primary-btn,
+html[data-theme="dark"] .header-nav-item.active,
+html[data-theme="dark"] .header-nav-item[aria-current="page"],
+html[data-theme="dark"] .op-tab.selected,
+html[data-theme="dark"] .pp-order-filters button.active,
+html[data-theme="dark"] .syllabus-tabs>button.active,
+html[data-theme="dark"] .syllabus-tabs>button[aria-current="page"],
+html[data-theme="dark"] .syllabus-hub-intro button,
+html[data-theme="dark"] .syllabus-hub-filters button.active {
+  background:var(--pp-accent-cyan);
+  color:var(--pp-accent-cyan-ink);
+}
+html[data-theme="dark"] .header-cta:hover,
+html[data-theme="dark"] .primary-btn:hover,
+html[data-theme="dark"] .syllabus-hub-intro button:hover {
+  background:var(--pp-accent-cyan-hover);
+  color:var(--pp-accent-cyan-ink);
+}
+html[data-theme="light"] .header-nav-item.active,
+html[data-theme="light"] .header-nav-item[aria-current="page"]{
+  background:var(--pp-accent-cyan);
+  color:var(--pp-accent-cyan-ink);
+}
+html[data-theme="light"] .research-copilot-emblem{
+  background:var(--pp-accent-cyan);
+  color:var(--pp-accent-cyan-ink);
+}
+html[data-theme="dark"] .pp-kpi-light > span,
+html[data-theme="dark"] .pp-kpi-light > small {
+  color:#164E63;
+}
+html[data-theme="dark"] .pp-kpi-light > strong {color:var(--pp-accent-cyan-ink)}
+html[data-theme="dark"] .pp-state-shape.selected text {fill:var(--pp-accent-cyan-ink)}
+html[data-theme="dark"] .atlas-lens.active{color:var(--pp-accent-cyan-ink)}
+html[data-theme="dark"] .welcome-closer button,
+html[data-theme="dark"] .welcome-primary{
+  background:var(--pp-accent-cyan);
+  color:var(--pp-accent-cyan-ink);
+}
+html[data-theme="dark"] .welcome-closer button:hover,
+html[data-theme="dark"] .welcome-primary:hover{
+  background:var(--pp-accent-cyan-hover);
+  color:var(--pp-accent-cyan-ink);
+}

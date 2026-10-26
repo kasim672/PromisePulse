@@ -1,0 +1,73 @@
+name: Soft Cyan Theme QA
+on:
+  push:
+    branches:
+      - 'feat/soft-cyan-theme-7dd3fc'
+    paths:
+      - 'web/src/**'
+      - 'web/index.html'
+      - 'web/public/favicon-cyan.svg'
+      - 'web/scripts/smoke-soft-cyan.mjs'
+      - 'tests/test_soft_cyan_theme.cjs'
+      - '.github/workflows/soft-cyan-theme.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cyan-theme-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  cyan-branch-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install website tools and available browser
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          if command -v google-chrome > /dev/null; then
+            echo "PP_BROWSER_CHANNEL=chrome" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright install chromium
+          fi
+      - name: Build and protect existing functionality
+        working-directory: web
+        run: |
+          npm run build
+          node ../tests/test_soft_cyan_theme.cjs
+          node ../tests/test_theme.cjs
+          node ../tests/test_editorial_hierarchy.cjs
+          node ../tests/test_algorithm_playground.cjs
+          node ../tests/test_documentation.cjs
+      - name: Run local historical data site
+        working-directory: web
+        run: |
+          test -s public/data/manifest.json
+          test -s public/data/fact_orders.parquet
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-soft-cyan.log 2>&1 &
+          for i in {1..90}; do
+            if curl --silent --fail http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pp-soft-cyan.log
+          exit 1
+      - name: Verify cyan computed styles across desktop and mobile
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-soft-cyan.mjs
+      - name: Upload genuine UI previews without touching main
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: soft-cyan-theme-branch-preview
+          path: docs/theme-previews/soft-cyan/
+          if-no-files-found: ignore

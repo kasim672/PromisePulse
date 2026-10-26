@@ -12,8 +12,13 @@
   --cadra-text: #111111;
   --cadra-muted: #5c5c5a;
   --cadra-faint: #73736f;
-  --cadra-accent: #bcd4f2;
-  --cadra-primary-ink: #1d4f87;
+  --cadra-accent: #7dd3fc;
+  --cadra-primary-ink: #0369a1;
+  /* Primary theme accent. The legacy lime token below remains as a compatibility alias. */
+  --pp-accent-cyan:#7dd3fc;
+  --pp-accent-cyan-hover:#bae6fd;
+  --pp-accent-cyan-text:#0369a1;
+  --pp-accent-cyan-ink:#082f49;
   --cadra-glass: rgba(255,255,255,.56);
   --cadra-glass-2: rgba(255,255,255,.70);
   --cadra-rim: rgba(255,255,255,.8);
@@ -24,7 +29,7 @@
   --cadra-ease: cubic-bezier(.2,.8,.2,1);
   --cadra-radius: 24px;
   --cadra-pill: 999px;
-  --cadra-brand-lime:#6f8f1c;
+  --cadra-brand-lime:var(--pp-accent-cyan);
   --cadra-brand-violet:#7b55bd;
   --blue: #1d4f87; --blue-dark: #0f1f33; --light-blue: #e8f0fb;
   --ink: #111111; --secondary: #5c5c5a; --quiet: #73736f;
@@ -52,10 +57,10 @@ a:hover{text-underline-offset:3px}
 .brand{border-radius:999px;padding:7px 14px;background:#111;min-height:48px;align-items:center}
 .brand-logo-image{width:165px;max-height:35px;object-fit:contain;filter:none}
 .brand:hover .brand-logo-image,.footer-brand:hover .footer-logo-image{filter:none;transform:none}
-.brand:hover,.footer-brand:hover{box-shadow:0 0 0 3px rgba(111,143,28,.19)}
+.brand:hover,.footer-brand:hover{box-shadow:0 0 0 3px rgba(3,105,161,.19)}
 .header-actions{margin-left:auto;display:flex;align-items:center;gap:12px}
 .header-version{font:600 11px/1.4 'Urbanist',sans-serif;letter-spacing:.02em;color:#5c5c5a;text-transform:none}
-.header-online{background:#237a48;box-shadow:0 0 0 4px rgba(35,122,72,.12)}
+.header-online{background:#0369a1;box-shadow:0 0 0 4px rgba(3,105,161,.12)}
 .header-online.offline{background:#a87406;box-shadow:0 0 0 4px rgba(168,116,6,.13)}
 .header-cta,.primary-btn{background:#111;border:1px solid #111;color:#f7f7f5;box-shadow:none;border-radius:999px;padding:11px 18px;font-size:13px;line-height:1.4;font-weight:600}
 .header-cta:hover,.primary-btn:hover{background:#1d4f87;border-color:#1d4f87;box-shadow:0 8px 22px rgba(29,79,135,.14);color:#fff;transform:translateY(-1px)}
@@ -64,7 +69,7 @@ a:hover{text-underline-offset:3px}
 .header-nav-item svg{flex:none;width:19px;height:19px}
 .header-nav-item .nav-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .header-nav-item:hover{background:rgba(247,247,245,.13);color:#fff}
-.header-nav-item.active,.header-nav-item[aria-current="page"]{background:#bcd4f2;color:#0f1f33;box-shadow:0 2px 0 rgba(255,255,255,.24) inset}
+.header-nav-item.active,.header-nav-item[aria-current="page"]{background:var(--pp-accent-cyan);color:var(--pp-accent-cyan-ink);box-shadow:0 2px 0 rgba(255,255,255,.24) inset}
 .header-nav-item:hover::after,.header-nav-item:focus-visible::after{content:attr(data-label);position:absolute;left:calc(100% + 16px);top:50%;transform:translateY(-50%);white-space:nowrap;background:#111;color:#f7f7f5;border-radius:999px;padding:9px 14px;font:600 13px 'Urbanist',sans-serif;box-shadow:0 10px 25px #0003;pointer-events:none}
 .menu-toggle{display:none!important}
 
@@ -85,7 +90,7 @@ a:hover{text-underline-offset:3px}
 .pp-page-top p{font:500 13.5px/1.5 'Urbanist',sans-serif;color:#5c5c5a}
 .pp-overline span{color:#73736f}
 .pp-historical{color:#5c5c5a;font:600 11px 'Urbanist',sans-serif;letter-spacing:0}
-.pp-historical span,.pp-live-dot{background:#237a48;box-shadow:0 0 0 4px rgba(35,122,72,.12)}
+.pp-historical span,.pp-live-dot{background:#0369a1;box-shadow:0 0 0 4px rgba(3,105,161,.12)}
 .pp-year,.year-pill,.status-pill,.micro-tag{border:1px solid var(--cadra-rim);border-radius:999px;background:var(--cadra-glass-2);color:#111;box-shadow:var(--cadra-shadow);font:600 12.5px 'Urbanist',sans-serif}
 .pp-year select{font:600 12.5px 'Urbanist',sans-serif;color:#111;min-width:65px}
 .pp-year option{color:#111}
@@ -130,7 +135,7 @@ a:hover{text-underline-offset:3px}
 .op-tab{border:0;border-radius:999px;font:600 12px 'Urbanist',sans-serif;color:#5c5c5a;padding:11px 16px}
 .op-tab:hover{color:#111;background:rgba(255,255,255,.7)}
 .op-tab.selected{background:#111;border-color:#111;color:#f7f7f5;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-.sql-code,.terminal-code{background:#15191d;color:#d2edba;border:1px solid #252b2d}
+.sql-code,.terminal-code{background:#15191d;color:#e0f2fe;border:1px solid #252b2d}
 .notice{background:#e7f1f8;border:1px solid #c4d9ec;color:#1d4f87;font-size:12px}
 .loading,.empty{color:#5c5c5a}
 .spinner{border-color:#ccdce9;border-top-color:#1d4f87}
@@ -170,7 +175,7 @@ a:hover{text-underline-offset:3px}
 .pp-legend>div{font:500 12px/1.3 'Urbanist',sans-serif;color:#5c5c5a}
 .pp-legend b{font:600 12px 'Urbanist',sans-serif;color:#111}
 .pp-revenue-top strong{font:600 clamp(18px,2vw,26px)/1.14 'Urbanist',sans-serif;color:#111;letter-spacing:-.02em;overflow-wrap:anywhere}
-.pp-revenue-top span{font:600 11px 'Urbanist',sans-serif;color:#237a48}
+.pp-revenue-top span{font:600 11px 'Urbanist',sans-serif;color:#0369a1}
 .pp-chart-dates{color:#73736f;font:500 11px 'Urbanist',sans-serif}
 .pp-upgrade{background:#bcd4f2;border-color:#f8fbff;min-height:145px;padding:18px 20px;color:#0f1f33}
 .pp-upgrade>strong{font:600 21px 'Urbanist',sans-serif;color:#0f1f33}
@@ -221,7 +226,7 @@ a:hover{text-underline-offset:3px}
 .pp-order-table tbody tr:hover{background:rgba(255,255,255,.55)}
 .pp-order-table td:first-child{font:600 11px 'Urbanist',sans-serif;color:#1d4f87}
 .pp-state{color:#5c5c5a;font:500 11px 'Urbanist',sans-serif}
-.pp-state i{background:#2563a8}.pp-state.on i{background:#237a48}.pp-state.late i{background:#c9542b}
+.pp-state i{background:#2563a8}.pp-state.on i{background:#0369a1}.pp-state.late i{background:#c9542b}
 .pp-bar-top{font:500 12px 'Urbanist',sans-serif;color:#5c5c5a}
 .pp-bar-top strong{color:#111;font:600 12px 'Urbanist',sans-serif}
 .pp-bar-track{background:rgba(17,17,17,.10);height:6px}
@@ -230,7 +235,7 @@ a:hover{text-underline-offset:3px}
 .pp-month-col>span{background:linear-gradient(0deg,#2563a8,#bcd4f2);opacity:.86}
 .pp-callout strong{color:#111;font-weight:600}
 .pp-callout span,.pp-provenance{color:#5c5c5a;font:500 12px/1.6 'Urbanist',sans-serif}
-.pp-provenance svg{color:#237a48}
+.pp-provenance svg{color:#0369a1}
 .pp-insights-hero{background:radial-gradient(120% 140% at 100% 0%,rgba(37,99,168,.09),transparent 55%),radial-gradient(90% 120% at 0% 100%,rgba(37,99,168,.1),transparent 60%),#f8f8f6;border:1px solid var(--cadra-rim);border-radius:24px;box-shadow:var(--cadra-shadow);padding:25px}
 .pp-insights-hero h2{color:#111;font:600 clamp(28px,3vw,38px)/1.1 'Urbanist',sans-serif;letter-spacing:-.025em}
 .pp-insights-hero h2 em{color:#1d4f87}
@@ -238,7 +243,7 @@ a:hover{text-underline-offset:3px}
 .pp-insights-hero p,.pp-insights-hero small{color:#5c5c5a;font:500 13px/1.6 'Urbanist',sans-serif}
 .pp-insights-hero strong{color:#111;font:600 clamp(32px,4vw,52px) 'Urbanist',sans-serif}
 .pp-inline-legend{color:#5c5c5a;font-size:11px}
-.pp-dot-lime{background:#6f8f1c}.pp-dot-violet{background:#1d4f87}
+.pp-dot-lime{background:#0369a1}.pp-dot-violet{background:#1d4f87}
 .pp-bottom-grid{gap:16px}
 
 /* Documentation and footer */
