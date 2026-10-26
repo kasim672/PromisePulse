@@ -85,6 +85,28 @@ npm run dev
 
 Open **http://127.0.0.1:5173/**, click **Ask PromisePulse AI**, and ask **“How does the PromisePulse warehouse work?”**. The chat will call your *local* `/api/ask` route, which sends the selected project evidence to Gemini over HTTPS. Restart `npm run dev` after changing `.env`.
 
+#### If the chat says “/api/ask route was not found”
+
+This is an **HTTP 404 route problem**, not evidence that the Gemini API key is incorrect. The normal Vite terminal should print:
+
+```text
+[PromisePulse] Local Gemini API mounted at /api/ask (server-side configuration)
+```
+
+From a **second terminal**, check the route without using Gemini credits or exposing the key:
+
+```bash
+cd ~/PromisePulse/web
+curl -i -X POST http://127.0.0.1:5173/api/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"hi"}'
+```
+
+Expected: **HTTP 400** with `Enter a question between 3 and 450 characters.` This invalid question verifies the endpoint without calling Google. If you receive **HTTP 404**, stop Vite (`Ctrl+C`), update your branch with `git pull --ff-only origin feat/gemini-project-research-assistant`, and restart `npm run dev` from the `web` folder. Open the URL Vite prints, usually **http://127.0.0.1:5173/**.
+
+An empty `GEMINI_API_KEY` produces **HTTP 503** for a valid project question, not 404. A greeting like `hi` is below the three-character API minimum and now gets an inline validation message.
+
+
 If you prefer, `cp .env.example .env` does the same initialization manually, but **`npm run setup:gemini` is safer** because it refuses to overwrite an existing local `.env`.
 
 #### Local architecture
