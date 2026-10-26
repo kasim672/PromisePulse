@@ -71,7 +71,7 @@ export default async function handler(req,res){
   if(!sources.length)return json(res,200,{answer:NO_KEY_HELP,sources:[],grounded:false,mode:'reference',notice:'Gemini is not configured; this is a static introduction rather than an AI-generated response.'})
   return referenceReply(res,sources,'Project reference information only. Configure GEMINI_API_KEY privately on the server for conversational Gemini explanations.')
  }
- const model=process.env.GEMINI_MODEL||'gemini-2.5-flash'
+ const model=process.env.GEMINI_MODEL||'gemini-3.5-flash'
  if(!/^gemini-[a-z0-9.-]+$/.test(model))return json(res,503,{error:'Invalid configured Gemini model.'})
  const evidence=sources.map((s,i)=>'['+(i+1)+'] '+s.title+'\n'+s.text.slice(0,1400)).join('\n\n').slice(0,8500)
  const controller=new AbortController()
@@ -87,6 +87,7 @@ export default async function handler(req,res){
   })
   if(!response.ok){
    const upstream=response.status
+   if(upstream===404)return sources.length?referenceReply(res,sources,'Gemini model '+model+' is unavailable for this API key (HTTP 404). Set GEMINI_MODEL to an available current model, such as gemini-3.5-flash, and restart the server. Showing checked-in project facts.'):json(res,503,{error:'Gemini model '+model+' is unavailable for this API key (HTTP 404). Configure GEMINI_MODEL with a model supported by your key.'})
    if(upstream===429)return sources.length?referenceReply(res,sources,'Gemini usage limit reached. Showing checked-in project reference facts instead.'):json(res,429,{error:'Gemini usage limit reached. Please try later.'})
    if(upstream===401||upstream===403)return sources.length?referenceReply(res,sources,'Gemini authentication failed. Check the server-side API key; these are project reference facts.'):json(res,503,{error:'Gemini authentication failed. Check the private server API key.'})
    return sources.length?referenceReply(res,sources,'Gemini was unavailable. Showing checked-in project reference facts instead.'):json(res,502,{error:'Gemini is temporarily unavailable. Please try again.'})
