@@ -38,7 +38,6 @@ export function kMeansFrames():Frame[]{
  return out
 }
 export function decisionFrames():Frame[]{
- const row={items:3,promisedDays:6}
  return [
   {title:'Inspect a sample order',detail:'Example order has 3 items and a 6-day promised window. The label to be predicted is whether the delivery will be late.',formula:'Inputs available at checkout: item count, promised days',highlight:['order'],note:'The chosen split rules illustrate tree traversal; they are not extracted from the fitted Olist Decision Tree.'},
   {title:'Test the root split',detail:'Is promised delivery window shorter than 5 days? In our example, 6 < 5 is false, so move to the right branch.',formula:'6 < 5 → false',highlight:['root','right'],note:'A fitted tree would learn splits by reducing impurity on training examples.'},
