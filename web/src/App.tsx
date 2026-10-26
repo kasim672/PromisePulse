@@ -369,7 +369,6 @@ export default function App() {
     {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
       <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
         <div className="command-search"><Search size={20} aria-hidden="true"/><input autoFocus value={navQuery} onChange={event => setNavQuery(event.target.value)} placeholder="Search pages, insights, warehouse tools..." aria-label="Search sections"/><kbd>ESC</kbd></div>
-        <div className="command-section-label">JUMP TO A WORKSPACE</div>
         <div className="command-results">{matchingNav.length ? matchingNav.map(item => { const Icon = item.icon; return <button type="button" key={item.label} className="command-result" onClick={() => changePage(item.label)}><span className="command-result-icon"><Icon size={18} aria-hidden="true"/></span><span><strong>{item.label}</strong><small>{item.description}</small></span><ArrowRight size={16} aria-hidden="true"/></button> }) : <p className="command-no-results">No matching sections. Try “risk”, “OLAP”, or “catalog”.</p>}</div>
         <p className="command-hint">Search navigates between existing analytical pages. All warehouse results remain historical and data-backed.</p>
       </div>
