@@ -45,7 +45,7 @@ async function scenario(theme,width,height,mobile=false){
   await page.locator('.pp-welcome').waitFor({state:'visible',timeout:90000})
   const cyan=await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--pp-accent-cyan').trim().toLowerCase())
   if(cyan!=='#7dd3fc')throw Error('Current-release cyan theme missing: '+cyan)
-  await page.waitForFunction(()=>document.body.textContent?.includes('WAREHOUSE CONNECTED'),null,{timeout:90000})
+  // Header connection badge was intentionally removed; wait for actual source-backed chart output.
   await page.locator('.welcome-history svg').waitFor({state:'visible',timeout:90000})
   const prefix=mobile?'mobile-':''
   await save(page,prefix+'welcome-'+theme)
