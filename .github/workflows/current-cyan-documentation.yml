@@ -1,9 +1,5 @@
-name: Capture verified current-release docs and AI chat
+name: Capture verified current-release screenshots (manual)
 on:
-  push:
-    branches: [docs/current-release-documentation]
-    paths:
-      - '.github/workflows/current-cyan-documentation.yml'
   workflow_dispatch:
 permissions:
   contents: write
@@ -68,7 +64,7 @@ jobs:
           name: promisepulse-release-docs-30-screenshots
           path: docs/screenshots/current/
           retention-days: 30
-      - name: Commit verified screenshot binaries to documentation branch only
+      - name: Commit verified screenshot binaries to main on manual capture
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -79,6 +75,6 @@ jobs:
           git add docs/screenshots/current/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "docs: refresh 30 real screenshots including light and dark assistant"
-          git fetch --no-tags origin docs/current-release-documentation
+          git fetch --no-tags origin main
           git rebase FETCH_HEAD
-          git push origin HEAD:refs/heads/docs/current-release-documentation
+          git push origin HEAD:refs/heads/main
