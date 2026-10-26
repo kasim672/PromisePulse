@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react'
-import {ArrowRight,BookOpen,CheckCircle2,Database,Download,FlaskConical,GraduationCap,Layers3,ChartNoAxesCombined,BrainCircuit,GitFork,Network,ShieldCheck} from 'lucide-react'
+import {ArrowRight,BookOpen,CheckCircle2,Database,FlaskConical,GraduationCap,Layers3,ChartNoAxesCombined,BrainCircuit,GitFork,Network,ShieldCheck} from 'lucide-react'
 import type {Tab} from './types'
 
 type Summary={
