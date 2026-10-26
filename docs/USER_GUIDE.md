@@ -1,4 +1,4 @@
-# PromisePulse 3.0 — User Guide
+# PromisePulse 5.0 — User Guide
 
 This guide describes the working **historical Olist analytics application** from the PromisePulse GitHub source, not live production shipment tracking. For methodology and exact chart-level SQL lineage, see [Analytics Atlas Methodology](ANALYTICS_ATLAS_METHODOLOGY.md). For the architecture and research workflow, see [Research Reproducibility](RESEARCH_REPRODUCIBILITY.md).
 
@@ -17,7 +17,7 @@ For a clean production build, run `npm run build`. No PostgreSQL/MySQL server, e
 
 ### Main navigation
 
-The black icon dock on wide screens contains **12 destinations** in PromisePulse 4.0. The new first destination is **Welcome**, which opens by default and displays actual historical Olist month-trend data and navigation into the research workspaces. At tablet/mobile widths, the dock moves to the bottom and scrolls horizontally to keep targets readable. Buttons provide accessible labels and keyboard focus; navigate using the dock or the Search command palette.
+The navigation dock includes the **12 retained research/analytics workspaces** plus **one Data Mining Lab icon** in PromisePulse 5.0. The new first destination is **Welcome**, which opens by default and displays actual historical Olist month-trend data and navigation into the research workspaces. At tablet/mobile widths, the dock moves to the bottom and scrolls horizontally to keep targets readable. Buttons provide accessible labels and keyboard focus; navigate using the dock or the Search command palette.
 
 | Destination | Purpose | Helpful inspection |
 | --- | --- | --- |
@@ -34,9 +34,17 @@ The black icon dock on wide screens contains **12 destinations** in PromisePulse
 | **Data Catalog** | Physical warehouse tables, their columns and source provenance | Preview actual selected table rows and consult source counts |
 | **Pipeline & Quality** | ETL stages, data lineage and validation | Check deduplication, foreign-key coverage and reconciliation facts |
 
+### Data Mining Lab — six additional analysis sections
+
+Click the **graduation-cap Data Mining Lab icon** in the navigation dock. It opens the **Data Mining Lab overview immediately**, not a dropdown menu. Choose an analysis card or use the clickable internal tabs to switch between **Warehouse & ETL**, **Data Lakes**, **EDA & Preprocessing**, **Classification Lab**, **Clustering Lab** and **Pattern Mining**. Use **Overview** in that tab row to return to the analysis cards.
+
+Every lab panel reads the published `mining_lab.json` export produced offline from the Olist warehouse. Charts and selectors do not fit a new machine-learning model in the browser. Teaching hours and module-number banners are documented separately in [the academic syllabus](SYLLABUS_V5.md) rather than placed as micro-headlines on the screen.
+
+For current verified screenshots (including desktop, dark and mobile), see [the PromisePulse 5.0 gallery](SCREENSHOT_GALLERY_CURRENT.md). For the backend/public distinction see [Architecture](ARCHITECTURE_V5.md).
+
 These are separate analysis views, **not separate data providers**. The application works from the same historical Olist source and verified Parquet export. The **66 registered research chart definitions** comprise the original 36 Atlas views plus 30 new empirical views; changing a chart form does not create a distinct research figure.
 
-For the four new analysis destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
+For the four originally added research destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
 
 ## Light mode, dark mode and search
 
