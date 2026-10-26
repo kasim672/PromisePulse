@@ -2,6 +2,7 @@ import {useEffect,useMemo,useState} from 'react'
 import type {ReactNode,CSSProperties} from 'react'
 import {Download,ShieldCheck} from 'lucide-react'
 import {ChartCard} from './AnalyticsAtlas'
+import {AlgorithmPlayground} from './AlgorithmPlayground'
 import type {AtlasMetric} from './atlasQueries'
 import type {RecordRow,Tab} from './types'
 export type SyllabusModule='Warehouse & ETL'|'Data Lakes'|'EDA & Preprocessing'|'Classification Lab'|'Clustering Lab'|'Pattern Mining'
@@ -205,9 +206,9 @@ export function SyllabusLab({module,onNavigate}:{module:SyllabusModule;onNavigat
     {module==='Warehouse & ETL'&&<Warehouse d={result}/>}
     {module==='Data Lakes'&&<DataLakes d={result}/>}
     {module==='EDA & Preprocessing'&&<Exploration d={result}/>}
-    {module==='Classification Lab'&&<Classification d={result}/>}
-    {module==='Clustering Lab'&&<Cluster d={result}/>}
-    {module==='Pattern Mining'&&<Rules d={result}/>}
+    {module==='Classification Lab'&&<><AlgorithmPlayground topic="classification"/><Classification d={result}/></>}
+    {module==='Clustering Lab'&&<><AlgorithmPlayground topic="clustering"/><Cluster d={result}/></>}
+    {module==='Pattern Mining'&&<><AlgorithmPlayground topic="patterns"/><Rules d={result}/></>}
     <div className="atlas-methodology"><ShieldCheck size={18}/><p><strong>Interpretation notes.</strong> Offline analyses use real historical Olist source data and a deterministic script, not simulated charts. Clustering samples and rule denominators are disclosed. Relationships are exploratory, not causal; manuscript-level statistical testing and independent validation remain separate work.</p></div>
   </>}
  </div>
