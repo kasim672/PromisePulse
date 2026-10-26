@@ -1,0 +1,65 @@
+name: Header Search Layout QA
+on:
+  push:
+    branches: ['fix/header-search-fill-space']
+    paths:
+      - 'web/src/**'
+      - 'web/scripts/smoke-header-search.mjs'
+      - 'tests/test_header_search.cjs'
+      - '.github/workflows/header-search-layout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: header-search-layout-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  responsive-header:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web app and browser
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          if command -v google-chrome >/dev/null; then
+            echo 'PP_BROWSER_CHANNEL=chrome' >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - name: Validate build and header code contracts
+        working-directory: web
+        run: |
+          npm run build
+          node ../tests/test_header_search.cjs
+          node ../tests/test_theme.cjs
+          node ../tests/test_soft_cyan_theme.cjs
+      - name: Launch source-backed website
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/header-search-v5.log 2>&1 &
+          for i in {1..90}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/header-search-v5.log
+          exit 1
+      - name: Check expanded header at desktop, tablet and mobile sizes
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-header-search.mjs
+      - name: Upload authentic layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: header-search-expanded-six-viewports
+          path: web/.screenshots-header-search/
+          if-no-files-found: ignore
