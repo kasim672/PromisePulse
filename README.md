@@ -25,7 +25,7 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 
 ## PromisePulse 5.0 — All Six University Data-Mining Modules
 
-**New additional implementation; all original features preserved.** PromisePulse 5.0 now has **18 navigable destinations**, adding six academic laboratories directly aligned to the 30-hour university syllabus. No previous module, chart, geographic state map, theme, home screen, or AI Studio was removed.
+**New additional implementation; all original features preserved.** PromisePulse 5.0 now has **19 navigable destinations** (including a new academic **Syllabus Hub**), adding six academic laboratories directly aligned to the 30-hour university syllabus. No previous module, chart, geographic state map, theme, home screen, or AI Studio was removed. A seventh *academic* navigation entry, **Syllabus Hub**, links the six syllabus laboratories, shows the official contact-hour distribution, presents the verified empirical population counts, and filters by phase.
 
 | Module | Syllabus hours | Functional evidence |
 | --- | ---: | --- |
@@ -47,7 +47,7 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 
 **Detailed syllabus documentation:** [30-hour module-to-feature matrix, reproducibility and exact empirical outcomes](docs/SYLLABUS_V5.md).
 
-**Complete 16-image gallery:** [Screenshots covering all six syllabus modules, light/dark themes, mobile, and the preserved original Overview](docs/SCREENSHOT_GALLERY_V5.md).
+**Verified syllabus gallery (existing 16 captures plus three new Syllabus Hub views):** [Screenshots covering all six syllabus modules, light/dark themes, mobile, and the preserved original Overview](docs/SCREENSHOT_GALLERY_V5.md).
 
 **Reproduce the syllabus experiments locally:**
 
