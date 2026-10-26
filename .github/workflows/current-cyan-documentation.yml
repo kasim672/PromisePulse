@@ -1,7 +1,7 @@
-name: Refresh merged cyan release screenshots
+name: Capture verified current-release docs and AI chat
 on:
   push:
-    branches: [docs/current-soft-cyan-release]
+    branches: [docs/current-release-documentation]
     paths:
       - '.github/workflows/current-cyan-documentation.yml'
   workflow_dispatch:
@@ -59,22 +59,22 @@ jobs:
         run: node scripts/smoke-algorithms.mjs
       - name: Verify screenshot count and palette provenance
         run: |
-          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 28
-          node -e "const fs=require('fs');const d='docs/screenshots/current/';const a=JSON.parse(fs.readFileSync(d+'CAPTURE_MANIFEST.json'));const b=JSON.parse(fs.readFileSync(d+'ALGORITHM_CAPTURE_MANIFEST.json'));if(a.images.length!==13||b.images.length!==15||!a.release.includes('#7DD3FC'))process.exit(1);console.log('Captured',a.images.length+b.images.length,'authentic cyan screenshots')"
+          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 30
+          node -e "const fs=require('fs');const d='docs/screenshots/current/';const a=JSON.parse(fs.readFileSync(d+'CAPTURE_MANIFEST.json'));const b=JSON.parse(fs.readFileSync(d+'ALGORITHM_CAPTURE_MANIFEST.json'));if(a.images.length!==15||b.images.length!==15||!a.release.includes('#7DD3FC'))process.exit(1);console.log('Captured',a.images.length+b.images.length,'authentic current-release screenshots')"
       - name: Attach screenshot set
         uses: actions/upload-artifact@v4
         with:
-          name: promisepulse-current-soft-cyan-28-screenshots
+          name: promisepulse-release-docs-30-screenshots
           path: docs/screenshots/current/
           retention-days: 30
-      - name: Commit verified screenshot binaries to docs branch only
+      - name: Commit verified screenshot binaries to documentation branch only
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/screenshots/current/
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "docs: refresh 28 real screenshots for merged soft cyan release"
-          git fetch --no-tags origin docs/current-soft-cyan-release
+          git commit -m "docs: refresh 30 real screenshots including light and dark assistant"
+          git fetch --no-tags origin docs/current-release-documentation
           git rebase FETCH_HEAD
-          git push origin HEAD:refs/heads/docs/current-soft-cyan-release
+          git push origin HEAD:refs/heads/docs/current-release-documentation
