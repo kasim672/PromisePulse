@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react'
 import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,Globe2,Layers3,LockKeyhole,PlayCircle,ShieldCheck,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
+import {QueryLoading} from './DataStates'
 import type {RecordRow,Tab} from './types'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
@@ -20,7 +21,7 @@ function MiniHistory({rows}:{rows:RecordRow[]}){
      <path d={area} fill="url(#welcome-history-fill)"/><path d={line} stroke="var(--welcome-blue)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
      {values.map((v,i)=><circle key={i} cx={24+i*448/Math.max(1,values.length-1)} cy={183-v/peak*144} r="4" fill="var(--welcome-blue)"><title>{String(rows[i].month)}: {v.toLocaleString()} orders</title></circle>)}
      <text x="24" y="202" className="atlas-tick">2016</text><text x="249" y="202" textAnchor="middle" className="atlas-tick">2017</text><text x="472" y="202" textAnchor="end" className="atlas-tick">2018</text>
-   </svg>:<div className="welcome-chart-wait"><span className="spinner"/> {rows.length===0?'Waiting for verified Parquet trend data…':'No observations available'}</div>}
+   </svg>:<div className="welcome-chart-wait"><QueryLoading label="Reading monthly purchase activity"/></div>}
    <div className="welcome-history-foot"><span>Source: Olist / DuckDB-Wasm</span></div>
  </div>
 }
