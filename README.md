@@ -23,6 +23,48 @@ Unlike traditional analytics dashboards that rely on heavy server fleets or comp
 
 ---
 
+## PromisePulse 5.0 — All Six University Data-Mining Modules
+
+**New additional implementation; all original features preserved.** PromisePulse 5.0 now has **19 navigable destinations** (including a new academic **Syllabus Hub**), adding six academic laboratories directly aligned to the 30-hour university syllabus. No previous module, chart, geographic state map, theme, home screen, or AI Studio was removed. A seventh *academic* navigation entry, **Syllabus Hub**, links the six syllabus laboratories, shows the official contact-hour distribution, presents the verified empirical population counts, and filters by phase.
+
+| Module | Syllabus hours | Functional evidence |
+| --- | ---: | --- |
+| 1. Warehouse & ETL | 8 | Star/fact constellation explorer, actual warehouse relations, physical records, raw-to-Parquet stages, OLAP linkage |
+| 2. Data Lakes | 3 | Raw CSV file provenance, data curation, real CSV/Parquet file sizes and source record analysis |
+| 3. EDA & Preprocessing | 5 | Seven statistical profiles, histograms, quartile box plots, missingness, 7×7 Pearson matrix, PCA/transformation explanations |
+| 4. Classification Lab | 5 | Trained Decision Tree and Gaussian Naive Bayes; logistic and majority baselines; four regression methods, out-of-time evaluation |
+| 5. Clustering Lab | 4 | K-Means, Ward agglomerative and divisive Bisecting K-Means, **actual dendrogram**, PCA scatter, silhouette and elbow plots |
+| 6. Pattern Mining | 5 | Real Apriori, FP-Growth and Eclat itemsets, closed itemsets, support/confidence/lift, association-rule network and mining timing |
+| **Total** | **30** | Historical Olist source-backed, reproducible experiments |
+
+**New historical experiment export:** [`web/public/data/mining_lab.json`](web/public/data/mining_lab.json) is generated with `scripts/build_mining_lab.py` from the existing included Olist Parquet files and verified with `scripts/verify_mining_lab.py`. At current export, 950 sampled customers were clustered (a true 52-leaf Ward dendrogram), and 649 eligible multi-category baskets yielded 47 association rules. Classification metrics are explicitly reported as weak, rather than claiming predictive improvements.
+
+<div align="center">
+  <a href="docs/screenshots/v5/clustering-dendrogram-light.png"><img width="100%" alt="PromisePulse 5.0 Clustering Lab showing real PCA-scatter K-Means and Ward dendrogram" src="docs/screenshots/v5/clustering-dendrogram-light.png"/></a>
+  <p><em>Genuine screenshot: K-Means PCA clustering and Ward hierarchical dendrogram from the offline Olist experiment.</em></p>
+  <a href="docs/screenshots/v5/apriori-fpgrowth-eclat-dark.png"><img width="100%" alt="PromisePulse 5.0 dark-mode Apriori, FP-Growth, Eclat and association-rule analysis" src="docs/screenshots/v5/apriori-fpgrowth-eclat-dark.png"/></a>
+</div>
+
+**Detailed syllabus documentation:** [30-hour module-to-feature matrix, reproducibility and exact empirical outcomes](docs/SYLLABUS_V5.md).
+
+**Verified syllabus gallery (existing 16 captures plus three new Syllabus Hub views):** [Screenshots covering all six syllabus modules, light/dark themes, mobile, and the preserved original Overview](docs/SCREENSHOT_GALLERY_V5.md).
+
+**Reproduce the syllabus experiments locally:**
+
+```bash
+pip install -r requirements-export.txt
+python scripts/build_mining_lab.py
+python scripts/verify_mining_lab.py
+cd web
+npm ci
+npm run build
+npm run dev
+```
+
+This extension is educational and exploratory. The rendered cloud lake and snowflake alternatives are conceptual where not deployed; clustering uses bounded samples, minority-class classification performance is weak, and association support uses a clearly defined small multi-category basket cohort. Figure quantity by itself is not evidence of research novelty, causal findings, or acceptance by a top-quartile journal.
+
+---
+
 ## PromisePulse 4.0 — Landing, AI Evidence, 12 Destinations & 66 Research Charts
 
 **New in the research expansion (feature branch):** a premium **Welcome** page now opens first; the existing premium dashboard, geographic Brazil choropleth, light/dark modes, AI risk classifier, original Atlas and OLAP modules remain intact. The floating left navigation has expanded from 7 to **12 accessible destinations**, with a scrollable mobile dock. No unrelated UI redesign or fake operational feed has been introduced.
