@@ -29,7 +29,7 @@ export function ProjectAssistant(){
   return()=>{document.removeEventListener('keydown',onKey);window.clearTimeout(id)}
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[open])
- useEffect(()=>{if(open)end.current?.scrollIntoView({block:'end',behavior:'instant'})},[messages,working,open])
+ useEffect(()=>{if(open)end.current?.scrollIntoView({block:'end',behavior:'auto'})},[messages,working,open])
  useEffect(()=>()=>{request.current?.abort()},[])
  const close=()=>{request.current?.abort();request.current=null;setWorking(false);setOpen(false);trigger.current?.focus()}
  const ask=async(text:string)=>{
