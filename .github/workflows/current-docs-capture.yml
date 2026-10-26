@@ -39,11 +39,17 @@ jobs:
           done
           cat /tmp/pp-docs-v5.log
           exit 1
-      - name: Capture V5 desktop and mobile evidence after typography cleanup
+      - name: Capture current desktop, mobile and chatbot appearance
         working-directory: web
         env:
           PP_BASE_URL: http://127.0.0.1:4173
         run: node scripts/capture-current-docs.mjs
+      - name: Refresh algorithm screenshots and matching provenance manifest
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+          PP_SKIP_RECOVERY: '1'
+        run: node scripts/smoke-algorithms.mjs
       - name: Upload current screenshots as an audit artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -55,7 +61,8 @@ jobs:
         run: |
           set -euo pipefail
           test -s docs/screenshots/current/CAPTURE_MANIFEST.json
-          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 10
+          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 31
+          node -e "const f=require('./docs/screenshots/current/CAPTURE_MANIFEST.json');const g=require('./docs/screenshots/current/ALGORITHM_CAPTURE_MANIFEST.json');if(f.images.length!==16||g.images.length!==15||f.git_sha!==g.source_sha)process.exit(1)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/screenshots/current/
