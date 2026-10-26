@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
@@ -7,15 +7,19 @@ import {
   Compass, UsersRound, Truck, FlaskConical, Sparkles,
   Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined, GraduationCap,
 } from 'lucide-react'
-import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
-import { PremiumOverview, PremiumIntelligence } from './Premium'
-import { AnalyticsAtlas } from './AnalyticsAtlas'
-import { Welcome } from './Welcome'
-import { ResearchWorkspace } from './ResearchWorkspace'
-import { SyllabusLab } from './SyllabusLab'
-import { SyllabusHub } from './SyllabusHub'
+import { ReportStudio } from './ReportStudio'
+import { LineageExplorer } from './LineageExplorer'
+import { useSharedFilters } from './sharedFilters'
+import { ATLAS_STATES, ATLAS_GROUPS } from './atlasQueries'
+const PremiumOverview=lazy(()=>import('./Premium').then(x=>({default:x.PremiumOverview})))
+const PremiumIntelligence=lazy(()=>import('./Premium').then(x=>({default:x.PremiumIntelligence})))
+const AnalyticsAtlas=lazy(()=>import('./AnalyticsAtlas').then(x=>({default:x.AnalyticsAtlas})))
+const Welcome=lazy(()=>import('./Welcome').then(x=>({default:x.Welcome})))
+const ResearchWorkspace=lazy(()=>import('./ResearchWorkspace').then(x=>({default:x.ResearchWorkspace})))
+const SyllabusLab=lazy(()=>import('./SyllabusLab').then(x=>({default:x.SyllabusLab})))
+const SyllabusHub=lazy(()=>import('./SyllabusHub').then(x=>({default:x.SyllabusHub})))
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
@@ -313,6 +317,8 @@ export default function App() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
+  const [filters,setFilters] = useSharedFilters()
+  const [reportOpen,setReportOpen] = useState(false)
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.documentElement.style.colorScheme = theme
@@ -330,7 +336,7 @@ export default function App() {
   }, [])
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
-    loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
+    import('./db').then(({loadWarehouse})=>loadWarehouse()).then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
     return () => { alive = false; if (current) void current.close() }
   }, [reloading])
   useEffect(() => {
@@ -339,11 +345,14 @@ export default function App() {
         event.preventDefault()
         setSearchOpen(current => !current)
       }
-      if (event.key === 'Escape') setSearchOpen(false)
+      if (event.key === 'Escape') {setSearchOpen(false);setReportOpen(false)}
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
+  const chartMatches=ATLAS_GROUPS.flatMap(group=>group.metrics.map(chart=>({
+    title:chart.title,description:group.title,lens:group.id,
+  }))).filter(item=>(item.title+' '+item.description).toLowerCase().includes(navQuery.trim().toLowerCase())).slice(0,12)
   const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
   const changePage = (tab: Tab) => {
     setActive(tab)
@@ -359,21 +368,30 @@ export default function App() {
       <div className="header-inner">
         <button className="brand" aria-label="PromisePulse landing page" onClick={() => changePage('Welcome')}><img className="brand-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button>
         
-        <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
+        <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button type="button" className="header-report" onClick={()=>setReportOpen(true)} disabled={!db} title="Create a printable research report"><FileSpreadsheet size={16} aria-hidden="true"/><span>Report</span></button><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
       <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">
         {NAV.filter(item => !(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}
         <button type="button" className={`header-nav-item ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'active':''}`} aria-label="Data Mining Lab" aria-current={(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'page':undefined} data-label="Data Mining Lab" title="Open Data Mining Lab" onClick={() => changePage('Syllabus Hub')}><GraduationCap size={19} aria-hidden="true"/><span className="nav-label">Data Mining Lab</span></button>
       </nav>
     </header>
+    <div className="shared-filter-bar" role="group" aria-label="Shared historical filters">
+      <label>Period <select aria-label="Shared purchase year" value={filters.year} onChange={e=>setFilters({year:e.target.value as 'all'|'2016'|'2017'|'2018'})}>{(['all','2016','2017','2018'] as const).map(y=><option key={y} value={y}>{y==='all'?'All years':y}</option>)}</select></label>
+      <label>Customer state <select aria-label="Shared customer state" value={filters.state} onChange={e=>setFilters({state:e.target.value})}>{ATLAS_STATES.map(x=><option key={x} value={x}>{x==='ALL'?'All states':x}</option>)}</select></label>
+      <small>Year applies to Overview, Intelligence, Atlas & research. State applies to Atlas & research; held-out model cohorts have separate evaluation scopes.</small>
+    </div>
+    {reportOpen && db && <ReportStudio manifest={db.manifest} onClose={()=>setReportOpen(false)}/>}
     {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
       <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
         <div className="command-search"><Search size={20} aria-hidden="true"/><input autoFocus value={navQuery} onChange={event => setNavQuery(event.target.value)} placeholder="Search pages, insights, warehouse tools..." aria-label="Search sections"/><kbd>ESC</kbd></div>
-        <div className="command-results">{matchingNav.length ? matchingNav.map(item => { const Icon = item.icon; return <button type="button" key={item.label} className="command-result" onClick={() => changePage(item.label)}><span className="command-result-icon"><Icon size={18} aria-hidden="true"/></span><span><strong>{item.label}</strong><small>{item.description}</small></span><ArrowRight size={16} aria-hidden="true"/></button> }) : <p className="command-no-results">No matching sections. Try “risk”, “OLAP”, or “catalog”.</p>}</div>
+        <div className="command-results">{matchingNav.map(item => { const Icon = item.icon; return <button type="button" key={item.label} className="command-result" onClick={() => changePage(item.label)}><span className="command-result-icon"><Icon size={18} aria-hidden="true"/></span><span><strong>{item.label}</strong><small>{item.description}</small></span><ArrowRight size={16} aria-hidden="true"/></button> })}
+        {navQuery.trim() && chartMatches.map((item,i)=><button type="button" key={item.lens+'-'+i} className="command-result" onClick={()=>{try{sessionStorage.setItem('promisepulse-atlas-lens',item.lens)}catch{/*private*/}changePage('Analytics Atlas')}}><span className="command-result-icon"><BarChart3 size={18}/></span><span><strong>{item.title}</strong><small>Chart · {item.description}</small></span><ArrowRight size={16}/></button>)}
+        {!matchingNav.length&&!chartMatches.length&&<p className="command-no-results">No matching sections or charts. Try “revenue”, “risk” or “delivery”.</p>}</div>
         <p className="command-hint">Search navigates between existing analytical pages. All warehouse results remain historical and data-backed.</p>
       </div>
     </div>}
     <main className="main-content" id="main-content">
+      <Suspense fallback={<Loader title="Loading workspace…"/>}>
       {active === 'Welcome' && <Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>}
       {active !== 'Welcome' && pending && <Loader title="Initializing local DuckDB warehouse…"/>}
       {active !== 'Welcome' && !pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
@@ -388,7 +406,7 @@ export default function App() {
         {active === 'OLAP Lab' && <OlapLab db={db}/>}
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
-        {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
+        {active === 'Pipeline & Quality' && <><PipelineQuality db={db}/><LineageExplorer manifest={db.manifest}/></>}
         {active === 'Syllabus Hub' && <SyllabusHub onNavigate={changePage}/>}
         {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL" onNavigate={changePage}/>}
         {active === 'Data Lakes' && <SyllabusLab module="Data Lakes" onNavigate={changePage}/>}
@@ -397,6 +415,7 @@ export default function App() {
         {active === 'Clustering Lab' && <SyllabusLab module="Clustering Lab" onNavigate={changePage}/>}
         {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining" onNavigate={changePage}/>}
       </>}
+      </Suspense>
     </main>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
