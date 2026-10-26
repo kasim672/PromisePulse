@@ -4,7 +4,7 @@
 
 ## Navigation
 
-The existing **12 top-level workspace** buttons remain. One additional top-level expandable **Data Mining Lab** menu contains the Syllabus Hub and six syllabus module pages. Command search continues to index the individual six modules, plus the hub.
+The existing **12 workspace** buttons remain. The graduation-cap **Data Mining Lab** icon opens its overview directly, without a popup. Six analysis pages are reached through overview cards and a clickable internal tab bar (including an Overview button). Command search still indexes every analysis page.
 
 ## Syllabus verification
 
@@ -34,7 +34,7 @@ npm run build
 npm run dev
 ```
 
-Then inspect the top-level Data Mining Lab submenu, its Syllabus Hub and all six modules. Verify the existing Welcome, Overview, Intelligence, Atlas, customer cohorts, delivery, research, AI, OLAP, Risk Center, catalog and pipeline pages. Exercise light and dark themes, keyboard navigation, mobile menu, state map, module selectors, rule filters, and CSV export.
+Click the Data Mining Lab icon to open the overview, select an analysis card, then navigate directly through all six clickable analysis tabs and back via Overview. Verify the existing Welcome, Overview, Intelligence, Atlas, customer cohorts, delivery, research, AI, OLAP, Risk Center, catalog and pipeline pages. Exercise light and dark themes, keyboard navigation, mobile menu, state map, module selectors, rule filters, and CSV export.
 
 ## Scientific reproduction
 
@@ -54,7 +54,7 @@ Python scientific exports use real checked-in historical Olist Parquet; outputs 
 ## Release gate
 
 - [ ] User has inspected all original pages and geography visualization
-- [ ] User has inspected six modules and the expandable menu
+- [ ] User has inspected the hub entry and all six clickable analysis tabs on desktop/mobile
 - [ ] GitHub Actions checks complete successfully
 - [ ] Empirical export reproduced and checked
 - [ ] User has accepted the measured scientific limitations
