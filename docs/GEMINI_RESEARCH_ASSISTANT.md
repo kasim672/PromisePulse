@@ -22,6 +22,10 @@ The index contains search passages rather than copying millions of Parquet recor
 - If Gemini is unavailable or unconfigured, the API presents **clearly labeled reference passages** when it finds relevant project knowledge. These are not AI-generated explanations. For unrelated requests with no Gemini key, it explains the setup limitation instead of pretending a generated answer.
 - A useful question may still require a deeper direct SQL investigation. The assistant cannot see a visitor's unsaved SQL query results or current screen state.
 
+## Visual verification
+
+[Light-mode and dark-mode chatbot screenshots](SCREENSHOT_GALLERY_CURRENT.md) are captured from the real checked-in React app with the drawer open, without a Gemini API request. They verify presentation, not model availability. The separate `docs/architecture.svg` and [end-to-end architecture](ARCHITECTURE_V5.md) show which calls stay in browser memory and which reach the private function.
+
 ## Architecture and security
 
 ```mermaid
