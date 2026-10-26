@@ -41,7 +41,7 @@ function priorQuestion(body){
  return previous.length?previous.at(-1).trim():''
 }
 function isFollowUp(question){
- return question.length<=120&&/^(?:tell (?:me )?more|explain (?:that|this|it|more)|(?:how|why) (?:does|is|was|about|so|it|that)\\b|what (?:about|does|is) (?:it|that|this|those)\\b|can you (?:expand|elaborate)|(?:give|show) (?:me )?(?:an? )?example|and (?:what|how|why)\\b)/i.test(question)
+ return question.length<=120&&/^(?:tell (?:me )?more|explain (?:that|this|it|more)|(?:how|why) (?:does|is|was|about|so|it|that)\b|what (?:about|does|is) (?:it|that|this|those)\\b|can you (?:expand|elaborate)|(?:give|show) (?:me )?(?:an? )?example|and (?:what|how|why)\\b)/i.test(question)
 }
 function cited(records){
  const base='https://github.com/kasim672/PromisePulse/blob/main'
@@ -51,7 +51,7 @@ function cited(records){
 // unconfigured or unavailable. It is clearly labelled as NOT AI-generated.
 function referenceReply(res,sources,notice){
  return json(res,200,{
-  answer:sources.slice(0,2).map(s=>s.text).join('\\n\\n').slice(0,4200),
+  answer:sources.slice(0,2).map(s=>s.text).join('\n\n').slice(0,4200),
   sources:cited(sources),grounded:true,mode:'reference',notice
  })
 }
