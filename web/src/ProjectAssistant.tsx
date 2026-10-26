@@ -35,6 +35,11 @@ export function ProjectAssistant(){
  const ask=async(text:string)=>{
   const q=text.trim()
   if(working||!q||q.length>450)return
+  if(q.length<3){
+   setMessages(prev=>[...prev.slice(-11),{role:'user',text:q},{role:'assistant',text:'Please enter a PromisePulse question of at least 3 characters. For example: What is PromisePulse?',error:true}])
+   setQuestion('')
+   return
+  }
   setQuestion('')
   setMessages(prev=>[...prev.slice(-11),{role:'user',text:q}])
   setWorking(true)
@@ -45,7 +50,7 @@ export function ProjectAssistant(){
    const body:unknown=await response.json().catch(()=>null)
    const result=body&&typeof body==='object'?body as {answer?:unknown;sources?:unknown;error?:unknown}:null
    if(!response.ok||typeof result?.answer!=='string'){
-    const msg=typeof result?.error==='string'?result.error:response.status===404?'The local AI endpoint is unavailable. Restart npm run dev and check that web/.env is configured.':'The assistant could not answer right now. Please try again.'
+    const msg=typeof result?.error==='string'?result.error:response.status===404?'The /api/ask route was not found on '+window.location.origin+'. Open the Vite development address (usually http://127.0.0.1:5173), run npm run dev from the web folder, and refresh. This is a missing local route, not a Gemini key error.':'The assistant could not answer right now. Please try again.'
     throw new Error(msg)
    }
    if(controller.signal.aborted)return
