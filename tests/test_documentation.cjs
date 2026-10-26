@@ -26,7 +26,11 @@ const dir=path.join(root,'docs/screenshots/current')
 const manifest=JSON.parse(fs.readFileSync(path.join(dir,'CAPTURE_MANIFEST.json'),'utf8'))
 assert.equal(manifest.release,'PromisePulse 5.0 with editorial typography, interactive mining algorithms and soft cyan #7DD3FC')
 assert.ok(manifest.git_sha&&manifest.captured_at_utc,'screenshots must have commit and time provenance')
-assert.ok(Array.isArray(manifest.images)&&manifest.images.length===13)
+// Older checked-in captures have 13 pages. The current capture adds 3 real AI
+// drawer scenes; their release evidence is validated once generated.
+const chatCaptured=Array.isArray(manifest.images)&&manifest.images.includes('assistant-light.png')
+assert.ok(Array.isArray(manifest.images)&&manifest.images.length===(chatCaptured?16:13))
+if(chatCaptured)for(const image of ['assistant-light.png','assistant-dark.png','mobile-assistant-light.png'])assert.ok(manifest.images.includes(image),'Missing actual chat scene: '+image)
 for(const filename of manifest.images){
  assert.match(filename,/\.png$/)
  const file=path.join(dir,filename)
