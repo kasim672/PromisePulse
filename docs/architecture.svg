@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="660" viewBox="0 0 1440 660" role="img" aria-labelledby="title desc">
-<title id="title">PromisePulse 5.0 soft-cyan application architecture</title>
-<desc id="desc">Offline Olist CSV data passes through Python and DuckDB modeling, producing Parquet and JSON files. Vercel hosts those static files, and a React browser application uses a DuckDB WebAssembly worker to query them. Mining analysis results were generated offline. Soft-cyan #7DD3FC styles change appearance only.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="835" viewBox="0 0 1440 835" role="img" aria-labelledby="title desc">
+<title id="title">PromisePulse 5.0 application and Gemini assistant architecture</title>
+<desc id="desc">Offline Olist CSV data passes through Python and DuckDB modeling, producing Parquet and JSON files. Vercel hosts those static files, and a React browser application uses a DuckDB WebAssembly worker to query them. Mining analysis results were generated offline. A separate Node or Vercel server function searches published project evidence and sends questions to Gemini using a private server key. The website works independently of Gemini. Soft-cyan #7DD3FC styles change appearance only.</desc>
 <defs>
  <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#101a2b"/><stop offset="1" stop-color="#19283b"/></linearGradient>
  <linearGradient id="offline" x1="0" x2="1"><stop stop-color="#22577a"/><stop offset="1" stop-color="#21445f"/></linearGradient>
@@ -21,7 +21,7 @@
   .arrow{fill:none;stroke:#7DD3FC;stroke-width:3;marker-end:url(#arrow)}
  </style>
 </defs>
-<rect x="0" y="0" width="1440" height="660" rx="22" fill="url(#bg)"/>
+<rect x="0" y="0" width="1440" height="835" rx="22" fill="url(#bg)"/>
 <text x="56" y="60" class="heading">PromisePulse 5.0</text>
 <text x="58" y="90" class="subtitle">Historical Olist data → static Parquet exports → browser SQL + soft-cyan research UI</text>
 <rect x="48" y="122" width="421" height="430" class="panel" fill="url(#offline)"/>
@@ -65,5 +65,26 @@
 <text x="1020" y="475" class="nodeInfo">Charts · OLAP · teaching · CSV</text>
 <path d="M1182 268 V298" class="arrow"/><path d="M1182 389 V420" class="arrow"/>
 <path d="M903 464 H952 V339 H997" class="arrow"/>
-<text x="64" y="604" class="body">Theme #7DD3FC changes presentation only. Payments and item sales keep separate grains; exports are public, not live feeds.</text>
+<rect x="48" y="572" width="1344" height="189" rx="18" fill="#102536" stroke="#5597b7" stroke-width="1.7"/>
+<text x="76" y="607" class="label">04  Optional Gemini research assistant — separate server boundary</text>
+<rect x="76" y="627" width="268" height="95" class="node"/>
+<text x="94" y="656" class="nodeTitle">React chat drawer</text>
+<text x="94" y="680" class="nodeInfo">POST /api/ask</text>
+<text x="94" y="703" class="micro">Source-backed questions</text>
+<rect x="375" y="627" width="316" height="95" class="node"/>
+<text x="393" y="654" class="nodeTitle">Node / Vercel Function</text>
+<text x="393" y="679" class="nodeInfo">Validation + relevant passages</text>
+<text x="393" y="701" class="micro">Docs · manifest · mining aggregates</text>
+<rect x="723" y="627" width="299" height="95" class="node"/>
+<text x="741" y="654" class="nodeTitle">Gemini API (optional)</text>
+<text x="741" y="679" class="nodeInfo">Private GEMINI_API_KEY</text>
+<text x="741" y="701" class="micro">Server-side only · quota required</text>
+<rect x="1053" y="627" width="311" height="95" class="node"/>
+<text x="1071" y="654" class="nodeTitle">Answer / reference excerpt</text>
+<text x="1071" y="679" class="nodeInfo">Document links and labelled fallback</text>
+<text x="1071" y="701" class="micro">No access to live browser SQL</text>
+<path d="M344 676 H371" class="arrow"/>
+<path d="M691 676 H719" class="arrow"/>
+<path d="M1022 676 H1049" class="arrow"/>
+<text x="64" y="796" class="body">Theme #7DD3FC changes presentation only. Payments and item sales keep separate grains; public exports are historical, not live feeds.</text>
 </svg>
