@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/current-docs-capture.yml'
+      - 'web/scripts/capture-current-docs.mjs'
+      - 'web/scripts/smoke-algorithms.mjs'
   workflow_dispatch:
 permissions:
   contents: write
