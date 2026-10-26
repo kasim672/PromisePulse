@@ -39,3 +39,134 @@
 .project-ai-dialog :is(button,textarea,a):focus-visible,.project-ai-trigger:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}
 @media(max-width:620px){.project-ai-trigger{right:12px;bottom:12px;min-height:45px;padding:12px 14px}.project-ai-trigger span{display:none}.project-ai-backdrop{padding:0}.project-ai-dialog{height:100dvh;width:100%;border-radius:0;border:0}.project-ai-header{padding:13px 14px}.project-ai-messages{padding:14px}}
 @media(prefers-reduced-motion:reduce){.project-ai-dots{animation:none}}
+
+/*
+ * AI drawer — light appearance only.
+ * The global Cadra glass token is translucent on light pages, so chat surfaces
+ * inherited the dimmed backdrop and looked grey. Solid, scoped colors keep
+ * messages legible without changing the existing dark-mode palette.
+ */
+html[data-theme="light"] .project-ai-dialog {
+  --ai-surface: #f8fbff;
+  --ai-panel: #ffffff;
+  --ai-messages: #f3f8fd;
+  --ai-border: #d6e3ef;
+  --ai-ink: #10263e;
+  --ai-muted: #4b6077;
+  --ai-link: #075985;
+  --ai-cyan: #0284c7;
+  background: var(--ai-surface);
+  color: var(--ai-ink);
+  border-color: var(--ai-border);
+  box-shadow: 0 24px 70px rgba(15, 37, 61, .24);
+}
+html[data-theme="light"] .project-ai-header {
+  background: var(--ai-panel);
+  border-bottom-color: var(--ai-border);
+}
+html[data-theme="light"] .project-ai-heading h2,
+html[data-theme="light"] .project-ai-intro,
+html[data-theme="light"] .project-ai-message strong,
+html[data-theme="light"] .project-ai-message p,
+html[data-theme="light"] .project-ai-composer label {
+  color: var(--ai-ink);
+}
+html[data-theme="light"] .project-ai-heading p,
+html[data-theme="light"] .project-ai-intro p,
+html[data-theme="light"] .project-ai-thinking,
+html[data-theme="light"] .project-ai-sources > span,
+html[data-theme="light"] .project-ai-answer-note,
+html[data-theme="light"] .project-ai-composer > p {
+  color: var(--ai-muted);
+}
+html[data-theme="light"] .project-ai-symbol {
+  background: #e0f2fe;
+  color: #075985;
+}
+html[data-theme="light"] .project-ai-close {
+  background: #f8fbff;
+  color: var(--ai-ink);
+  border-color: var(--ai-border);
+}
+html[data-theme="light"] .project-ai-close:hover {
+  background: #e9f5fd;
+  border-color: #93c5e7;
+}
+html[data-theme="light"] .project-ai-messages {
+  background: var(--ai-messages);
+}
+html[data-theme="light"] .project-ai-message {
+  background: var(--ai-panel);
+  border-color: var(--ai-border);
+  box-shadow: 0 3px 12px rgba(22, 50, 75, .04);
+}
+html[data-theme="light"] .project-ai-message.user {
+  background: #def2ff;
+  border-color: #93cbe8;
+}
+html[data-theme="light"] .project-ai-message.user strong,
+html[data-theme="light"] .project-ai-message.user p {
+  color: #082f49;
+}
+html[data-theme="light"] .project-ai-message.is-error {
+  background: #fff5f5;
+  border-color: #e8a3a3;
+}
+html[data-theme="light"] .project-ai-message.is-error strong,
+html[data-theme="light"] .project-ai-message.is-error p {
+  color: #9b1c1c;
+}
+html[data-theme="light"] .project-ai-suggestions button {
+  background: var(--ai-panel);
+  color: var(--ai-ink);
+  border-color: var(--ai-border);
+}
+html[data-theme="light"] .project-ai-suggestions button:hover {
+  background: #eaf6fe;
+  border-color: #7cbde3;
+}
+html[data-theme="light"] .project-ai-sources a {
+  background: #f2f9fe;
+  color: var(--ai-link);
+  border-color: #c7e0f0;
+}
+html[data-theme="light"] .project-ai-sources a:hover {
+  background: #dff1fd;
+  border-color: #7cbde3;
+  color: #06466c;
+}
+html[data-theme="light"] .project-ai-composer {
+  background: var(--ai-panel);
+  border-top-color: var(--ai-border);
+}
+html[data-theme="light"] .project-ai-composer textarea {
+  background: #ffffff;
+  color: var(--ai-ink);
+  border-color: #afc8da;
+  box-shadow: inset 0 1px 2px rgba(15, 37, 61, .035);
+}
+html[data-theme="light"] .project-ai-composer textarea::placeholder {
+  color: #53697f;
+  opacity: 1;
+}
+html[data-theme="light"] .project-ai-composer textarea:focus-visible {
+  border-color: var(--ai-cyan);
+  outline: 2px solid var(--ai-cyan);
+  outline-offset: 2px;
+}
+html[data-theme="light"] .project-ai-composer button {
+  background: #7dd3fc;
+  color: #082f49;
+}
+html[data-theme="light"] .project-ai-composer button:not(:disabled):hover {
+  background: #38bdf8;
+  color: #082f49;
+}
+html[data-theme="light"] .project-ai-composer button:disabled {
+  background: #dce8f2;
+  color: #53697f;
+  opacity: 1;
+}
+html[data-theme="light"] .project-ai-dialog :is(button, textarea, a):focus-visible {
+  outline-color: var(--ai-cyan);
+}
