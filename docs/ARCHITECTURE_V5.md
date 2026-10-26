@@ -73,7 +73,7 @@ flowchart LR
   Olist["Static historical Olist exports"] -. "Manually curated evidence only" .-> R
 ```
 
-The backend receives the visitor question, filters and validates it, and sends selected project evidence to Gemini using a server-side key. Questions therefore leave the website for Google's API processing; no persistent chat database is added. It uses a curated reference catalog rather than loading the entire private repository or generating new live SQL results. It includes best-effort application throttling, but production bot and spending protection should be configured at the edge/provider. See [GEMINI_RESEARCH_ASSISTANT.md](GEMINI_RESEARCH_ASSISTANT.md) for full limitations and setup.
+For local development, a Vite dev-only middleware invokes the same `/api/ask` handler after loading `GEMINI_API_KEY` from ignored `web/.env`. In production, Vercel hosts that handler and reads the private key from its Environment Variables. The backend receives the visitor question, filters and validates it, and sends selected project evidence to Gemini using a server-side key. Questions therefore leave the website for Google's API processing; no persistent chat database is added. It uses a curated reference catalog rather than loading the entire private repository or generating new live SQL results. It includes best-effort application throttling, but production bot and spending protection should be configured at the edge/provider. See [GEMINI_RESEARCH_ASSISTANT.md](GEMINI_RESEARCH_ASSISTANT.md) for full limitations and setup.
 
 ## 2. Offline export and verification
 
