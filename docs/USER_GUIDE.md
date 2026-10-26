@@ -145,6 +145,18 @@ The exporter reports **zero duplicated order keys**, **zero duplicated item keys
 
 The [Screenshot Gallery](SCREENSHOT_GALLERY.md) links to authentic browser captures with a capture manifest. Use those images when describing the UI. The figure-to-SQL appendix and data manifest are the authoritative sources for quantitative methods. Never substitute a screenshot for a dataset-level validation or a statistical significance test.
 
+## Ask PromisePulse AI — website knowledge and chat
+
+The floating **Ask PromisePulse AI** button opens a keyboard-accessible chat drawer. It is available from the dashboard in light and dark modes; on narrow screens the floating trigger sits **above the navigation dock**, leaving the lab navigation tappable.
+
+The assistant's source context includes the published Olist data manifest, selected data-mining aggregates, architecture and research guides, navigation explanations, and documented release setup. You can ask “Which datasets are used?”, “What does the classification threshold mean?”, “Compare clustering methods”, or “How is the dashboard deployed?”. Relevant document links appear under grounded responses.
+
+**Two response modes matter.** When a valid private Gemini key, model access and quota are available, the server can provide conversational explanations. When Gemini is unconfigured or unavailable, it displays **labelled project reference excerpts**; those passages are not a generative answer. General-knowledge conversation needs the Gemini path. A greeting answered directly in React does not verify the server.
+
+The assistant cannot view an unsaved query, access private GitHub content, execute SQL over a visitor's Parquet tables, fetch new external sources, or make current logistical predictions. Results are about historical 2016–2018 Olist data. The question and selected evidence snippets are sent to Google whenever Gemini is invoked. Avoid sharing personal data or keys.
+
+See [AI setup and security](GEMINI_RESEARCH_ASSISTANT.md), [architecture](ARCHITECTURE_V5.md), and [actual light/dark/mobile assistant screenshots](SCREENSHOT_GALLERY_CURRENT.md).
+
 ## Troubleshooting
 
 **White/blank content or loading errors:** confirm you ran Vite from the `web` directory and that `web/public/data/manifest.json` and the relevant Parquet files exist. Open browser DevTools to identify failed fetches.
