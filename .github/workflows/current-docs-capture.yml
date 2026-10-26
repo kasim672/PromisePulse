@@ -1,0 +1,67 @@
+name: Refresh current PromisePulse documentation screenshots
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/current-docs-capture.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  capture-current-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install real Chromium and React dependencies
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Start actual source-backed Vite site
+        working-directory: web
+        run: |
+          test -s public/data/manifest.json
+          test -s public/data/fact_orders.parquet
+          test -s public/data/mining_lab.json
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-docs-v5.log 2>&1 &
+          for i in {1..90}; do
+            if curl --silent --fail http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pp-docs-v5.log
+          exit 1
+      - name: Capture V5 desktop and mobile evidence after typography cleanup
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/capture-current-docs.mjs
+      - name: Upload current screenshots as an audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promisepulse-v5-current-website-screenshots
+          path: docs/screenshots/current/
+          if-no-files-found: ignore
+      - name: Publish verified screenshots to README gallery on main
+        run: |
+          set -euo pipefail
+          test -s docs/screenshots/current/CAPTURE_MANIFEST.json
+          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 10
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/current/
+          if git diff --cached --quiet; then
+            echo "Capture unchanged; no commit required."
+            exit 0
+          fi
+          git commit -m "docs: publish verified current V5 desktop and mobile screenshots"
+          git push origin HEAD:main
