@@ -2,6 +2,7 @@ import {useEffect,useId,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
 import {Activity,BarChart3,CalendarDays,CheckCircle2,Database,Download,Filter,MapPinned,Microscope,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
+import {useSharedFilters} from './sharedFilters'
 import type {RecordRow} from './types'
 import {ATLAS_CHART_COUNT,ATLAS_GROUPS,ATLAS_STATES,atlasLabQueries,atlasQuery} from './atlasQueries'
 import type {AtlasGroup,AtlasLens,AtlasMetric,AtlasState,AtlasYear} from './atlasQueries'
@@ -148,9 +149,16 @@ function Calibration({rows}:{rows:RecordRow[]}){
 }
 const GROUP_ICONS=[TrendingUp,CalendarDays,Activity,MapPinned,CheckCircle2,BarChart3,Database,Filter,Microscope]
 export function AnalyticsAtlas({db}:{db:Warehouse}){
-  const [lens,setLens]=useState<AtlasLens>('commerce')
-  const [year,setYear]=useState<AtlasYear>('all')
-  const [state,setState]=useState<AtlasState>('ALL')
+  const [lens,setLens]=useState<AtlasLens>(()=>{
+    try{const stored=sessionStorage.getItem('promisepulse-atlas-lens') as AtlasLens|null
+      if(stored&&ATLAS_GROUPS.some(g=>g.id===stored)){sessionStorage.removeItem('promisepulse-atlas-lens');return stored}
+    }catch{/* private browsing */}return 'commerce'
+  })
+  const [shared,setShared] =useSharedFilters()
+  const year=shared.year as AtlasYear
+  const state=shared.state as AtlasState
+  const setYear=(v:AtlasYear)=>setShared({year:v})
+  const setState=(v:AtlasState)=>setShared({state:v})
   const [result,setResult]=useState<QueryData>(empty)
   const [matrix,setMatrix]=useState<Record<string,QueryData>>({})
   const cache=useRef(new Map<string,RecordRow[]>())
