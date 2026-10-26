@@ -10,6 +10,7 @@ import './expansion.css'
 import './syllabus.css'
 import './syllabus-hub.css'
 import './editorial.css'
+import './algorithm-playground.css'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,
