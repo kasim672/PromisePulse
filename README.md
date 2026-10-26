@@ -20,34 +20,28 @@ A separate offline experiment exporter provides six Data Mining Lab sections: wa
 
 **This is a research and education dashboard, not a live fulfillment tracker or deployed risk-scoring service.** It requires no hosted SQL server, account system, Streamlit application or Python process to serve the public site.
 
-## Current design and release status
+## Current release and design
 
-The interface uses a **soft-cyan accent (`#7DD3FC`)** in place of fluorescent lime. Cyan appears on navigation selection, calls to action, KPI highlights, chart interactions, the historical Brazil map, Data Mining Lab controls, and the favicon. The dark graphite backgrounds and purple wordmark are retained. The design also provides a light theme, accessible dark-navy text on cyan backgrounds, and responsive layouts.
+The current source release on **`main`** combines the V5 warehouse and six-area Data Mining Lab with the website-wide Gemini research assistant. The UI uses soft cyan **`#7DD3FC`**, a dark graphite theme, a restrained light theme, a purple wordmark, accessible navigation/search and responsive chart layouts. The chat drawer has separate opaque light-theme surfaces and a preserved dark palette.
 
-This visual update was merged to **`main`** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), following the five teaching visualizers and loading/retry changes in [PR #9](https://github.com/kasim672/PromisePulse/pull/9). The theme is presentation-only: it does not modify Olist records, SQL, model evaluation, or mining results.
+Recent changes: [assistant routing fix #17](https://github.com/kasim672/PromisePulse/pull/17), [website-wide knowledge #18](https://github.com/kasim672/PromisePulse/pull/18), [chat light-theme contrast #19](https://github.com/kasim672/PromisePulse/pull/19). These changes are merged into `main`; there is no separate development feature branch to check out.
 
-**GitHub source versus public deployment:** Vercel reported a build-rate-limit failure for the soft-cyan merge on October 26, 2026. Therefore the public URL might still show the earlier lime theme until a successful redeployment. See the [deployment guide](docs/DEPLOYMENT.md) for verifying and retrying the production build. The [design system](docs/THEME_SYSTEM.md) documents colors, contrast, logos, and code ownership.
+**Source and deployment are separate.** Earlier Vercel builds were blocked by a deployment-rate limit. A merged GitHub commit or local screenshot does not prove the [public site](https://promise-pulse-rose.vercel.app/) serves that commit. Check **Deployments → Ready → commit SHA** in Vercel before calling production current; follow the [deployment checklist](docs/DEPLOYMENT.md). The Olist export remains a fixed historical dataset rather than live data.
 
-## Optional Gemini-powered PromisePulse Research Assistant
+## PromisePulse AI research assistant
 
-The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
+The **Ask PromisePulse AI** drawer is included in the current source release, not a proposed feature. It supports questions about the website and general conversation **when Gemini is configured**. Project-specific answers use an indexed server-side evidence catalog of checked-in guides, `manifest.json` and selected published aggregate mining results; it does not transmit all raw Parquet rows or run SQL on behalf of the model. Short follow-up questions can use bounded previous-user-question context. If Gemini is missing, rate-limited or unavailable, relevant questions receive **labeled documentation excerpts**, not a simulated AI answer.
 
-**Local setup:** `npm run dev` starts the private local Gemini API and Vite together. Vite proxies `/api/ask` to the loopback-only server at port 8787. Open a terminal and run:
+The browser calls `POST /api/ask`:
 
-```bash
-cd ~/PromisePulse
-git switch feat/gemini-project-research-assistant
-cd web
-npm ci
-npm run setup:gemini
-nano .env
-# Add your own private GEMINI_API_KEY to the created file.
-npm run dev
-```
+- **Local development:** `npm run dev` starts Vite on `127.0.0.1:5173` and a loopback Node adapter on `127.0.0.1:8787`; Vite proxies requests to the same handler used in production.
+- **Vercel:** `web/api/ask.js` runs as a serverless function with a **private, server-only** `GEMINI_API_KEY`. The default model in the current code is `gemini-3.5-flash`; choose another model only if supported by your Google account.
+- **Knowledge refresh:** `web/scripts/build-assistant-index.mjs` rebuilds the searchable source index before `npm run dev` and `npm run build`. The evidence comes from committed documentation and historical **aggregate** exports, not private accounts or live transactions.
+- **Privacy and cost:** questions and selected evidence passages are sent to Google if generation is enabled. Apply Google quotas and Vercel firewall/rate controls before public usage; instance-local throttling is only a basic safeguard.
 
-The project commits `web/.env.example` but **never a real `web/.env`**; both Git ignore files exclude secret files. No Vercel account or Vercel CLI is necessary for local Gemini testing. After deployment, set `GEMINI_API_KEY` privately in Vercel Environment Variables as well. Do not paste API keys into GitHub or browser code. See the [complete local setup](docs/GEMINI_RESEARCH_ASSISTANT.md).
+To enable generated replies, run `cd web && npm run setup:gemini`, add your API key to the ignored `web/.env`, and start `npm run dev`. For production, set `GEMINI_API_KEY` in **Vercel → Settings → Environment Variables**, redeploy, and test `/api/ask`. Do not use a `VITE_`-prefixed key.
 
-Questions and selected project source excerpts are processed by Gemini; avoid entering personal data. The assistant is educational and only as accurate as the curated sources. See the complete [Gemini configuration, security, privacy, rate-limiting and architecture guide](docs/GEMINI_RESEARCH_ASSISTANT.md).
+See [AI assistant architecture, privacy and troubleshooting](docs/GEMINI_RESEARCH_ASSISTANT.md) and [deployment instructions](docs/DEPLOYMENT.md).
 
 ## Explore the current release
 
@@ -113,18 +107,19 @@ Loading is also more informative: warehouse initialization reports the manifest,
 | --- | --- |
 | [![Data Mining Lab](docs/screenshots/current/mining-hub-light.png)](docs/screenshots/current/mining-hub-light.png) | [![Clustering and Ward dendrogram](docs/screenshots/current/clustering-light.png)](docs/screenshots/current/clustering-light.png) |
 
-**[See the complete soft-cyan desktop, dark-mode and mobile gallery](docs/SCREENSHOT_GALLERY_CURRENT.md).** Previous [V3](docs/SCREENSHOT_GALLERY.md), [V4](docs/SCREENSHOT_GALLERY_V4.md) and [early V5](docs/SCREENSHOT_GALLERY_V5.md) captures remain archived; some older screenshots predate the typography cleanup.
+**[See the current-release desktop, chatbot, dark-mode and mobile gallery](docs/SCREENSHOT_GALLERY_CURRENT.md).** Previous [V3](docs/SCREENSHOT_GALLERY.md), [V4](docs/SCREENSHOT_GALLERY_V4.md) and [early V5](docs/SCREENSHOT_GALLERY_V5.md) captures remain archived; some older screenshots predate the typography cleanup.
 
 ## System architecture
 
-![Offline ETL to static exports and in-browser DuckDB](docs/architecture.svg)
+![Current PromisePulse offline warehouse, browser analytics and optional Gemini API](docs/architecture.svg)
 
-The system has **two distinct phases**:
+**Offline pipeline:** Eight Olist CSVs → Python/DuckDB ETL and quality checks → six Parquet warehouse tables + manifest; optional chronological evaluation exports held-out risk predictions; a separate exporter creates `mining_lab.json`.
 
-1. **Offline data preparation:** Olist CSV files → Python/DuckDB staging and dimensional modeling → reconciliation checks → Parquet export and manifest. Optional chronological model evaluation produces held-out predictions; the mining exporter produces `mining_lab.json`.
-2. **Public interactive application:** Vercel serves React/Vite build assets plus the versioned Parquet and JSON files. React instantiates DuckDB-Wasm in a browser worker, registers Parquet views and runs historical SQL against them. Lab charts display previously computed experiment results.
+**Browser runtime:** Vercel serves static React/Vite assets, WASM workers and published historical files. DuckDB-Wasm executes read-only exploratory SQL on those files **in the visitor browser**. Mining experiments are prepared offline and rendered from JSON.
 
-Read the **[full system architecture, end-to-end flow, ER/grain diagram and browser sequence diagram](docs/ARCHITECTURE_V5.md)**.
+**Server-side AI boundary:** A separate Vercel `/api/ask` function retrieves indexed published guides/aggregates and optionally calls Google Gemini with a private server key. It does **not** proxy the DuckDB-Wasm SQL engine or provide a live production database.
+
+See the [end-to-end component, warehouse ER, request-flow and trust-boundary diagrams](docs/ARCHITECTURE_V5.md).
 
 ### Warehouse at a glance
 
@@ -196,7 +191,7 @@ python scripts/verify_mining_lab.py
 
 ## Deploy on Vercel
 
-The production domain is **[promise-pulse-rose.vercel.app](https://promise-pulse-rose.vercel.app/)**. Confirm that Vercel deployed the newest `main` commit before assuming the theme is live; deployment was rate-limited after the cyan merge. For a new Vercel import:
+The public domain is **[promise-pulse-rose.vercel.app](https://promise-pulse-rose.vercel.app/)**. Confirm the most recent **Ready** deployment has the intended `main` SHA before assuming any GitHub change is live. For a new import:
 
 | Setting | Value |
 | --- | --- |
@@ -207,9 +202,9 @@ The production domain is **[promise-pulse-rose.vercel.app](https://promise-pulse
 | Install | `npm ci` |
 | Build | `npm run build` |
 | Output directory | `dist` |
-| Required production secrets | None for the bundled static historical data |
+| Required production secrets | None for static historical analytics; **`GEMINI_API_KEY`** required for generated AI answers |
 
-Vercel deploys compiled HTML, JS, CSS, WebAssembly and `web/public/data` files. No live DuckDB server or Python deployment is involved. **[Read the complete setup, production QA, data-regeneration and troubleshooting guide](docs/DEPLOYMENT.md).**
+Vercel deploys compiled HTML, JS, CSS, WebAssembly and `web/public/data` files **and** the separate `web/api/ask.js` serverless handler. No live DuckDB SQL server or Python service is involved. Without a Gemini key the dashboard still works, but AI generation falls back to reference-only responses. **[Read the complete setup, production QA, data-regeneration and troubleshooting guide](docs/DEPLOYMENT.md).**
 
 ## Validate the release
 
