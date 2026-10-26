@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { ArrowDownRight, ArrowUpRight, CalendarDays, CheckCircle2, ChevronRight, Download, Globe2, MapPinned, Package, Sparkles, TrendingUp } from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, CalendarDays, CheckCircle2, ChevronRight, Download, Globe2, MapPinned, Package, TrendingUp } from 'lucide-react'
 import type { Warehouse } from './db'
 import type { RecordRow } from './types'
 import { dashboardQueries, insightQueries } from './premiumQueries'
