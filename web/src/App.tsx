@@ -17,6 +17,7 @@ import { Welcome } from './Welcome'
 import { ResearchWorkspace } from './ResearchWorkspace'
 import { SyllabusLab } from './SyllabusLab'
 import { SyllabusHub } from './SyllabusHub'
+import { ProjectAssistant } from './ProjectAssistant'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
@@ -421,6 +422,7 @@ export default function App() {
         {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining" onNavigate={changePage}/>}
       </>}
     </main>
+    <ProjectAssistant/>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
 }
