@@ -8,7 +8,7 @@ This release develops the approved platform experience improvements. It **does n
 
 | Requested item | Implementation | How to test |
 |---|---|---|
-| 1. Performance | Code-split React routes; lazy-load DuckDB engine module; separate vendor chunk; keep Parquet static | `npm run build`, inspect Vite output bundles |
+| 1. Performance | Code-split React routes; lazy-load DuckDB engine module; fetch independent Parquet files in parallel; separate vendor chunk; keep Parquet static | `npm run build`, inspect Vite output bundles |
 | 2. Mobile | New responsive layouts for shared filters, shortcuts, walkthrough, charts, dialogs and lineage | Chromium V6 workflow: 390 × 844 light/dark |
 | 3. Unified design | Shared radii/focus tokens and consolidated new-feature styling | `web/src/experience.css` |
 | 4. Interactive charts | Focus mode with full-size plot, raw bins, CSV and Escape support; retained chart mode selectors | Analytics Atlas → Focus on chart |
@@ -33,7 +33,7 @@ This release develops the approved platform experience improvements. It **does n
 - **Shared filters:** State applies to Atlas and Research SQL queries. Overview and Intelligence currently support the shared **year** only. Held-out classification evaluation remains a fixed cohort; it is not resliced by the global year.
 - **Dashboard customization:** Reorders landing-page workspace shortcuts and three data-backed analytical widgets on Overview. Changes are stored locally per browser, not synced across accounts; underlying queries and calculations remain unchanged.
 - **Report:** Uses print/PDF save in the browser; no server renders PDFs. Included chart depicts measured row counts rather than a screenshot of another dashboard.
-- **Performance:** Route/code splitting limits initial JavaScript parsing. DuckDB-Wasm assets and Parquet still require substantial downloads on a first visit. No unsupported performance target or Lighthouse score is claimed.
+- **Performance:** Route/code splitting limits initial JavaScript parsing, while parallel fetching improves warehouse download scheduling. DuckDB-Wasm assets and Parquet still require substantial downloads on a first visit. No unsupported performance target or Lighthouse score is claimed.
 - **SEO:** The SPA has a single indexable URL; individual in-app views are not prerendered or separately indexed.
 - **Security:** No sensitive information, API tokens, GitHub credentials or user analytics are collected by new components. Saved settings stay in the user's browser.
 
