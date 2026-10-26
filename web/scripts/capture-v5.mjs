@@ -14,17 +14,14 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disab
 const screenshots=[],errors=[]
 async function navigateToModule(page,label){
  const nav=page.getByRole('navigation',{name:'Main navigation'})
- const trigger=nav.getByRole('button',{name:'Data Mining Lab',exact:true})
- await trigger.click()
- const submenu=page.locator('#syllabus-nav-submenu')
- await submenu.waitFor({state:'visible'})
- const inBounds=await submenu.evaluate(el=>{
-   const r=el.getBoundingClientRect()
-   return r.top>=0&&r.left>=0&&r.bottom<=innerHeight+1&&r.right<=innerWidth+1
- })
- if(!inBounds)throw Error('Data Mining Lab menu clipped outside visible viewport')
- await submenu.getByRole('button',{name:label,exact:true}).click()
- await submenu.waitFor({state:'hidden'})
+ await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
+ const grid=page.locator('.syllabus-hub-grid .syllabus-hub-card')
+ await grid.first().waitFor({state:'visible',timeout:120000})
+ if(label==='Syllabus Hub')return
+ const i=labels.indexOf(label)
+ if(i<0)throw Error('Unknown analysis area '+label)
+ await grid.nth(i).getByRole('button',{name:'Open analysis',exact:true}).click()
+ await page.getByRole('navigation',{name:'Data Mining Lab sections'}).getByRole('button',{name:label,exact:true}).waitFor({state:'visible'})
 }
 async function capture(theme,viewport,mobile=false){
  const ctx=await browser.newContext({viewport,deviceScaleFactor:1,colorScheme:theme,reducedMotion:'reduce'})
@@ -38,7 +35,7 @@ async function capture(theme,viewport,mobile=false){
  await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible',timeout:120000})
  await page.waitForFunction(()=>document.querySelectorAll('.syllabus-hub-stat-grid strong').length===6,null,{timeout:120000})
  const cards=await page.locator('.syllabus-hub-grid .syllabus-hub-card').count()
- if(cards!==6)throw Error('Syllabus Hub must open all six academically grounded modules, got '+cards)
+ if(cards!==6)throw Error('Lab overview must contain all analysis areas, got '+cards)
  await page.getByRole('button',{name:'Modelling',exact:true}).click()
  if(await page.locator('.syllabus-hub-grid .syllabus-hub-card').count()!==2)throw Error('Syllabus phase filter failed')
  await page.getByRole('button',{name:'All',exact:true}).click()
@@ -46,7 +43,7 @@ async function capture(theme,viewport,mobile=false){
  await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo({top:0,behavior:'instant'})})
  await page.screenshot({path:path.join(folder,first),fullPage:true,animations:'disabled'})
  screenshots.push(first)
- console.log('Verified six-module navigator and 30-hour summary: '+first)
+ console.log('Verified Data Mining Lab overview: '+first)
  for(let i=0;i<labels.length;i++){
   if(mobile&&i!==2&&i!==4)continue
   await navigateToModule(page,labels[i])
