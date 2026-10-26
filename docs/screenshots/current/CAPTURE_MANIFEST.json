@@ -1,7 +1,7 @@
 {
-  "release": "PromisePulse 5.0 with post-release editorial typography cleanup",
-  "captured_at_utc": "2026-10-26T14:07:43.366Z",
-  "git_sha": "9a61a1f8534a36ecb8cb224dffc647cf1116f29f",
+  "release": "PromisePulse 5.0 with editorial typography, interactive mining algorithms and soft cyan #7DD3FC",
+  "captured_at_utc": "2026-10-26T15:51:10.104Z",
+  "git_sha": "a9620fa70d4bc1c8ea31931ab87a53c2c3801f62",
   "source": "Actual checked-in Olist Parquet, manifest.json and mining_lab.json",
   "method": "Playwright Chromium against running Vite app; no synthetic metrics",
   "viewports": [
