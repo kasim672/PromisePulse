@@ -1,6 +1,10 @@
 """Scientific guardrail: no holdout information is used to fit model preprocessing."""
+import sys
+from pathlib import Path
 import numpy as np
 import pandas as pd
+# Running `python tests/...` starts with tests/ on sys.path, not repo root.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.build_mining_lab import prepare_features
 
 train = pd.DataFrame({
