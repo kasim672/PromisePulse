@@ -11,6 +11,7 @@ import type { Warehouse } from './db'
 import type { RecordRow, Tab } from './types'
 import { ReportStudio } from './ReportStudio'
 import { LineageExplorer } from './LineageExplorer'
+import { WorkspaceErrorBoundary } from './WorkspaceErrorBoundary'
 import { useSharedFilters } from './sharedFilters'
 import { ATLAS_STATES, ATLAS_GROUPS } from './atlasQueries'
 const PremiumOverview=lazy(()=>import('./Premium').then(x=>({default:x.PremiumOverview})))
@@ -391,6 +392,7 @@ export default function App() {
       </div>
     </div>}
     <main className="main-content" id="main-content">
+      <WorkspaceErrorBoundary page={active} onHome={()=>changePage('Overview')}>
       <Suspense fallback={<Loader title="Loading workspace…"/>}>
       {active === 'Welcome' && <Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>}
       {active !== 'Welcome' && pending && <Loader title="Initializing local DuckDB warehouse…"/>}
@@ -416,6 +418,7 @@ export default function App() {
         {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining" onNavigate={changePage}/>}
       </>}
       </Suspense>
+      </WorkspaceErrorBoundary>
     </main>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
   </div>
