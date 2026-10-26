@@ -2,6 +2,7 @@ import { chromium } from 'playwright'
 
 const base = process.env.PP_BASE_URL || 'http://127.0.0.1:4173'
 const browser = await chromium.launch({headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']})
+const analysisAreas = ['Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining']
 const failures = []
 
 async function run(viewport, colorScheme) {
@@ -12,41 +13,40 @@ async function run(viewport, colorScheme) {
   try {
     await page.goto(base, {waitUntil: 'domcontentloaded', timeout: 60000})
     await page.locator('.pp-welcome').waitFor({state: 'visible', timeout: 120000})
-    const nav = page.getByRole('navigation', {name: 'Main navigation'})
-    const trigger = nav.getByRole('button', {name: 'Data Mining Lab', exact: true})
-    const submenu = page.locator('#syllabus-nav-submenu')
-    await trigger.click()
-    await submenu.waitFor({state: 'visible'})
-    if (await trigger.getAttribute('aria-expanded') !== 'true') throw Error('Trigger not marked expanded')
-    const bounds = await page.evaluate(() => {
-      const panel = document.querySelector('#syllabus-nav-submenu').getBoundingClientRect()
-      const button = document.querySelector('.syllabus-nav-trigger').getBoundingClientRect()
-      return {
-        visible: panel.top >= 0 && panel.left >= 0 && panel.bottom <= innerHeight + 1 && panel.right <= innerWidth + 1,
-        direction: innerWidth > 1099 ? panel.left >= button.right : panel.bottom <= button.top,
-        panel: [panel.left, panel.top, panel.right, panel.bottom],
-        button: [button.left, button.top, button.right, button.bottom]
+    const dock = page.getByRole('navigation', {name: 'Main navigation'})
+    const launcher = dock.getByRole('button', {name: 'Data Mining Lab', exact: true})
+
+    // Clicking the graduation-cap icon must navigate, not open a flyout.
+    await launcher.click()
+    await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible',timeout:120000})
+    if (await page.locator('.syllabus-nav-submenu').count() !== 0) throw Error('Old sidebar popup is still present')
+    if (await page.locator('.syllabus-hub-grid .syllabus-hub-card').count() !== 6) throw Error('Overview is missing an analysis card')
+    const hubCopy = await page.locator('.syllabus-hub').innerText()
+    if (/30\s*(contact\s*)?hours|6\s*modules|research environment|academic laboratory|MODULE 0/i.test(hubCopy)) {
+      throw Error('Classroom placeholder text still visible on overview')
+    }
+
+    // Each visible analysis card opens the correct interactive lab.
+    await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().getByRole('button', {name:'Open analysis'}).click()
+    let tabs = page.getByRole('navigation', {name:'Data Mining Lab sections'})
+    await tabs.getByRole('button', {name: 'Warehouse & ETL', exact:true}).waitFor({state:'visible'})
+    for (const name of analysisAreas.slice(1)) {
+      await tabs.getByRole('button', {name, exact:true}).click()
+      await page.locator('.syllabus-page .syllabus-card').first().waitFor({state:'visible',timeout:120000})
+      if (await tabs.getByRole('button',{name,exact:true}).getAttribute('aria-current') !== 'page') {
+        throw Error('Internal tab failed to activate: '+name)
       }
-    })
-    if (!bounds.visible || !bounds.direction) throw Error('Flyout not properly placed: ' + JSON.stringify(bounds))
-    if (await submenu.getByRole('button').count() !== 7) throw Error('Expected syllabus hub + 6 modules')
-    await page.keyboard.press('Escape')
-    await submenu.waitFor({state: 'hidden'})
-    if (await trigger.getAttribute('aria-expanded') !== 'false') throw Error('Escape did not collapse menu')
-    if (await trigger.evaluate(el => document.activeElement === el) !== true) throw Error('Escape did not restore focus')
-    await trigger.click()
-    await submenu.waitFor({state: 'visible'})
-    await page.locator('header .brand').click()
-    await submenu.waitFor({state: 'hidden'})
-    await trigger.click()
-    await submenu.getByRole('button', {name: 'Syllabus Hub', exact: true}).click()
-    await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state: 'visible', timeout: 120000})
-    await trigger.click()
-    await submenu.getByRole('button', {name: 'Clustering Lab', exact: true}).click()
-    await page.locator('.syllabus-page .syllabus-card').first().waitFor({state: 'visible', timeout: 120000})
-    if (await submenu.isVisible()) throw Error('Menu remains open after module navigation')
-    if (errors.length) throw Error('Runtime error(s): ' + errors.join('; '))
-    console.log('PASS navigation: ' + viewport.width + 'x' + viewport.height + ' ' + colorScheme)
+      const pageText = await page.locator('.syllabus-page').innerText()
+      if (/Academic laboratory|30-hour university syllabus|MODULE \d OF 6/i.test(pageText)) {
+        throw Error('Classroom placeholder text still visible in '+name)
+      }
+    }
+    await tabs.getByRole('button', {name:'Overview', exact:true}).click()
+    await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible'})
+    await launcher.click() // Selecting the icon on the hub must not produce a popover.
+    if (await page.locator('.syllabus-nav-submenu').count()) throw Error('Popover unexpectedly reopened')
+    if (errors.length) throw Error('Runtime error(s): '+errors.join('; '))
+    console.log('PASS direct lab navigation: '+viewport.width+'x'+viewport.height+' '+colorScheme)
   } finally {
     await context.close()
   }
@@ -54,17 +54,17 @@ async function run(viewport, colorScheme) {
 
 try {
   for (const [viewport, theme] of [
-    [{width: 1440, height: 900}, 'light'],
-    [{width: 1440, height: 900}, 'dark'],
-    [{width: 390, height: 844}, 'light'],
-    [{width: 390, height: 844}, 'dark']
-  ]) await run(viewport, theme)
+    [{width:1440,height:900}, 'light'],
+    [{width:1440,height:900}, 'dark'],
+    [{width:390,height:844}, 'light'],
+    [{width:390,height:844}, 'dark']
+  ]) await run(viewport,theme)
 } catch (error) {
-  failures.push(error.stack || String(error))
+  failures.push(error.stack||String(error))
 } finally {
   await browser.close()
 }
 if (failures.length) {
-  console.error('FAIL syllabus flyout: ' + failures.join('\n'))
-  process.exitCode = 1
+  console.error('FAIL direct lab navigation: '+failures.join('\n'))
+  process.exitCode=1
 }
