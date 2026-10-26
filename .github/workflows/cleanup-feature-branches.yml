@@ -8,26 +8,23 @@ permissions:
   contents: write
 jobs:
   clean-merged-feature-branches:
-    if: github.repository == 'kasim672/PromisePulse'
+    if: github.repository == 'kasim672/PromisePulse' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Delete the reviewed and merged non-main branches
+      - name: Delete every remote branch except main
         run: |
           set -euo pipefail
-          for branch in \
-            'feat/promisepulse-3-measured-glass' \
-            'feat/cadra-measured-glass-workspace' \
-            'feat/promisepulse-4-research-expansion'
-          do
-            if git ls-remote --heads origin "$branch" | grep -q .; then
-              git push origin --delete "$branch"
-              echo "Deleted origin/$branch"
-            else
-              echo "Already absent: origin/$branch"
+          git ls-remote --heads origin | sed 's#^.*refs/heads/##' | while IFS= read -r branch; do
+            if [ "$branch" = "main" ]; then
+              echo "Preserving origin/main"
+              continue
             fi
+            git push origin --delete "$branch"
+            echo "Deleted origin/$branch"
           done
-          echo 'Remaining remote branch heads:'
-          git ls-remote --heads origin
+          remaining="$(git ls-remote --heads origin | sed 's#^.*refs/heads/##')"
+          printf 'Remaining remote branches:\n%s\n' "$remaining"
+          test "$remaining" = main
