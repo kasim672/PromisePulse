@@ -21,6 +21,14 @@ To publish the merged design when the limit clears:
 
 The release screenshots in this repository are from Chromium rendering the source application with actual checked-in historical data. They provide UI evidence **even if a Vercel deployment is pending**.
 
+### Optional project-only Gemini assistant
+
+A pending feature branch, `feat/gemini-project-research-assistant`, adds the `/api/ask` Vercel Function to the Vite project root (`web/api/ask.js`). It must be merged and deployed before that endpoint exists in production. This new feature does not change the static Parquet warehouse or existing machine-learning results.
+
+To enable it, set `GEMINI_API_KEY` **privately in Vercel project Environment Variables**, not in Vite source or a `VITE_*` variable. The server defaults to `GEMINI_MODEL=gemini-2.5-flash`; change this server-only variable to an available model when necessary. For local API testing, use `npx vercel dev` from `web`, not only `npm run dev`. Review request quotas, Google billing, Vercel firewall rules and the user-data implications first. See [Gemini Research Assistant](GEMINI_RESEARCH_ASSISTANT.md).
+
+The normal static frontend build remains unchanged. The Gemini feature requires a real Vercel deployment with Functions support; a successful `npm run build` does not by itself test Gemini authentication or confirm the Vercel API route is live.
+
 ## 1. Deploy to Vercel from GitHub
 
 1. Sign in to [Vercel](https://vercel.com/new) and import `kasim672/PromisePulse`.
