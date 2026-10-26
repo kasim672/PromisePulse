@@ -14,7 +14,7 @@ const modules=['Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classificat
 for(const name of modules){
  assert.ok(nav.includes("label: '"+name+"'"),'missing navigation '+name)
  assert.ok(types.includes("'"+name+"'"),'missing route type '+name)
- assert.ok(app.includes('<SyllabusLab module="'+name+'"/>'),'missing full UI render '+name)
+ assert.ok(app.includes('<SyllabusLab module="'+name+'" onNavigate={changePage}/>'),'missing full UI render/navigation '+name)
  assert.ok(syllabus.includes("'"+name+"'"),'missing module implementation '+name)
 }
 assert.match(syllabus,/data\/mining_lab\.json/,'read real generated export')
