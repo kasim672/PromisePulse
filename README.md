@@ -32,7 +32,7 @@ This visual update was merged to **`main`** in [PR #10](https://github.com/kasim
 
 The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
 
-**Local setup:** The normal Vite dev server now serves the same `/api/ask` handler locally. Open a terminal and run:
+**Local setup:** `npm run dev` starts the private local Gemini API and Vite together. Vite proxies `/api/ask` to the loopback-only server at port 8787. Open a terminal and run:
 
 ```bash
 cd ~/PromisePulse
