@@ -138,8 +138,7 @@ export function Overview({ db, onNavigate }: { db: Warehouse; onNavigate: (tab: 
   const states = useSql(db, STATE_SQL)
   const row: RecordRow = kpis.rows[0] ?? {}
   return <div className="content-stack">
-    <div className="section-eyebrow"><span className="eyebrow-rule"/> HISTORICAL BUSINESS INTELLIGENCE <span className="eyebrow-index">/ 01</span></div>
-    <div className="intro hero-intro"><div><h2>Make sense of <span className="accent-text">every order.</span></h2><p>From raw transactions to meaningful decisions. Explore a real e-commerce warehouse, question the data with SQL, and investigate historical delivery risk.</p><div className="hero-actions"><button className="primary-btn hero-button" onClick={() => onNavigate('OLAP Lab')}>Explore the warehouse <ArrowRight size={17}/></button><button className="outline-btn" onClick={() => onNavigate('Data Catalog')}>View data sources <ExternalLink size={16}/></button></div></div><div className="hero-meta"><span className="meta-overline">THE DATASET</span><strong>2016<span>—</span>2018</strong><div className="hero-meta-row"><span className="hero-meta-dot"/> Brazilian E-Commerce · Olist</div><div className="hero-meta-caption">Real historical transactions, not a live service.</div></div></div>
+    <div className="intro hero-intro"><div><h2>Make sense of <span className="accent-text">every order.</span></h2><p>From raw transactions to meaningful decisions. Explore a real e-commerce warehouse, question the data with SQL, and investigate historical delivery risk.</p><div className="hero-actions"><button className="primary-btn hero-button" onClick={() => onNavigate('OLAP Lab')}>Explore the warehouse <ArrowRight size={17}/></button><button className="outline-btn" onClick={() => onNavigate('Data Catalog')}>View data sources <ExternalLink size={16}/></button></div></div><div className="hero-meta"><span className="meta-overline">Dataset</span><strong>2016<span>—</span>2018</strong><div className="hero-meta-row"><span className="hero-meta-dot"/> Brazilian E-Commerce · Olist</div><div className="hero-meta-caption">Real historical transactions, not a live service.</div></div></div>
     {kpis.error && <Notice message={kpis.error} />}
     <div className="kpi-grid">
       {[
@@ -150,10 +149,10 @@ export function Overview({ db, onNavigate }: { db: Warehouse; onNavigate: (tab: 
       ].map(k => <div key={k.title} className="kpi-card"><div className="kpi-top"><span>{k.title}</span><k.icon size={18}/></div><div className="kpi-value">{kpis.loading ? '···' : k.value}</div><div className="kpi-note"><span className="green-dot" /> {k.note}</div></div>)}
     </div>
     <div className="two-col wide-left">
-      <Panel title="Revenue trend" sub="Monthly payments, aggregated from order facts" action={<span className="micro-tag">SQL · GROUP BY</span>}>
+      <Panel title="Revenue trend" sub="Monthly payments, aggregated from order facts" >
         {trends.loading ? <Loader/> : <RevenueChart rows={trends.rows}/>}
       </Panel>
-      <Panel title="Product categories" sub="Item sales, not double-counted payment revenue" action={<span className="micro-tag">ITEM GRAIN</span>}>
+      <Panel title="Product categories" sub="Item sales, not double-counted payment revenue" >
         {categories.loading ? <Loader/> : <BarChart data={categories.rows.slice(0, 7)} x="category" y="item_sales" currency />}
       </Panel>
     </div>
@@ -202,10 +201,9 @@ function OlapLab({ db }: { db: Warehouse }) {
     return () => { active = false }
   }, [db, sql])
   return <div className="content-stack">
-    <div className="section-eyebrow"><Layers3 size={14}/> INTERACTIVE DATA EXPLORER</div>
     <div className="intro"><div><h2>Explore data. <span className="accent-text">Find the patterns.</span></h2><p>Choose an analysis and adjust the filters. Results update automatically from historical warehouse records, without needing to write queries.</p></div><div className="year-pill"><Database size={15}/> Olist · 2016–2018</div></div>
     <div className="olap-ops" role="group" aria-label="Analysis operation">{OLAP_OPERATIONS.map(item => <button key={item} type="button" aria-pressed={op === item} className={`op-tab ${op === item ? 'selected' : ''}`} onClick={() => setOp(item)}>{item}</button>)}</div>
-    <Panel title="Filters" sub={OP_DESCRIPTION[op]} action={<span className="micro-tag">AUTO REFRESH</span>}>
+    <Panel title="Filters" sub={OP_DESCRIPTION[op]} >
       <div className="filter-grid">
         <label>From<input type="date" value={filter.start} onChange={e => setFilter(s => ({ ...s, start: e.target.value }))}/></label>
         <label>To<input type="date" value={filter.end} onChange={e => setFilter(s => ({ ...s, end: e.target.value }))}/></label>
@@ -230,7 +228,6 @@ function RiskCenter({ db }: { db: Warehouse }) {
   const metrics = db.manifest.model.model_metrics
   const baseline = db.manifest.model.baseline_metrics
   return <div className="content-stack">
-    <div className="section-eyebrow"><BrainCircuit size={14}/> PREDICTIVE DATA MINING</div>
     <div className="intro"><div><h2>Understand the <span className="accent-text">risk.</span></h2><p>Historical out-of-sample predictions, with validation-selected threshold and true outcomes.</p></div><span className="year-pill">{trained ? 'EVALUATED · HISTORICAL' : 'NOT YET TRAINED'}</span></div>
     {!trained ? <Panel title="Real model output not available"><Empty title="The model has not been trained" description={db.manifest.model.reason ?? 'Run the export with --train using the official Olist CSV files. The dashboard never fabricates risk scores.'}/><pre className="terminal-code">python scripts/build_web_data.py --raw-dir data/raw --train</pre></Panel> : <>
       <div className="kpi-grid three">
@@ -259,7 +256,6 @@ function DataCatalog({ db }: { db: Warehouse }) {
   const [table, setTable] = useState<WarehouseTable>('fact_orders')
   const preview = useSql(db, `SELECT * FROM ${table} LIMIT 25`)
   return <div className="content-stack">
-    <div className="section-eyebrow"><FileSpreadsheet size={14}/> PROVENANCE & SCHEMA</div>
     <div className="intro"><div><h2>Know your <span className="accent-text">data.</span></h2><p>See exactly where the data came from, how many records were processed, and which warehouse tables power the dashboard.</p></div></div>
     <Panel title="Official dataset" sub="Direct attribution for your academic submission">
       <div className="source-hero"><div className="source-logo">O</div><div><strong>{db.manifest.dataset.name}</strong><span>{db.manifest.dataset.provider} · {db.manifest.dataset.period} · {db.manifest.dataset.license}</span></div><a href={db.manifest.dataset.url} target="_blank" rel="noreferrer" className="ghost-btn">View source <ExternalLink size={15}/></a></div>
@@ -268,7 +264,7 @@ function DataCatalog({ db }: { db: Warehouse }) {
     <Panel title="Source CSV files" sub="Actual input files counted by the Python warehouse builder">
       <div className="file-grid">{db.manifest.source_files.map(f => <div className="file-card" key={f.table}><FileSpreadsheet size={19}/><div><strong>{f.table}</strong><span>{f.file}</span></div><div className="file-count">{nfmt(f.rows)} <small>rows</small></div></div>)}</div>
     </Panel>
-    <Panel title="Interactive warehouse browser" sub="SQL query against real Parquet tables in your browser" action={<span className="micro-tag">NO DATABASE SERVER</span>}>
+    <Panel title="Interactive warehouse browser" sub="SQL query against real Parquet tables in your browser" >
       <div className="table-selector"><label>Choose table<select value={table} onChange={e => setTable(e.target.value as WarehouseTable)}>{WAREHOUSE_TABLES.map(t => <option key={t}>{t}</option>)}</select></label><span>{nfmt(db.manifest.warehouse[table])} total rows</span></div>
       <pre className="sql-code compact"><code>SELECT * FROM {table} LIMIT 25</code></pre>
       {preview.loading ? <Loader/> : <Table rows={preview.rows} max={25} />}
@@ -281,7 +277,6 @@ function PipelineQuality({ db }: { db: Warehouse }) {
   const integrity = ['duplicate_order_keys', 'duplicate_item_keys']
   const allGood = integrity.every(key => Number(quality[key]) === 0)
   return <div className="content-stack">
-    <div className="section-eyebrow"><ShieldCheck size={14}/> DATA ENGINEERING EVIDENCE</div>
     <div className="intro"><div><h2>Built on <span className="accent-text">evidence.</span></h2><p>Inspectable ETL lineage, verified table grains, and the quality checks produced during data preparation.</p></div><div className={`status-pill ${allGood ? 'positive' : 'negative'}`}>{allGood ? <Check size={14}/> : <X size={14}/>} {allGood ? 'Fact keys verified' : 'Review integrity checks'}</div></div>
     <Panel title="Data lineage" sub="Offline build produces static exports; browser SQL runs live during presentation">
       <div className="lineage">{db.manifest.lineage.map((stage,i) => <div className="lineage-node" key={stage}><span>{String(i+1).padStart(2, '0')}</span><strong>{stage}</strong>{i < db.manifest.lineage.length-1 && <ArrowRight size={15}/>}</div>)}</div>
