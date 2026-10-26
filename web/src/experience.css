@@ -80,3 +80,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
  .report-print section{break-inside:avoid}
  .report-print th,.report-print td{font-size:10pt}
 }
+
+/* Focused chart view lets readers inspect raw bins without losing filters. */
+.atlas-visual-actions{display:flex;gap:8px;align-items:center}
+.atlas-visual-actions button{min-width:36px;min-height:36px;display:grid;place-items:center;border:1px solid var(--ux-line);border-radius:9px;background:var(--cadra-glass-2);color:var(--cadra-text);cursor:pointer}
+.atlas-chart-card.atlas-chart-expanded{position:fixed;inset:4vh 5vw;z-index:1300;overflow:auto;max-width:none;width:auto;max-height:92vh;background:var(--cadra-glass-2,#f4f5f6);border:2px solid var(--ux-focus);box-shadow:0 0 0 100vmax rgba(4,9,18,.76),0 24px 70px rgba(0,0,0,.3);padding:clamp(18px,3vw,36px)}
+.atlas-chart-card.atlas-chart-expanded .atlas-svg{max-height:min(65vh,700px)}
+.atlas-chart-card.atlas-chart-expanded .atlas-raw-table{max-height:45vh;overflow:auto}
+@media (max-width:760px){.atlas-chart-card.atlas-chart-expanded{inset:3vh 2vw;padding:12px}.atlas-visual-actions{gap:4px}}
