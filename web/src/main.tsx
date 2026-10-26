@@ -11,6 +11,7 @@ import './syllabus.css'
 import './syllabus-hub.css'
 import './editorial.css'
 import './algorithm-playground.css'
+import './soft-cyan.css'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,
