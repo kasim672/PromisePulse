@@ -61,6 +61,17 @@ These are separate analysis views, **not separate data providers**. The applicat
 
 For the four originally added research destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
 
+## Ask PromisePulse AI
+
+The floating **Ask PromisePulse AI** button opens a keyboard-accessible chat drawer. Suggested prompts cover datasets, dashboards, the warehouse, and models; you can ask follow-up questions in the same conversation. The assistant retrieves from a server-side index of checked-in documentation and published aggregate results, not all individual Olist records.
+
+- **When Gemini is configured:** the server may return a generated explanation and related repository source links. General questions need not be about the dataset.
+- **Without Gemini or during quota/network failure:** relevant questions receive **clearly labeled source excerpts**, not an AI-generated response. The analytics workspaces remain usable.
+- **Privacy:** questions and selected project snippets leave the website for Google when generation runs. Do not submit API keys, private customer data or other secrets.
+- **Appearance:** light theme uses opaque white messages and cyan user bubbles; dark theme uses graphite surfaces. Switch themes from the header. The chat can be closed with Escape.
+
+See [AI implementation and limits](GEMINI_RESEARCH_ASSISTANT.md), [current chat screenshots](SCREENSHOT_GALLERY_CURRENT.md) and [deployment/key configuration](DEPLOYMENT.md).
+
 ## Light mode, dark mode and search
 
 Use the Sun/Moon button in the header. Theme preference is saved in localStorage and restored on return. If no saved preference exists, the app respects operating-system appearance when possible. Both styles apply to the dock, cards, charts, controls, tables, and geographic analysis. Keyboard focus styling and reduced-motion preferences are included.
@@ -143,7 +154,7 @@ The exporter reports **zero duplicated order keys**, **zero duplicated item keys
 
 ## Responsible screenshots and figure citation
 
-The [Screenshot Gallery](SCREENSHOT_GALLERY.md) links to authentic browser captures with a capture manifest. Use those images when describing the UI. The figure-to-SQL appendix and data manifest are the authoritative sources for quantitative methods. Never substitute a screenshot for a dataset-level validation or a statistical significance test.
+The [current screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) links to authentic browser captures with a capture manifest. Use those images when describing the UI. The figure-to-SQL appendix and data manifest are the authoritative sources for quantitative methods. Never substitute a screenshot for a dataset-level validation or a statistical significance test.
 
 ## Troubleshooting
 
@@ -162,5 +173,5 @@ The [Screenshot Gallery](SCREENSHOT_GALLERY.md) links to authentic browser captu
 - [README](../README.md): project narrative, architecture and setup.
 - [Research Reproducibility](RESEARCH_REPRODUCIBILITY.md): methods, schema, quantitative caveats and evaluation.
 - [Analytics Atlas Methodology](ANALYTICS_ATLAS_METHODOLOGY.md): 36-figure inventory and query lineage.
-- [Screenshot Gallery](SCREENSHOT_GALLERY.md): light/dark/mobile and page gallery.
+- [Current Screenshot Gallery](SCREENSHOT_GALLERY_CURRENT.md): source-proven desktop/mobile/assistant images.
 - [Measured Design Reference](../design.md): observed design tokens and source limitations.
