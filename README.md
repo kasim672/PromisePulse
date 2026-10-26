@@ -10,7 +10,7 @@
 
 ![Current PromisePulse homepage with soft cyan #7DD3FC accents](docs/screenshots/current/welcome-dark.png)
 
-*PromisePulse 5.0, soft-cyan design (`#7DD3FC`). Real Chromium screenshot of the checked-in Olist dashboard; the [capture manifest](docs/screenshots/current/CAPTURE_MANIFEST.json) records the exact source commit and viewport. Screenshots reflect source code, not necessarily the most recent public Vercel deployment.*
+*PromisePulse 5.0, soft-cyan design (`#7DD3FC`). Browser-rendered capture of the repository's historical Olist dashboard. The [capture manifest](docs/screenshots/current/CAPTURE_MANIFEST.json) identifies the source SHA, capture date and viewport; images are not proof of a live Vercel release. The [gallery](docs/SCREENSHOT_GALLERY_CURRENT.md) also documents the light/dark AI assistant.*
 
 ## Overview
 
@@ -24,30 +24,29 @@ A separate offline experiment exporter provides six Data Mining Lab sections: wa
 
 The interface uses a **soft-cyan accent (`#7DD3FC`)** in place of fluorescent lime. Cyan appears on navigation selection, calls to action, KPI highlights, chart interactions, the historical Brazil map, Data Mining Lab controls, and the favicon. The dark graphite backgrounds and purple wordmark are retained. The design also provides a light theme, accessible dark-navy text on cyan backgrounds, and responsive layouts.
 
-This visual update was merged to **`main`** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), following the five teaching visualizers and loading/retry changes in [PR #9](https://github.com/kasim672/PromisePulse/pull/9). The theme is presentation-only: it does not modify Olist records, SQL, model evaluation, or mining results.
+The current `main` release includes the original analytics and six mining lab modules, the step-by-step visualizers, the **Gemini-backed website knowledge assistant**, and its improved dark/light chat styling ([PR #18](https://github.com/kasim672/PromisePulse/pull/18), [PR #19](https://github.com/kasim672/PromisePulse/pull/19)). UI changes do not alter Olist data, SQL, historical model evaluation or mining results. See [release notes](docs/RELEASE_NOTES.md).
 
-**GitHub source versus public deployment:** Vercel reported a build-rate-limit failure for the soft-cyan merge on October 26, 2026. Therefore the public URL might still show the earlier lime theme until a successful redeployment. See the [deployment guide](docs/DEPLOYMENT.md) for verifying and retrying the production build. The [design system](docs/THEME_SYSTEM.md) documents colors, contrast, logos, and code ownership.
+**GitHub source and public deployment are separate:** recent Vercel status checks reported deployment build-rate limits. Check **Deployments → Production**, its **Ready** status, and the deployed commit SHA before assuming the public URL reflects `main`. The [deployment guide](docs/DEPLOYMENT.md) explains verification; the [design system](docs/THEME_SYSTEM.md) covers both appearance modes.
 
-## Optional Gemini-powered PromisePulse Research Assistant
+## PromisePulse AI — website knowledge assistant
 
-The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
+The merged React chatbot opens from **Ask PromisePulse AI** and calls `POST /api/ask`. Its server-side retrieval indexes the checked-in project guides, warehouse `manifest.json`, and selected **aggregate** mining results. Relevant passages support questions about workspaces, tables, charts, experiments and deployment. With a configured Google Gemini API key, it can also handle ordinary conversational questions. It **does not** query raw Parquet rows, inspect the visitor's current SQL output, search the live web or automatically discover new content outside the checked-in index.
 
-**Local setup:** `npm run dev` starts the private local Gemini API and Vite together. Vite proxies `/api/ask` to the loopback-only server at port 8787. Open a terminal and run:
+**There are two response modes:** Gemini-generated explanations when the private key and model are available; clearly labelled **reference excerpts** if Gemini is missing or unavailable. A reference response is not a generated explanation. A local greeting may also be handled in React. The model currently defaults to `gemini-3.5-flash` unless `GEMINI_MODEL` overrides it; availability depends on the Google API project.
 
 ```bash
-cd ~/PromisePulse
-git switch feat/gemini-project-research-assistant
-cd web
+git clone https://github.com/kasim672/PromisePulse.git
+cd PromisePulse/web
 npm ci
 npm run setup:gemini
-nano .env
-# Add your own private GEMINI_API_KEY to the created file.
+# Add your private key to the untracked web/.env; never commit it.
 npm run dev
+# In another terminal: cd PromisePulse/web && npm run check:gemini
 ```
 
-The project commits `web/.env.example` but **never a real `web/.env`**; both Git ignore files exclude secret files. No Vercel account or Vercel CLI is necessary for local Gemini testing. After deployment, set `GEMINI_API_KEY` privately in Vercel Environment Variables as well. Do not paste API keys into GitHub or browser code. See the [complete local setup](docs/GEMINI_RESEARCH_ASSISTANT.md).
+`npm run dev` starts the loopback-only Node API on `127.0.0.1:8787` and Vite on `127.0.0.1:5173`. Vite proxies `/api/ask` to the same handler used by the Vercel Function. The index is refreshed from checked-in docs and published aggregates on `predev` and `prebuild`.
 
-Questions and selected project source excerpts are processed by Gemini; avoid entering personal data. The assistant is educational and only as accurate as the curated sources. See the complete [Gemini configuration, security, privacy, rate-limiting and architecture guide](docs/GEMINI_RESEARCH_ASSISTANT.md).
+Keep `GEMINI_API_KEY` in `web/.env` locally and in **Vercel server-side Environment Variables** for production; never use a `VITE_*` secret. Gemini processes submitted questions and selected source excerpts when enabled. See the [assistant guide](docs/GEMINI_RESEARCH_ASSISTANT.md) for privacy, quotas, testing, fallback behavior and limitations.
 
 ## Explore the current release
 
