@@ -315,6 +315,7 @@ export default function App() {
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
   const [mobileNav, setMobileNav] = useState(false)
+  const [labMenuOpen, setLabMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
@@ -352,6 +353,7 @@ export default function App() {
   const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
   const changePage = (tab: Tab) => {
     setActive(tab)
+    setLabMenuOpen(false)
     setMobileNav(false)
     setSearchOpen(false)
     setNavQuery('')
@@ -366,7 +368,15 @@ export default function App() {
         
         <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
-      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
+      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">
+        {NAV.filter(item => !(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}
+        <div className="syllabus-nav-group">
+          <button type="button" className={`header-nav-item ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'active':''}`} aria-label="Data Mining Lab modules" aria-expanded={labMenuOpen} aria-controls="syllabus-nav-submenu" onClick={()=>setLabMenuOpen(v=>!v)}><GraduationCap size={19} aria-hidden="true"/><span className="nav-label">Data Mining Lab</span><span aria-hidden="true">⌄</span></button>
+          {labMenuOpen && <div className="syllabus-nav-submenu" id="syllabus-nav-submenu" aria-label="Syllabus modules">
+            {NAV.filter(item => (['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item=><button type="button" key={item.label} className={active===item.label?'active':''} aria-current={active===item.label?'page':undefined} onClick={()=>changePage(item.label)}>{item.label}</button>)}
+          </div>}
+        </div>
+      </nav>
     </header>
     {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
       <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
