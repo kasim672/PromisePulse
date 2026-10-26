@@ -81,6 +81,6 @@
 <text x="856" y="704" class="micro">Without a key: labeled documentation fallback</text>
 <path d="M361 678 H417" class="arrow"/>
 <path d="M777 678 H833" class="arrow"/>
-<path d="M1182 508 V562 H218 V628" class="arrow"/>
+<path d="M1002 508 V548 H61 V676 H74" class="arrow"/>
 <text x="64" y="801" class="body">#7DD3FC is a presentation color. Payments and item sales keep separate grains. Published files are historical, not live feeds.</text>
 </svg>
