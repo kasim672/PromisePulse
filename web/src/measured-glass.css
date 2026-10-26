@@ -12,8 +12,13 @@
   --cadra-text: #111111;
   --cadra-muted: #5c5c5a;
   --cadra-faint: #73736f;
-  --cadra-accent: #bcd4f2;
-  --cadra-primary-ink: #1d4f87;
+  --cadra-accent: #7dd3fc;
+  --cadra-primary-ink: #0369a1;
+  /* Primary theme accent. The legacy lime token below remains as a compatibility alias. */
+  --pp-accent-cyan:#7dd3fc;
+  --pp-accent-cyan-hover:#bae6fd;
+  --pp-accent-cyan-text:#0369a1;
+  --pp-accent-cyan-ink:#082f49;
   --cadra-glass: rgba(255,255,255,.56);
   --cadra-glass-2: rgba(255,255,255,.70);
   --cadra-rim: rgba(255,255,255,.8);
@@ -24,7 +29,7 @@
   --cadra-ease: cubic-bezier(.2,.8,.2,1);
   --cadra-radius: 24px;
   --cadra-pill: 999px;
-  --cadra-brand-lime:#0369a1;
+  --cadra-brand-lime:var(--pp-accent-cyan);
   --cadra-brand-violet:#7b55bd;
   --blue: #1d4f87; --blue-dark: #0f1f33; --light-blue: #e8f0fb;
   --ink: #111111; --secondary: #5c5c5a; --quiet: #73736f;
@@ -64,7 +69,7 @@ a:hover{text-underline-offset:3px}
 .header-nav-item svg{flex:none;width:19px;height:19px}
 .header-nav-item .nav-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .header-nav-item:hover{background:rgba(247,247,245,.13);color:#fff}
-.header-nav-item.active,.header-nav-item[aria-current="page"]{background:#bcd4f2;color:#0f1f33;box-shadow:0 2px 0 rgba(255,255,255,.24) inset}
+.header-nav-item.active,.header-nav-item[aria-current="page"]{background:var(--pp-accent-cyan);color:var(--pp-accent-cyan-ink);box-shadow:0 2px 0 rgba(255,255,255,.24) inset}
 .header-nav-item:hover::after,.header-nav-item:focus-visible::after{content:attr(data-label);position:absolute;left:calc(100% + 16px);top:50%;transform:translateY(-50%);white-space:nowrap;background:#111;color:#f7f7f5;border-radius:999px;padding:9px 14px;font:600 13px 'Urbanist',sans-serif;box-shadow:0 10px 25px #0003;pointer-events:none}
 .menu-toggle{display:none!important}
 
