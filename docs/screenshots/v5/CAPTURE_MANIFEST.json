@@ -1,11 +1,12 @@
 {
   "source": "Actual Olist Parquet and offline scikit-learn/mlxtend export",
-  "when_utc": "2026-10-25T13:59:09.726Z",
+  "when_utc": "2026-10-26T08:32:39.437Z",
   "viewports": [
     "1440x900 light/dark",
     "390x844 mobile light"
   ],
   "screenshots": [
+    "syllabus-hub-light.png",
     "warehouse-etl-light.png",
     "data-lakes-light.png",
     "eda-preprocessing-light.png",
@@ -13,6 +14,7 @@
     "clustering-dendrogram-light.png",
     "apriori-fpgrowth-eclat-light.png",
     "preserved-overview-light.png",
+    "syllabus-hub-dark.png",
     "warehouse-etl-dark.png",
     "data-lakes-dark.png",
     "eda-preprocessing-dark.png",
@@ -20,8 +22,9 @@
     "clustering-dendrogram-dark.png",
     "apriori-fpgrowth-eclat-dark.png",
     "preserved-overview-dark.png",
+    "syllabus-hub-mobile-light.png",
     "eda-preprocessing-mobile-light.png",
     "clustering-dendrogram-mobile-light.png"
   ],
-  "notes": "Six working syllabus modules, real static experimental figures; original Overview preserved"
+  "notes": "Six working syllabus modules plus syllabus hub, empirical figures, both theme modes and original Overview preserved; train-only fitted preprocessing"
 }
