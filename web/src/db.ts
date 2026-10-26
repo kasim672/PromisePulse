@@ -37,11 +37,17 @@ export async function loadWarehouse(): Promise<Warehouse> {
   try {
     await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
     const conn = await db.connect()
-    for (const table of [...tables, ...(manifest.model.status === 'evaluated' ? ['risk_predictions'] : [])]) {
+    // Fetch independent static Parquet assets concurrently; keep registrations and
+    // view creation ordered because DuckDB's underlying connection is serialized.
+    const required = [...tables, ...(manifest.model.status === 'evaluated' ? ['risk_predictions'] : [])]
+    const files = await Promise.all(required.map(async table => {
       const response = await fetch(`${base}data/${table}.parquet`)
       if (!response.ok) throw new Error(`Missing warehouse file ${table}.parquet; regenerate the export.`)
-      await db.registerFileBuffer(`${table}.parquet`, new Uint8Array(await response.arrayBuffer()))
-      await conn.query(`CREATE VIEW ${table} AS SELECT * FROM read_parquet('${table}.parquet')`)
+      return {table, buffer:new Uint8Array(await response.arrayBuffer())}
+    }))
+    for (const file of files) {
+      await db.registerFileBuffer(`${file.table}.parquet`, file.buffer)
+      await conn.query(`CREATE VIEW ${file.table} AS SELECT * FROM read_parquet('${file.table}.parquet')`)
     }
     return {
       manifest,
