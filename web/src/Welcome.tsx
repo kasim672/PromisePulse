@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react'
-import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,FlaskConical,Globe2,Layers3,LockKeyhole,PlayCircle,ShieldCheck,TrendingUp} from 'lucide-react'
+import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,Globe2,Layers3,LockKeyhole,PlayCircle,ShieldCheck,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
 import type {RecordRow,Tab} from './types'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
