@@ -9,6 +9,9 @@ on:
       - 'tests/test_performance_budget.cjs'
       - '.github/workflows/v6-experience-smoke.yml'
   workflow_dispatch:
+concurrency:
+  group: v6-experience-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -22,6 +25,10 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-v6-${{ runner.os }}-node22
       - name: Install web app and Chromium
         working-directory: web
         run: |
