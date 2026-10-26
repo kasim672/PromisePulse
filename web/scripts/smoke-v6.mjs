@@ -1,4 +1,5 @@
 import {chromium} from 'playwright'
+import fs from 'node:fs/promises'
 const url=process.env.PP_BASE_URL||'http://127.0.0.1:4173/'
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']})
 async function run(width,height,theme){
@@ -63,6 +64,8 @@ async function run(width,height,theme){
   await dialog.getByRole('button',{name:'Print / Save as PDF'}).click()
   await page.waitForFunction(()=>document.documentElement.dataset.printCalled==='yes')
   await dialog.getByRole('button',{name:'Close report'}).click()
+  await fs.mkdir('.screenshots-v6',{recursive:true})
+  await page.screenshot({path:`.screenshots-v6/experience-${width}x${height}-${theme}.png`,fullPage:true,animations:'disabled'})
   if(errors.length)throw Error('Browser JS errors: '+errors.join(' | '))
   console.log('PASS V6 '+width+'x'+height+' '+theme)
  }finally{await context.close()}
