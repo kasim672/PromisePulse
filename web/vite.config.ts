@@ -25,6 +25,9 @@ export default defineConfig(({ command, mode }) => {
         name: 'promisepulse-local-gemini',
         apply: 'serve' as const,
         configureServer(server) {
+          // This line confirms the local API middleware was actually registered.
+          // Never log the Gemini key, its prefix, or its value.
+          server.config.logger.info('[PromisePulse] Local Gemini API mounted at /api/ask (server-side configuration)')
           server.middlewares.use('/api/ask', async (request, response) => {
             response.setHeader('Cache-Control', 'no-store')
             response.setHeader('Content-Type', 'application/json; charset=utf-8')
