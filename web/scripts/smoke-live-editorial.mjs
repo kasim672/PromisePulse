@@ -40,6 +40,13 @@ async function inspect(width,height,theme){
   await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible',timeout:90000})
   await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().getByRole('button',{name:'Open analysis'}).click()
   await page.getByRole('navigation',{name:'Data Mining Lab sections'}).getByRole('button',{name:'Warehouse & ETL',exact:true}).waitFor({state:'visible',timeout:90000})
+  await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
+  await page.locator('.syllabus-hub-grid .syllabus-hub-card').nth(4).getByRole('button',{name:'Open analysis'}).click()
+  const visual=page.getByRole('region',{name:'Interactive algorithm visualizer'})
+  await visual.waitFor({state:'visible',timeout:90000})
+  await visual.getByRole('button',{name:'Next step'}).click()
+  await visual.getByRole('heading',{name:'Assign points to their nearest center'}).waitFor({state:'visible',timeout:90000})
+  console.log('PASS: deployed K-Means visualizer navigation and actual step calculation')
   if(exceptions.length)throw Error('Browser exception(s): '+exceptions.slice(0,3).join('; '))
   console.log(`PASS: production ${width}x${height} ${theme}, home / overview / atlas / lab`)
  }finally{await context.close()}
