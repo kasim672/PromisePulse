@@ -83,6 +83,15 @@ Then:
 npm run dev
 ```
 
+From **another terminal**, confirm the route is actually reachable without spending Gemini credits:
+
+```bash
+cd ~/PromisePulse/web
+npm run check:gemini
+```
+
+You should see `PASS: http://127.0.0.1:5173/api/ask reaches the real PromisePulse Gemini API.` This check deliberately sends the invalid question `hi`, which is rejected by your own server and never sent to Google. After it passes, send a real project question from the chat UI to test your Gemini key.
+
 Open **http://127.0.0.1:5173/**, click **Ask PromisePulse AI**, and ask **“How does the PromisePulse warehouse work?”**. The chat will call your *local* `/api/ask` route, which sends the selected project evidence to Gemini over HTTPS. Restart `npm run dev` after changing `.env`.
 
 #### If the chat says “/api/ask route was not found”
