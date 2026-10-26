@@ -35,6 +35,11 @@ export function ProjectAssistant(){
  const ask=async(text:string)=>{
   const q=text.trim()
   if(working||!q||q.length>450)return
+  if(/^(hi|hey|hello)$/i.test(q)){
+   setMessages(prev=>[...prev.slice(-11),{role:'user',text:q},{role:'assistant',text:'Hello! I can explain PromisePulse, its historical Olist dataset, DuckDB-Wasm architecture, data-mining algorithms, and model evaluation. What would you like to know?'}])
+   setQuestion('')
+   return
+  }
   if(q.length<3){
    setMessages(prev=>[...prev.slice(-11),{role:'user',text:q},{role:'assistant',text:'Please enter a PromisePulse question of at least 3 characters. For example: What is PromisePulse?',error:true}])
    setQuestion('')
