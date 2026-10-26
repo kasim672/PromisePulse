@@ -760,3 +760,37 @@ GitHub Actions provides the current build and static-query verification; the scr
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 The underlying **Brazilian E-Commerce Public Dataset** is provided by **Olist** and licensed under **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
+
+
+---
+
+## PromisePulse V6 — Platform Experience (feature-branch preview)
+
+Version 6 adds **platform usability tools** while preserving the existing Olist analytics, historical map, dashboard designs and mining experiments.
+
+- **Faster workspace loading:** Suspense-based route splitting and lazy DuckDB engine download.
+- **Shared historical filters:** Purchase year is synchronized between Overview, Intelligence, Atlas and Research; customer state between Atlas and Research. Fixed held-out model cohort metrics remain separate.
+- **Custom workspace order:** Reorder the landing page's workspace shortcuts with accessible Move earlier/later buttons; settings remain in browser local storage.
+- **Focus mode for charts:** Select Focus on chart, use existing chart-style and raw-data tools, exit with Escape.
+- **Method walkthroughs:** Decision Tree, K-Means, Apriori, FP-Growth and Eclat, clearly labeled educational examples. Live retraining is not claimed.
+- **Evidence reports:** Header → Report → select measured tables/warehouse chart → Print/Save as PDF in your browser.
+- **Interactive ETL lineage:** Select a published manifest stage in Pipeline & Quality.
+- **Search across charts:** Search for analysis chart names from the existing command menu (Ctrl/Cmd+K).
+- **Error recovery:** Transparent data-fetch retries, per-workspace failures, and responsive/mobile styles.
+- **Shareable metadata:** Updated Open Graph, canonical and social metadata, plus robots/sitemap.
+
+The user expressly excluded extensions to model training/explainability, new statistical inference, and new geographic analytics from this release. Those areas are not modified.
+
+### Run and verify the experience
+
+```bash
+cd web
+npm ci
+npm run build
+node ../tests/test_experience.cjs
+node ../tests/test_syllabus_modules.cjs
+npm run dev
+```
+
+Full feature coverage, known scope boundaries, browser verification and the merge checklist: [V6 experience release guide](docs/V6_EXPERIENCE_RELEASE.md). The site uses Olist's 2016–2018 historical public dataset; nothing should be represented as live order telemetry.
+
