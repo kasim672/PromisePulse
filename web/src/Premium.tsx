@@ -155,6 +155,24 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
   const kpi=useQuery(db,queries.summary),trends=useQuery(db,queries.monthly),regions=useQuery(db,queries.states),
     delivery=useQuery(db,queries.delivery),recent=useQuery(db,queries.recent),categories=useQuery(db,queries.categories)
   const row=kpi.rows[0]??{},filtered=recent.rows.filter(r=>filter==='All'||String(r.status)===filter.toLowerCase())
+  const bottomWidgets=['markets','categories','activity'] as const
+  type BottomWidget=typeof bottomWidgets[number]
+  const [bottomOrder,setBottomOrder]=useState<BottomWidget[]>(()=>{
+    try{const saved=JSON.parse(localStorage.getItem('promisepulse-overview-widgets-v1')||'null')
+      if(Array.isArray(saved)&&saved.length===3&&bottomWidgets.every(x=>saved.includes(x)))return saved as BottomWidget[]
+    }catch{/* private browser */}return [...bottomWidgets]
+  })
+  const [arrangeWidgets,setArrangeWidgets]=useState(false)
+  const moveWidget=(index:number,delta:number)=>{
+    const to=index+delta;if(to<0||to>=bottomOrder.length)return
+    const next=[...bottomOrder];[next[index],next[to]]=[next[to],next[index]]
+    setBottomOrder(next);try{localStorage.setItem('promisepulse-overview-widgets-v1',JSON.stringify(next))}catch{/*private*/}
+  }
+  const cards:Record<BottomWidget,{label:string;node:ReactNode}>={
+    markets:{label:'Customer markets',node:<Block title="Where customers shop" subtitle="Highest-volume customer states" aside={<Export rows={regions.rows} name="state-order-volume"/>}><Loading data={regions}><Bars rows={regions.rows} label="state" value="orders" limit={8}/></Loading></Block>},
+    categories:{label:'Product categories',node:<Block title="Top product categories" subtitle="Item-grain merchandise sales, not payment revenue" aside={<Export rows={categories.rows} name="category-sales"/>}><Loading data={categories}><Bars rows={categories.rows} label="category" value="sales" format="money" limit={8}/></Loading></Block>},
+    activity:{label:'Order activity',node:<Block title="Order activity" subtitle="Monthly order count, historical" aside={<ArrowDownRight size={16}/>}><Loading data={trends}><MonthlySpark data={trends.rows}/><div className="pp-callout"><strong>{compact(row.orders)} orders</strong><span>Browse annual variation with the period selector above.</span></div></Loading></Block>}
+  }
   return <div className="pp-home">
     <div className="pp-page-top"><div><h1>Every order tells <em>a story.</em></h1><p>Explore Brazil's historical e-commerce economy through a verified analytical warehouse.</p></div>
       <div className="pp-top-actions"><label className="pp-year"><CalendarDays size={15}/><span>Period</span><select aria-label="Analysis year" value={year} onChange={e=>setYear(e.target.value as YearSelection)}>{yearOptions.map(v=><option key={v} value={v}>{v==='all'?'All years (2016–2018)':v}</option>)}</select></label></div></div>
@@ -186,11 +204,11 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
         </Block>
       </div>
     </div>
-    <div className="pp-bottom-grid">
-      <Block title="Where customers shop" subtitle="Highest-volume customer states" aside={<Export rows={regions.rows} name="state-order-volume"/>}><Loading data={regions}><Bars rows={regions.rows} label="state" value="orders" limit={8}/></Loading></Block>
-      <Block title="Top product categories" subtitle="Item-grain merchandise sales, not payment revenue" aside={<Export rows={categories.rows} name="category-sales"/>}><Loading data={categories}><Bars rows={categories.rows} label="category" value="sales" format="money" limit={8}/></Loading></Block>
-      <Block title="Order activity" subtitle="Monthly order count, historical" aside={<ArrowDownRight size={16}/>}><Loading data={trends}><MonthlySpark data={trends.rows}/><div className="pp-callout"><strong>{compact(row.orders)} orders</strong><span>Browse annual variation with the period selector above.</span></div></Loading></Block>
-    </div>
+    <div className="overview-customization"><h2>More ways to explore</h2><button type="button" aria-pressed={arrangeWidgets} onClick={()=>setArrangeWidgets(v=>!v)}>{arrangeWidgets?'Done arranging':'Arrange dashboard widgets'}</button></div>
+    <div className="pp-bottom-grid">{bottomOrder.map((key,index)=><div className="overview-widget" key={key}>
+      {arrangeWidgets&&<div className="overview-widget-controls"><span>{cards[key].label}</span><button type="button" disabled={index===0} aria-label={'Move '+cards[key].label+' earlier'} onClick={()=>moveWidget(index,-1)}>Move left</button><button type="button" disabled={index===bottomOrder.length-1} aria-label={'Move '+cards[key].label+' later'} onClick={()=>moveWidget(index,1)}>Move right</button></div>}
+      {cards[key].node}
+    </div>)}</div>
     <div className="pp-provenance"><CheckCircle2 size={16}/><span>Source: <a target="_blank" rel="noreferrer" href={db.manifest.dataset.url}>Brazilian E-Commerce Public Dataset by Olist</a>. Analyses run locally on historical Parquet facts. Map markers are abstract state positions, not live vehicles, roads, or geocoded addresses.</span></div>
   </div>
 }
