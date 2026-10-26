@@ -95,17 +95,13 @@ html[data-theme="dark"] .syllabus-hub-open:hover{background:#c4ea84;color:#17231
 .syllabus-nav-trigger[aria-expanded="true"] .syllabus-nav-chevron {
   transform:rotate(180deg);
 }
-/* Desktop: panel opens to the RIGHT and UPWARD from the bottom icon. */
+/* Portal is viewport-fixed; React calculates desktop-side and mobile-above positions. */
 .syllabus-nav-submenu {
-  position:absolute;
-  z-index:120;
-  left:calc(100% + 18px);
+  position:fixed;
+  z-index:1000;
   right:auto;
   top:auto;
-  bottom:0;
-  width:290px;
-  max-width:min(330px,calc(100vw - 110px));
-  max-height:min(440px,calc(100dvh - 34px));
+  max-width:calc(100vw - 24px);
   overflow-y:auto;
   overscroll-behavior:contain;
   display:grid;
@@ -187,18 +183,8 @@ html[data-theme="dark"] .syllabus-nav-submenu button:focus-visible{outline-color
     min-width:37px;
     height:45px;
   }
-  .syllabus-nav-submenu {
-    top:auto;
-    bottom:calc(100% + 15px);
-    left:auto;
-    right:0;
-    width:min(315px,calc(100vw - 22px));
-    max-width:calc(100vw - 22px);
-    max-height:min(430px,calc(100dvh - 108px));
-  }
 }
 @media (max-width:480px) {
   .syllabus-nav-group{min-width:34px;flex-basis:34px}
   .syllabus-nav-group > .syllabus-nav-trigger{min-width:34px;height:43px}
-  .syllabus-nav-submenu{right:-5px}
 }
