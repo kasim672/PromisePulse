@@ -23,6 +23,8 @@ assert.match(api,/process\.env\.GEMINI_API_KEY/)
 assert.match(api,/x-goog-api-key/)
 assert.match(api,/Cache-Control.*no-store/)
 assert.match(source,/ProjectAssistant/)
+assert.match(source,/q\.length<3/,'chat should validate short messages before API calls')
+assert.match(source,/This is a missing local route, not a Gemini key error/,'404 should explain missing local API route')
 assert.match(source,/source.*url|s\.url/i)
 
 let nextIP=0
