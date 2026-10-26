@@ -54,6 +54,7 @@ node ../tests/test_research_expansion.cjs
 node ../tests/test_syllabus_modules.cjs
 node ../tests/test_mining_export_integrity.cjs
 node ../tests/test_editorial_hierarchy.cjs
+node ../tests/test_algorithm_playground.cjs
 ```
 
 The browser test in `web/scripts/smoke-live-editorial.mjs` additionally checks desktop/mobile light/dark navigation, and is run by [the live UI GitHub workflow](../.github/workflows/live-editorial-smoke.yml). Playwright is installed separately by the workflow; it is **not** a permanent frontend dependency.
@@ -115,6 +116,10 @@ If the exported files change, inspect `manifest.json` and verify all tests **bef
 | Blank page or asset 404 | Check `npm run build`, build output `dist`, browser console and the public `data` paths |
 | Warehouse initialization error | Check `/data/manifest.json` and all Parquet responses; clear cached assets/reload |
 | Mining lab says experiment data unavailable | Verify `/data/mining_lab.json` is deployed and `scripts/verify_mining_lab.py` passes |
+| Retrying a failed warehouse load | Click **Retry loading data**; the app makes another manifest request and restarts browser initialization. Check the visible phase and `X / Y` registration count. |
+| Mining lab JSON temporarily unavailable | Retry on Data Mining Lab overview or an individual lab. No sample values are substituted for measured results. |
+| Algorithm step visualizers appear different from empirical plots | Expected: step scenes are illustrative; the charts below use exported Olist experimental results. |
+
 | Slow first load | Browser downloads large WebAssembly binaries and historical Parquet files; first-run performance depends on device/network |
 | Chart not changing | Check filters and denominator/scope; model calibration uses a fixed held-out cohort |
 | Custom domain fails | Verify DNS and domain setup in Vercel; canonical documentation URL uses the current `vercel.app` domain |
@@ -128,4 +133,6 @@ If the exported files change, inspect `manifest.json` and verify all tests **bef
 - No backend account database, write APIs, user login or server-side scheduled ML retraining is included in this release.
 - Avoid advertising the dataset as a live feed or the models as production delivery predictions.
 
-Related documentation: [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).
+The new browser QA in [`v5-algorithm-playground.yml`](../.github/workflows/v5-algorithm-playground.yml) checks five step visualizations in light/dark/mobile and tests transient 503 failures followed by successful retry. Its screenshots and provenance are stored under `docs/screenshots/current/`.
+
+Related documentation: [Algorithm Playground](ALGORITHM_PLAYGROUND.md) · [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).
