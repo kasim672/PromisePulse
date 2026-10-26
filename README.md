@@ -118,10 +118,11 @@ Loading is also more informative: warehouse initialization reports the manifest,
 
 ![Offline ETL to static exports and in-browser DuckDB](docs/architecture.svg)
 
-The system has **two distinct phases**:
+The current system has **three distinct execution boundaries**:
 
 1. **Offline data preparation:** Olist CSV files → Python/DuckDB staging and dimensional modeling → reconciliation checks → Parquet export and manifest. Optional chronological model evaluation produces held-out predictions; the mining exporter produces `mining_lab.json`.
-2. **Public interactive application:** Vercel serves React/Vite build assets plus the versioned Parquet and JSON files. React instantiates DuckDB-Wasm in a browser worker, registers Parquet views and runs historical SQL against them. Lab charts display previously computed experiment results.
+2. **Browser analytics:** Vercel serves React/Vite assets and public historical Parquet/JSON files. DuckDB-Wasm runs read-only SQL in each visitor's browser and the Data Mining Lab renders precomputed experiments.
+3. **Optional AI gateway:** The separate Vercel `/api/ask` function retrieves checked-in documentation and selected aggregate evidence, then calls Google Gemini using a private server-side API key. It does not execute browser SQL or scan individual order rows.
 
 Read the **[full system architecture, end-to-end flow, ER/grain diagram and browser sequence diagram](docs/ARCHITECTURE_V5.md)**.
 
