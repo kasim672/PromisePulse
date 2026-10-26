@@ -33,10 +33,30 @@ for(const filename of manifest.images){
  assert.ok(fs.existsSync(file),'screenshot missing: '+filename)
  assert.ok(fs.statSync(file).size>20_000,'screenshot implausibly small: '+filename)
 }
+const algorithmManifest=JSON.parse(fs.readFileSync(path.join(dir,'ALGORITHM_CAPTURE_MANIFEST.json'),'utf8'))
+assert.ok(algorithmManifest.source_sha&&algorithmManifest.captured_at_utc,'teaching screenshots must preserve capture provenance')
+assert.equal(algorithmManifest.images.length,15,'five algorithms must have desktop light/dark and mobile captures')
+for(const method of ['decision-tree','k-means','apriori','fp-growth','eclat']){
+ for(const name of ['algorithm-'+method+'-light.png','algorithm-'+method+'-dark.png','mobile-algorithm-'+method+'-light.png']){
+  assert.ok(algorithmManifest.images.includes(name),'missing method screenshot from manifest: '+name)
+  const file=path.join(dir,name)
+  assert.ok(fs.existsSync(file),'missing captured algorithm screenshot: '+name)
+  assert.ok(fs.statSync(file).size>20000,'algorithm screenshot implausibly small: '+name)
+ }
+}
+const guide=fs.readFileSync(path.join(root,'docs/ALGORITHM_PLAYGROUND.md'),'utf8')
+assert.match(guide,/illustrative/i,'teaching examples must be clearly distinguished from Olist experiments')
+const teaching=JSON.parse(fs.readFileSync(path.join(dir,'ALGORITHM_CAPTURE_MANIFEST.json'),'utf8'))
+assert.ok(teaching.captured_at_utc&&teaching.source_sha,'algorithm screenshots require provenance')
+assert.equal(teaching.images.length,15,'five methods in desktop light/dark and mobile')
+for(const file of teaching.images){
+ assert.match(file,/^((mobile-)?algorithm-)[\w-]+\.png$/)
+ assert.ok(fs.statSync(path.join(dir,file)).size>20_000,'missing verified algorithm screenshot: '+file)
+}
 const readme=fs.readFileSync(path.join(root,'README.md'),'utf8')
 assert.match(readme,/PromisePulse 5\.0/)
 assert.match(readme,/precision ≈ 0\.049/)
 assert.match(readme,/Root directory.*\bweb\b/)
 assert.doesNotMatch(readme,/feature branch only/i)
 assert.doesNotMatch(readme,/V6 features implemented/i)
-console.log('PASS docs: '+checked+' local links, '+manifest.images.length+' authentic screenshot files, valid SVG, V5 provenance')
+console.log('PASS docs: '+checked+' local links, '+manifest.images.length+' original screenshots, '+algorithmManifest.images.length+' algorithm screenshots, valid SVG, V5 provenance')

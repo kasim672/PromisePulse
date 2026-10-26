@@ -2,6 +2,8 @@ import {useEffect,useMemo,useState} from 'react'
 import type {ReactNode,CSSProperties} from 'react'
 import {Download,ShieldCheck} from 'lucide-react'
 import {ChartCard} from './AnalyticsAtlas'
+import {AlgorithmPlayground} from './AlgorithmPlayground'
+import {ResourceLoading,ResourceError} from './DataStates'
 import type {AtlasMetric} from './atlasQueries'
 import type {RecordRow,Tab} from './types'
 export type SyllabusModule='Warehouse & ETL'|'Data Lakes'|'EDA & Preprocessing'|'Classification Lab'|'Clustering Lab'|'Pattern Mining'
@@ -193,21 +195,33 @@ function Rules({d}:{d:Evidence}){
 }
 export function SyllabusLab({module,onNavigate}:{module:SyllabusModule;onNavigate:(tab:Tab)=>void}){
  const [result,setResult]=useState<Evidence|null>(null),[pending,setPending]=useState(true),[error,setError]=useState('')
- useEffect(()=>{let live=true;void fetch(import.meta.env.BASE_URL+'data/mining_lab.json').then(res=>{if(!res.ok)throw Error('Mining export missing: install requirements-mining.txt and run python scripts/build_mining_lab.py.');return res.json() as Promise<Evidence>}).then(v=>{if(live){setResult(v);setPending(false)}}).catch(e=>{if(live){setPending(false);setError(String(e))}});return()=>{live=false}},[])
+ const [request,setRequest]=useState(0)
+ useEffect(()=>{
+   const ctrl=new AbortController()
+   setError('');setPending(true)
+   void fetch(import.meta.env.BASE_URL+'data/mining_lab.json',{signal:ctrl.signal,cache:'no-store'})
+    .then(res=>{if(!res.ok)throw Error('Mining export unavailable: HTTP '+res.status);return res.json() as Promise<Evidence>})
+    .then(value=>{if(!ctrl.signal.aborted){
+      if(!value||!value.source||!value.clustering||!value.patterns)throw Error('Mining export has an invalid structure')
+      setResult(value);setPending(false)
+    }})
+    .catch(e=>{if(!ctrl.signal.aborted){setError(String(e));setPending(false)}})
+   return()=>ctrl.abort()
+ },[request])
  return <div className="pp-home atlas-page syllabus-page">
   <div className="pp-page-top"><div><h1>{module.split(' ')[0]} <em>{module.split(' ').slice(1).join(' ')}</em></h1><p>Explore historical Olist data, inspect the underlying methods, and compare verified results.</p></div></div>
   <nav className="syllabus-tabs" aria-label="Data Mining Lab sections">
     <button type="button" onClick={()=>onNavigate('Syllabus Hub')}>Overview</button>
     {sequence.map(name=><button type="button" key={name} className={name===module?'active':''} aria-current={name===module?'page':undefined} onClick={()=>onNavigate(name)}>{name}</button>)}
   </nav>
-  {pending?<section className="pp-block syllabus-pending"><span className="spinner"/> Loading real mining evidence…</section>:error?<section className="pp-block syllabus-error" role="alert"><h3>Experiment data unavailable</h3><p>{error}</p><p>No results are simulated. Generate the offline export and reload.</p></section>:result&&<>
+  {pending?<div className="syllabus-pending"><ResourceLoading label="Loading Data Mining Lab evidence" detail="Downloading the historical experiment export for this section…"/></div>:error?<div className="syllabus-error"><ResourceError title="Experiment data unavailable" detail={error} onRetry={()=>setRequest(v=>v+1)}/></div>:result&&<>
     <div className="syllabus-facts"><span>Data <strong>Olist Brazilian E-Commerce</strong></span><span>Years <strong>{result.source.year_range}</strong></span><span>Seed <strong>{result.source.random_seed}</strong></span><span>Source <strong>Verified Parquet</strong></span></div>
     {module==='Warehouse & ETL'&&<Warehouse d={result}/>}
     {module==='Data Lakes'&&<DataLakes d={result}/>}
     {module==='EDA & Preprocessing'&&<Exploration d={result}/>}
-    {module==='Classification Lab'&&<Classification d={result}/>}
-    {module==='Clustering Lab'&&<Cluster d={result}/>}
-    {module==='Pattern Mining'&&<Rules d={result}/>}
+    {module==='Classification Lab'&&<><AlgorithmPlayground topic="classification"/><Classification d={result}/></>}
+    {module==='Clustering Lab'&&<><AlgorithmPlayground topic="clustering"/><Cluster d={result}/></>}
+    {module==='Pattern Mining'&&<><AlgorithmPlayground topic="patterns"/><Rules d={result}/></>}
     <div className="atlas-methodology"><ShieldCheck size={18}/><p><strong>Interpretation notes.</strong> Offline analyses use real historical Olist source data and a deterministic script, not simulated charts. Clustering samples and rule denominators are disclosed. Relationships are exploratory, not causal; manuscript-level statistical testing and independent validation remain separate work.</p></div>
   </>}
  </div>

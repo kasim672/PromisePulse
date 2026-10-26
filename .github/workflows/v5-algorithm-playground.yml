@@ -1,0 +1,79 @@
+name: V5 Algorithm Playground Browser QA
+on:
+  push:
+    branches: ['feat/v5-algorithm-playground-and-loading']
+    paths:
+      - 'web/src/**'
+      - 'web/scripts/smoke-algorithms.mjs'
+      - 'tests/test_algorithm_playground.cjs'
+      - '.github/workflows/v5-algorithm-playground.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: algorithm-playground-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-backed-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install test browser
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          if command -v google-chrome > /dev/null; then
+            echo "PP_BROWSER_CHANNEL=chrome" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright install chromium
+          fi
+      - name: Verify application build, computed teaching mathematics and original research data
+        working-directory: web
+        run: |
+          npm run build
+          node ../tests/test_algorithm_playground.cjs
+          node ../tests/test_mining_export_integrity.cjs
+      - name: Serve bundled historic Olist exports
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-demo.log 2>&1 &
+          for i in {1..90}; do
+            if curl --silent --fail http://127.0.0.1:4173/data/mining_lab.json > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pp-demo.log
+          exit 1
+      - name: Verify step navigation, failure/retry, desktop dark and mobile
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-algorithms.mjs
+      - name: Upload actual browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: V5-algorithm-playground-evidence
+          path: docs/screenshots/current/algorithm-*.png
+          if-no-files-found: ignore
+      - name: Commit verified walkthrough screenshots
+        run: |
+          set -euo pipefail
+          test -s docs/screenshots/current/ALGORITHM_CAPTURE_MANIFEST.json
+          test "$(find docs/screenshots/current -name '*algorithm-*.png' | wc -l)" -ge 12
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/current/
+          git commit -m "docs: capture real five-algorithm walkthroughs in light dark and mobile"
+          git fetch --no-tags origin feat/v5-algorithm-playground-and-loading
+          git rebase FETCH_HEAD
+          git push origin HEAD:refs/heads/feat/v5-algorithm-playground-and-loading

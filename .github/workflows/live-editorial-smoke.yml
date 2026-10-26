@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/live-editorial-smoke.yml'
+      - 'web/src/**'
+      - 'web/scripts/smoke-live-editorial.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +25,11 @@ jobs:
         run: |
           npm ci
           npm install --no-save --package-lock=false playwright
-          npx playwright install --with-deps chromium
+          if command -v google-chrome > /dev/null; then
+            echo "PP_BROWSER_CHANNEL=chrome" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Inspect public Vercel website in four layouts
         working-directory: web
         env:

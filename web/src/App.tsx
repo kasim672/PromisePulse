@@ -3,12 +3,13 @@ import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
-  Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
+  Layers3, LayoutDashboard, Menu, Moon, Search, ShieldCheck, Sun,
   Compass, UsersRound, Truck, FlaskConical, Sparkles,
   Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined, GraduationCap,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
-import type { Warehouse } from './db'
+import type { Warehouse,WarehouseProgress } from './db'
+import {WarehouseLoading,ResourceError,QueryLoading} from './DataStates'
 import type { RecordRow, Tab } from './types'
 import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { AnalyticsAtlas } from './AnalyticsAtlas'
@@ -55,7 +56,7 @@ function Panel({ title, sub, action, children, className = '' }: { title: string
   </section>
 }
 function Loader({ title = 'Processing warehouse query…' }: { title?: string }) {
-  return <div className="loading"><span className="spinner" /><span>{title}</span></div>
+  return <QueryLoading label={title}/>
 }
 function Notice({ message, action }: { message: string; action?: ReactNode }) {
   return <div className="notice"><CircleHelp size={18} /><span>{message}</span>{action}</div>
@@ -309,6 +310,7 @@ export default function App() {
   const [db, setDb] = useState<Warehouse | null>(null)
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
+  const [warehouseProgress,setWarehouseProgress]=useState<WarehouseProgress>({phase:'manifest',completed:0,total:0})
   const [mobileNav, setMobileNav] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
@@ -330,9 +332,14 @@ export default function App() {
   }, [])
   useEffect(() => {
     let alive = true; let current: Warehouse | null = null
-    loadWarehouse().then(warehouse => { current = warehouse; if (alive) setDb(warehouse); else void warehouse.close() }).catch(e => { if (alive) setLoadError(String(e)) }).finally(() => { if (alive) setPending(false) })
-    return () => { alive = false; if (current) void current.close() }
-  }, [reloading])
+    const controller=new AbortController()
+    setWarehouseProgress({phase:'manifest',completed:0,total:0})
+    loadWarehouse({signal:controller.signal,onProgress:value=>{if(alive)setWarehouseProgress(value)}})
+     .then(warehouse=>{current=warehouse;if(alive){setDb(warehouse);setLoadError('')}else void warehouse.close()})
+     .catch(e=>{if(alive&&!controller.signal.aborted)setLoadError(String(e))})
+     .finally(()=>{if(alive)setPending(false)})
+    return()=>{alive=false;controller.abort();if(current)void current.close()}
+  },[reloading])
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
@@ -374,9 +381,9 @@ export default function App() {
       </div>
     </div>}
     <main className="main-content" id="main-content">
-      {active === 'Welcome' && <Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>}
-      {active !== 'Welcome' && pending && <Loader title="Initializing local DuckDB warehouse…"/>}
-      {active !== 'Welcome' && !pending && loadError && <div className="setup-screen"><div className="setup-icon"><Database size={34}/></div><h2>Connect your <span className="accent-text">warehouse.</span></h2><p>This dashboard only displays real Olist analytics. Generate the Parquet export locally and reload; no demo numbers have been invented.</p><pre>{`python scripts/build_web_data.py --raw-dir data/raw --train\ncd web && npm run dev`}</pre><Notice message={loadError}/><button className="primary-btn" onClick={() => { setPending(true); setLoadError(''); setReloading(s => !s) }}><RefreshCw size={15}/> Retry loading</button></div>}
+      {active === 'Welcome' && <><Welcome db={db} onNavigate={changePage} warehouseError={loadError} pending={pending}/>{pending&&<WarehouseLoading progress={warehouseProgress}/>}{!pending&&loadError&&<ResourceError title="The historical warehouse could not load" detail={loadError} onRetry={()=>{setPending(true);setLoadError('');setReloading(v=>!v)}}/>}</>}
+      {active !== 'Welcome' && pending && <WarehouseLoading progress={warehouseProgress}/>}
+      {active !== 'Welcome' && !pending && loadError && <ResourceError title="The historical warehouse could not load" detail={loadError} onRetry={()=>{setPending(true);setLoadError('');setReloading(v=>!v)}}/>}
       {db && active !== 'Welcome' && <>
         {active === 'Overview' && <PremiumOverview db={db} onNavigate={changePage}/>}
         {active === 'Intelligence' && <PremiumIntelligence db={db}/>}

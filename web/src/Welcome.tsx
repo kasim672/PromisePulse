@@ -1,13 +1,14 @@
 import {useEffect,useState} from 'react'
 import {Activity,ArrowDownRight,ArrowRight,BookOpen,BrainCircuit,CheckCircle2,ChevronRight,Database,Globe2,Layers3,LockKeyhole,PlayCircle,ShieldCheck,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
+import {QueryLoading} from './DataStates'
 import type {RecordRow,Tab} from './types'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 
 type WelcomeProps={db:Warehouse|null;onNavigate:(tab:Tab)=>void;warehouseError?:string;pending?:boolean}
 const num=(value:unknown)=>typeof value==='number'?new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(value):'—'
-function MiniHistory({rows}:{rows:RecordRow[]}){
+function MiniHistory({rows,failed=false}:{rows:RecordRow[];failed?:boolean}){
  const values=rows.map(x=>Number(x.orders)||0)
  const peak=Math.max(1,...values)
  const line=values.map((v,i)=>((i===0?'M':'L')+(24+i*448/Math.max(1,values.length-1)).toFixed(1)+' '+(183-v/peak*144).toFixed(1))).join(' ')
@@ -20,7 +21,7 @@ function MiniHistory({rows}:{rows:RecordRow[]}){
      <path d={area} fill="url(#welcome-history-fill)"/><path d={line} stroke="var(--welcome-blue)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
      {values.map((v,i)=><circle key={i} cx={24+i*448/Math.max(1,values.length-1)} cy={183-v/peak*144} r="4" fill="var(--welcome-blue)"><title>{String(rows[i].month)}: {v.toLocaleString()} orders</title></circle>)}
      <text x="24" y="202" className="atlas-tick">2016</text><text x="249" y="202" textAnchor="middle" className="atlas-tick">2017</text><text x="472" y="202" textAnchor="end" className="atlas-tick">2018</text>
-   </svg>:<div className="welcome-chart-wait"><span className="spinner"/> {rows.length===0?'Waiting for verified Parquet trend data…':'No observations available'}</div>}
+   </svg>:failed?<div className="welcome-chart-wait" role="status"><p>Monthly trend unavailable. Restore the historical warehouse to view actual purchase activity.</p></div>:<div className="welcome-chart-wait"><QueryLoading label="Reading monthly purchase activity"/></div>}
    <div className="welcome-history-foot"><span>Source: Olist / DuckDB-Wasm</span></div>
  </div>
 }
@@ -37,6 +38,7 @@ export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeP
  const [error,setError]=useState(false)
  useEffect(()=>{
   if(!db){setMonthly([]);return}
+  setError(false)
   let live=true
   void db.query("SELECT strftime(purchase_ts,'%Y-%m') AS month, COUNT(*) AS orders FROM fact_orders WHERE purchase_ts IS NOT NULL GROUP BY 1 ORDER BY 1").then(rows=>{if(live)setMonthly(rows)}).catch(()=>{if(live)setError(true)})
   return()=>{live=false}
@@ -53,7 +55,7 @@ export function Welcome({db,onNavigate,warehouseError='',pending=false}:WelcomeP
    <div className="welcome-visual">
      <div className="welcome-visual-top"><div><span className="welcome-visual-diamond"><Layers3 size={21}/></span><h2>Analytics overview</h2></div></div>
      <div className="welcome-number-grid"><div><span>Orders</span><strong>{num(manifest?.warehouse.fact_orders)}</strong><small>Order-grain transactions</small></div><div><span>Charts</span><strong>{ATLAS_CHART_COUNT+NEW_CHART_COUNT}</strong><small>SQL-backed definitions</small></div><div><span>Order items</span><strong>{num(manifest?.warehouse.fact_order_items)}</strong><small>Item-grain merchandise</small></div></div>
-     <MiniHistory rows={monthly}/>
+     <MiniHistory rows={monthly} failed={Boolean(warehouseError||error)}/>
      {!pending && warehouseError && <div className="welcome-chart-error" role="alert">Warehouse data could not load. Open the command center to view the setup instructions: {warehouseError}</div>}
    <div className="welcome-visual-bottom"><span><ShieldCheck size={16}/> Sources before stories</span><button onClick={()=>onNavigate('Data Catalog')}>Explore lineage <ChevronRight size={17}/></button></div>
      {error&&<p className="welcome-chart-error">Monthly trend unavailable; the warehouse was not replaced with simulated values.</p>}

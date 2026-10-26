@@ -2,6 +2,7 @@ import {useEffect,useId,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
 import {Activity,BarChart3,CalendarDays,CheckCircle2,Database,Download,Filter,MapPinned,Microscope,TrendingUp} from 'lucide-react'
 import type {Warehouse} from './db'
+import {QueryLoading} from './DataStates'
 import type {RecordRow} from './types'
 import {ATLAS_CHART_COUNT,ATLAS_GROUPS,ATLAS_STATES,atlasLabQueries,atlasQuery} from './atlasQueries'
 import type {AtlasGroup,AtlasLens,AtlasMetric,AtlasState,AtlasYear} from './atlasQueries'
@@ -98,7 +99,7 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
 export function ChartCard({rows,metric,lens,loading,error}:{rows:RecordRow[];metric:AtlasMetric;lens:AtlasLens;loading:boolean;error:string}){
   return <section className="pp-block atlas-chart-card" aria-label={metric.title}>
     <div className="atlas-chart-heading"><div><h3>{metric.title}</h3><p>{metric.insight}</p></div><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span></div>
-    {loading?<div className="atlas-loading"><span className="spinner"/> Querying actual Parquet aggregates…</div>:error?<p className="atlas-error" role="alert">{error}</p>:<MetricPlot rows={rows} metric={metric} lens={lens}/>}
+    {loading?<QueryLoading label="Querying historical Parquet aggregates"/>:error?<p className="atlas-error" role="alert">{error}</p>:<MetricPlot rows={rows} metric={metric} lens={lens}/>}
   </section>
 }
 type MatrixRow=RecordRow
@@ -207,12 +208,12 @@ export function AnalyticsAtlas({db}:{db:Warehouse}){
         {lens==='laboratory'?<div className="atlas-panel-grid atlas-lab-grid">
           {labInfo.map(([title,subtitle,key])=>{
             const dat=matrix[key]
-            return !dat||dat.loading?<div className="pp-block atlas-loading" key={key}><span className="spinner"/> Computing {title}…</div>:
+            return !dat||dat.loading?<div className="pp-block" key={key}><QueryLoading label={'Computing '+title}/></div>:
               dat.error?<div className="pp-block atlas-error" key={key} role="alert">{title}: {dat.error}</div>:
               <Matrix key={key} rows={dat.rows} title={title} subtitle={subtitle} kind={key}/>
           })}
           {!evaluated?<div className="pp-block atlas-empty">Risk calibration is unavailable because the published model has not been evaluated. No synthetic predictions are shown.</div>:
-            !matrix.calibration?<div className="pp-block atlas-loading"><span className="spinner"/> Reading held-out calibration…</div>:
+            !matrix.calibration?<div className="pp-block"><QueryLoading label="Reading held-out calibration"/></div>:
             matrix.calibration.error?<div className="pp-block atlas-error" role="alert">{matrix.calibration.error}</div>:
             <Calibration rows={matrix.calibration.rows}/>}
         </div>:<>

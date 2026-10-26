@@ -1,6 +1,7 @@
 import {useEffect,useState} from 'react'
 import {ArrowRight,CheckCircle2,Database,FlaskConical,Layers3,ChartNoAxesCombined,BrainCircuit,GitFork,Network,ShieldCheck} from 'lucide-react'
 import type {Tab} from './types'
+import {ResourceLoading,ResourceError} from './DataStates'
 
 type Summary={
  source?:{dataset?:string;year_range?:string;random_seed?:number}
@@ -21,15 +22,17 @@ export function SyllabusHub({onNavigate}:{onNavigate:(tab:Tab)=>void}){
  const [summary,setSummary]=useState<Summary|null>(null)
  const [loading,setLoading]=useState(true)
  const [error,setError]=useState('')
+ const [attempt,setAttempt]=useState(0)
  const [filter,setFilter]=useState<'All'|'Foundation'|'Statistics'|'Modelling'|'Discovery'>('All')
  useEffect(()=>{
   const ctrl=new AbortController()
-  fetch('/data/mining_lab.json',{signal:ctrl.signal})
+  setLoading(true);setError('')
+  fetch(import.meta.env.BASE_URL+'data/mining_lab.json',{signal:ctrl.signal,cache:'no-store'})
    .then(r=>{if(!r.ok)throw Error('Evidence export is unavailable (HTTP '+r.status+')');return r.json() as Promise<Summary>})
-   .then(x=>{if(!ctrl.signal.aborted){setSummary(x);setLoading(false)}})
+   .then(x=>{if(!ctrl.signal.aborted){if(!x||!x.source||!x.clustering||!x.patterns)throw Error('The exported experiment metadata is invalid');setSummary(x);setLoading(false)}})
    .catch(e=>{if(!ctrl.signal.aborted){setError(String(e));setLoading(false)}})
   return()=>ctrl.abort()
- },[])
+ },[attempt])
  const selected=modules.filter(x=>filter==='All'||x.phase===filter)
  const evidence=[
    {label:'Order facts',value:summary?.eda?.quality?.fact_orders},
@@ -55,7 +58,7 @@ export function SyllabusHub({onNavigate}:{onNavigate:(tab:Tab)=>void}){
    </div>
    <div className="syllabus-hub-evidence">
     <div className="syllabus-hub-evidence-head"><ShieldCheck size={17}/><div><strong>Dataset snapshot</strong><span>Recorded results from historical Olist and Parquet exports</span></div></div>
-    {loading?<p role="status">Loading analysis data…</p>:error?<p role="alert">Dataset information unavailable: {error}. Analysis pages display source errors rather than invented results.</p>:
+    {loading?<ResourceLoading label="Loading mining lab overview" detail="Reading the published order counts and experiment metadata…"/>:error?<ResourceError title="Lab overview could not load" detail={error} onRetry={()=>setAttempt(v=>v+1)}/>:
       <div className="syllabus-hub-stat-grid">{evidence.map(x=><div key={x.label}><span>{x.label}</span><strong>{format(x.value)}</strong></div>)}</div>}
    </div>
    <div className="syllabus-hub-heading"><div><h2>Choose what to explore</h2><p>Open any area to investigate its charts, methods and recorded results.</p></div><div className="syllabus-hub-filters" aria-label="Filter analysis areas">{(['All','Foundation','Statistics','Modelling','Discovery'] as const).map(value=><button key={value} type="button" aria-pressed={filter===value} className={filter===value?'active':''} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>

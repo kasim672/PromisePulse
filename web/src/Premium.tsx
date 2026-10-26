@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowDownRight, ArrowUpRight, CalendarDays, CheckCircle2, ChevronRight, Download, Globe2, MapPinned, Package, TrendingUp } from 'lucide-react'
 import type { Warehouse } from './db'
+import {QueryLoading} from './DataStates'
 import type { RecordRow } from './types'
 import { dashboardQueries, insightQueries } from './premiumQueries'
 import type { YearSelection } from './premiumQueries'
@@ -45,7 +46,7 @@ function Block({title,subtitle,aside,children,className=''}:{title:string,subtit
   return <section className={'pp-block '+className}><div className="pp-block-header"><div><h3>{title}</h3>{subtitle&&<p>{subtitle}</p>}</div>{aside}</div>{children}</section>
 }
 function Loading({data,children}:{data:Dataset,children:ReactNode}){
-  if(data.busy)return <div className="pp-placeholder"><span className="spinner"/> Querying historical warehouse…</div>
+  if(data.busy)return <QueryLoading label="Querying the historical warehouse"/>
   if(data.error)return <p className="pp-error" role="alert">Unable to query: {data.error}</p>
   if(!data.rows.length)return <div className="pp-placeholder">No records for this period.</div>
   return <>{children}</>
