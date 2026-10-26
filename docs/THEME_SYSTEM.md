@@ -29,7 +29,7 @@ The product's dark graphite surfaces, purple logo lettering and original Olist d
 
 ### Color tokens and CSS cascade
 
-The main entry point `web/src/main.tsx` loads the component styles, then `theme.css`, `editorial.css`, `algorithm-playground.css`, and finally **`soft-cyan.css`**. That last file applies cross-surface accent corrections.
+The main entry point `web/src/main.tsx` loads base and component CSS, then `theme.css`, `editorial.css`, `algorithm-playground.css`, **`soft-cyan.css`** and finally **`project-assistant.css`**. The cyan file owns shared accents; the last stylesheet keeps chatbot light-mode overrides correctly scoped. Both theme modes are selected by `html[data-theme="light"]` or `html[data-theme="dark"]`, not by a body `.theme-light` class.
 
 ```css
 :root {
@@ -63,6 +63,21 @@ flowchart TD
 ```
 
 The SVG logo filter is defined in `web/src/App.tsx` as `pp-brand-cyan` and applied to `.brand-logo-image` and `.footer-logo-image`. It is a visual filter rather than a replacement of the source logo asset; the original PNG/WebP can therefore still be reused.
+
+### AI assistant drawer: light and dark modes
+
+The merged assistant is part of the application, not a pending feature. The dark chat drawer retains its deep graphite palette. Its light appearance was subsequently corrected in `web/src/project-assistant.css` so that translucent global glass tokens no longer make the conversation feel muddy or reduce text clarity:
+
+| Chat surface | Light theme behavior | Dark theme behavior |
+| --- | --- | --- |
+| Dialog and header | Opaque `#F8FBFF` and white `#FFFFFF` | Existing dark glass panel |
+| Main message list | Pale blue `#F3F8FD` | Existing graphite surfaces |
+| Assistant messages | White card; dark navy `#10263E` ink | Existing dark card and pale text |
+| User messages | `#DEF2FF` with dark-navy text `#082F49` | Existing cyan-tinted dark card |
+| Secondary copy and source links | High-contrast slate `#4B6077` and blue `#075985` | Existing accessible cyan |
+| Composer | Opaque white, clear focus outline and readable placeholder | Existing dark input |
+
+These light-mode rules use **`html[data-theme="light"] .project-ai-…` selectors** and do not override the dark theme. `tests/test_theme.cjs` checks chatbot colors and representative WCAG AA contrast pairs. Typography, keyboard focus, reduced motion and responsive sizing remain in the assistant stylesheet.
 
 ## Accessibility and usage
 
