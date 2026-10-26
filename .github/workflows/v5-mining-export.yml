@@ -1,7 +1,7 @@
 name: Export verified data-mining experiments
 on:
   push:
-    branches: ['feat/promisepulse-5-syllabus-mining-labs']
+    branches: ['feat/promisepulse-5-full-syllabus-review']
     paths: ['docs/V5_MINING_EXPORT_REQUEST.md']
 permissions:
   contents: write
@@ -35,7 +35,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add web/public/data/mining_lab.json
-          git commit -m "data(mining): publish verified real Olist statistical and algorithm evaluation results"
-          git fetch --no-tags origin feat/promisepulse-5-syllabus-mining-labs
+          if git diff --cached --quiet; then
+            echo 'Export matches the existing verified artifact'; exit 0
+          fi
+          git commit -m "data(mining): publish train-only preprocessed Olist experimental results"
+          git fetch --no-tags origin feat/promisepulse-5-full-syllabus-review
           git rebase FETCH_HEAD
-          git push origin HEAD:refs/heads/feat/promisepulse-5-syllabus-mining-labs
+          git push origin HEAD:refs/heads/feat/promisepulse-5-full-syllabus-review
