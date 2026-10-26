@@ -24,3 +24,13 @@ export function ResourceError({title,detail,onRetry}:{title:string;detail:string
   <details><summary>Technical details</summary><code>{detail}</code><p>Check the browser network requests and the files in <code>web/public/data/</code>.</p></details>
  </section>
 }
+
+/** In-browser SQL duration is unknown: an indeterminate progress element is honest. */
+export function QueryLoading({label='Running historical SQL query'}:{label?:string}){
+ return <div className="query-loading" role="status" aria-live="polite">
+  <strong>{label}</strong>
+  <p>Reading local Parquet aggregates; results will appear here when the query finishes.</p>
+  <progress aria-label="Query running"/>
+  <div className="query-loading-placeholder" aria-hidden="true"><i/><i/><i/></div>
+ </div>
+}
