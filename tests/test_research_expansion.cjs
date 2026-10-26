@@ -21,7 +21,7 @@ assert.ok(RESEARCH_GROUPS.every(g=>g.metrics.length===6),'each lens has six dist
 assert.equal(new Set(RESEARCH_GROUPS.flatMap(g=>g.metrics.map(m=>m.id))).size,30,'figure ids must be distinct')
 const app=fs.readFileSync(path.resolve(__dirname,'../web/src/App.tsx'),'utf8')
 const nav=app.match(/const NAV:[\s\S]*?\n\]/)?.[0]||''
-assert.equal((nav.match(/\{\s*label:\s*'/g)||[]).length,12,'exactly twelve dock destinations')
+assert.equal((nav.match(/\{\s*label:\s*'/g)||[]).length,19,'preserve twelve original destinations, six syllabus labs and their syllabus hub')
 for(const route of ['Welcome','Customer Cohorts','Delivery Lab','Research Studio','AI Studio'])
  assert.ok(app.includes("'"+route+"'"),'missing new destination '+route)
 assert.match(app,/useState<Tab>\('Welcome'\)/,'landing page must be first')

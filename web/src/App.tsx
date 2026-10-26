@@ -5,7 +5,7 @@ import {
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
   Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
   Compass, UsersRound, Truck, FlaskConical, Sparkles,
-  Table2, TrendingUp, X,
+  Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined, GraduationCap,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
@@ -14,6 +14,8 @@ import { PremiumOverview, PremiumIntelligence } from './Premium'
 import { AnalyticsAtlas } from './AnalyticsAtlas'
 import { Welcome } from './Welcome'
 import { ResearchWorkspace } from './ResearchWorkspace'
+import { SyllabusLab } from './SyllabusLab'
+import { SyllabusHub } from './SyllabusHub'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
@@ -32,6 +34,13 @@ const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] =
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
   { label: 'Pipeline & Quality', icon: ShieldCheck, description: 'Inspect the lineage & tests' },
+  { label: 'Syllabus Hub', icon: GraduationCap, description: 'All six modules, 30 contact hours and reproducible experiments' },
+  { label: 'Warehouse & ETL', icon: Database, description: 'Syllabus 1: Dimensional schema, facts, ETL and quality' },
+  { label: 'Data Lakes', icon: Layers3, description: 'Syllabus 2: Raw and curated source comparison' },
+  { label: 'EDA & Preprocessing', icon: ChartNoAxesCombined, description: 'Syllabus 3: Descriptive statistics, distributions, correlation and cleaning' },
+  { label: 'Classification Lab', icon: BrainCircuit, description: 'Syllabus 4: Decision Tree, Naive Bayes and regression experiments' },
+  { label: 'Clustering Lab', icon: GitFork, description: 'Syllabus 5: K-Means, hierarchical clustering and dendrograms' },
+  { label: 'Pattern Mining', icon: Network, description: 'Syllabus 6: Apriori, FP-Growth, Eclat and association rules' },
 ]
 
 const nfmt = (value: unknown, digits = 0) => typeof value === 'number'
@@ -357,7 +366,10 @@ export default function App() {
         
         <div className="header-actions"><button type="button" className="theme-toggle" onClick={() => setTheme(current => current === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}><span className="theme-toggle-icon">{theme === 'dark' ? <Sun size={17} aria-hidden="true"/> : <Moon size={17} aria-hidden="true"/>}</span><span className="theme-toggle-label">{theme === 'dark' ? 'Dark' : 'Light'}</span></button><button type="button" className="header-search" onClick={() => setSearchOpen(true)} aria-label="Search pages, Ctrl or Command plus K"><Search size={16} aria-hidden="true"/><span>Search</span><kbd>⌘K</kbd></button><span className="header-version"><span className={`header-online ${db ? '' : 'offline'}`}/>{db ? 'WAREHOUSE CONNECTED' : pending ? 'INITIALIZING' : 'DATA NOT LOADED'}</span><button className="header-cta" onClick={()=>changePage('OLAP Lab')}>Explore data <ArrowRight size={15}/></button><button className="menu-toggle" aria-label={mobileNav?'Close navigation':'Open navigation'} aria-expanded={mobileNav} onClick={()=>setMobileNav(s=>!s)}>{mobileNav?<X size={21}/>:<Menu size={21}/>}</button></div>
       </div>
-      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">{NAV.map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}</nav>
+      <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">
+        {NAV.filter(item => !(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}
+        <button type="button" className={`header-nav-item ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'active':''}`} aria-label="Data Mining Lab" aria-current={(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'page':undefined} data-label="Data Mining Lab" title="Open Data Mining Lab" onClick={() => changePage('Syllabus Hub')}><GraduationCap size={19} aria-hidden="true"/><span className="nav-label">Data Mining Lab</span></button>
+      </nav>
     </header>
     {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
       <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
@@ -383,6 +395,13 @@ export default function App() {
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
+        {active === 'Syllabus Hub' && <SyllabusHub onNavigate={changePage}/>}
+        {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL" onNavigate={changePage}/>}
+        {active === 'Data Lakes' && <SyllabusLab module="Data Lakes" onNavigate={changePage}/>}
+        {active === 'EDA & Preprocessing' && <SyllabusLab module="EDA & Preprocessing" onNavigate={changePage}/>}
+        {active === 'Classification Lab' && <SyllabusLab module="Classification Lab" onNavigate={changePage}/>}
+        {active === 'Clustering Lab' && <SyllabusLab module="Clustering Lab" onNavigate={changePage}/>}
+        {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining" onNavigate={changePage}/>}
       </>}
     </main>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
