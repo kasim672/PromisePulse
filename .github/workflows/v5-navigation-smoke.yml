@@ -1,0 +1,45 @@
+name: PromisePulse syllabus navigation browser smoke
+on:
+  push:
+    branches: ['feat/promisepulse-5-syllabus-research-lab']
+    paths:
+      - 'web/src/App.tsx'
+      - 'web/src/syllabus-hub.css'
+      - 'web/scripts/smoke-syllabus-nav.mjs'
+      - '.github/workflows/v5-navigation-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web app and headless Chromium
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Launch local historical-data app
+        working-directory: web
+        run: |
+          test -s public/data/mining_lab.json
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/pp-v5-nav.log 2>&1 &
+          for i in {1..90}; do
+            if curl --fail --silent http://127.0.0.1:4173/data/mining_lab.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pp-v5-nav.log
+          exit 1
+      - name: Verify expandable course flyout and real module navigation in both themes
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+        run: node scripts/smoke-syllabus-nav.mjs
