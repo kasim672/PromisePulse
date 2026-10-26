@@ -64,6 +64,12 @@ flowchart TD
 
 The SVG logo filter is defined in `web/src/App.tsx` as `pp-brand-cyan` and applied to `.brand-logo-image` and `.footer-logo-image`. It is a visual filter rather than a replacement of the source logo asset; the original PNG/WebP can therefore still be reused.
 
+## AI assistant light and dark appearance
+
+The current chatbot drawer is styled in `web/src/project-assistant.css`. Its **light mode** uses explicit opaque whites (`#FFFFFF`), a pale-blue transcript background (`#F3F8FD`), a soft-cyan user bubble (`#DEF2FF`) and deep readable text (`#10263E`). This avoids the dim translucent `--cadra-glass` background on pale pages. **Dark mode is unchanged** and inherits the established graphite palette. Both use the existing cyan action accent.
+
+Theme switching is applied with `html[data-theme="light"]`/`html[data-theme="dark"]`, reflecting the saved user preference. The integrated chat inherits those states. `tests/test_theme.cjs` asserts that light-theme chatbot surfaces are explicitly scoped and key foreground/background pairs meet the normal-text 4.5:1 contrast threshold. See [captured chat light/dark appearances](SCREENSHOT_GALLERY_CURRENT.md); unlike a visual mock-up, those PNGs come from browser capture scripts.
+
 ## Accessibility and usage
 
 - Use navy foreground `#082F49` against a cyan button or bright highlight; do not use white text on `#7DD3FC`.
@@ -89,6 +95,6 @@ Open **http://127.0.0.1:5173/**, switch light/dark, visit Welcome, Overview, Ana
 
 ### Source and deployment are separate statuses
 
-The cyan theme was merged in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), commit `0ddf3b69a8d33b2a448dca0a31f5eeb2a456a4eb`. **At that merge, Vercel returned a deployment-rate-limit failure**. This means the GitHub source can be updated while the public domain still serves an earlier deployed build. Check Vercel's deployment history before stating that the theme is live. See [Deployment](DEPLOYMENT.md) for how to retry and confirm the deployed commit.
+The base cyan theme was merged in [PR #10](https://github.com/kasim672/PromisePulse/pull/10); the chat-specific light-mode refinement arrived in [PR #19](https://github.com/kasim672/PromisePulse/pull/19). Vercel had an earlier deployment-rate-limit failure, but verify the **current** Vercel Ready status and deployed SHA before drawing conclusions about the public domain. See [Deployment](DEPLOYMENT.md) for how to retry and confirm the deployed commit.
 
 The platform's historical Olist data still describe 2016–2018 transactions. The cyan screenshots show the checked-in source running locally with those public assets; they are not evidence of a successful Vercel production deployment.
