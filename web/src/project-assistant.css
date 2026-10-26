@@ -1,0 +1,41 @@
+/* Gemini research drawer is additive: it never affects the navigation layout. */
+.project-ai-trigger{position:fixed;right:clamp(16px,2.2vw,32px);bottom:clamp(15px,2.2vw,28px);z-index:950;display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(3,105,161,.32);border-radius:999px;padding:13px 19px;min-height:48px;box-shadow:0 10px 32px rgba(0,0,0,.22);background:#7dd3fc;color:#082f49;font:700 14px/1.3 Urbanist,system-ui,sans-serif;cursor:pointer}
+.project-ai-trigger:hover{background:#bae6fd}
+.project-ai-backdrop{position:fixed;inset:0;z-index:1400;background:rgba(4,8,19,.67);display:flex;align-items:flex-end;justify-content:flex-end;padding:clamp(12px,2.5vw,30px)}
+.project-ai-dialog{width:min(515px,100%);height:min(690px,calc(100dvh - 40px));display:flex;flex-direction:column;border:1px solid var(--cadra-rim,rgba(135,153,176,.4));border-radius:23px;box-shadow:0 28px 80px rgba(0,0,0,.5);background:var(--cadra-panel,#182332);color:var(--cadra-text,#f6f8fc);overflow:hidden}
+.project-ai-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid var(--cadra-rim,rgba(135,153,176,.28));background:var(--cadra-glass,rgba(255,255,255,.04))}
+.project-ai-heading{display:flex;align-items:center;gap:12px;min-width:0}
+.project-ai-symbol{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:rgba(125,211,252,.18);color:var(--pp-accent-cyan-text,#7dd3fc)}
+.project-ai-heading h2{margin:0;font:700 18px/1.3 Urbanist,system-ui,sans-serif;color:var(--cadra-text)}
+.project-ai-heading p{margin:4px 0 0;font:500 12px/1.35 Urbanist,system-ui,sans-serif;color:var(--cadra-muted)}
+.project-ai-close{display:grid;place-items:center;flex:none;min-width:39px;height:39px;border:1px solid var(--cadra-rim);border-radius:10px;background:var(--cadra-glass);color:var(--cadra-text);cursor:pointer}
+.project-ai-messages{flex:1;min-height:0;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:15px}
+.project-ai-intro{margin:auto 0;display:grid;gap:12px;color:var(--cadra-text)}
+.project-ai-intro>svg{color:var(--pp-accent-cyan-text)}
+.project-ai-intro h3{font:700 22px/1.25 Urbanist,system-ui,sans-serif}
+.project-ai-intro p{color:var(--cadra-muted);font:500 14px/1.65 Urbanist,system-ui,sans-serif}
+.project-ai-suggestions{display:grid;gap:9px;margin-top:10px}
+.project-ai-suggestions button{border:1px solid var(--cadra-rim);border-radius:11px;background:var(--cadra-glass);color:var(--cadra-text);padding:12px;text-align:left;font:600 13px/1.4 Urbanist,system-ui,sans-serif;cursor:pointer}
+.project-ai-suggestions button:hover{border-color:var(--pp-accent-cyan,#7dd3fc)}
+.project-ai-message{max-width:96%;padding:14px;border-radius:14px;background:var(--cadra-glass);border:1px solid var(--cadra-rim)}
+.project-ai-message.user{align-self:flex-end;background:rgba(125,211,252,.14);border-color:rgba(125,211,252,.38)}
+.project-ai-message.assistant{align-self:flex-start}
+.project-ai-message.is-error{border-color:#ea7f7f}
+.project-ai-message strong{display:block;font:700 12px Urbanist,system-ui,sans-serif;margin-bottom:7px}
+.project-ai-message p{white-space:pre-wrap;overflow-wrap:anywhere;font:500 13px/1.75 Urbanist,system-ui,sans-serif;color:var(--cadra-text)}
+.project-ai-sources{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.project-ai-sources>span{flex-basis:100%;font:600 11px Urbanist,system-ui,sans-serif;color:var(--cadra-muted)}
+.project-ai-sources a{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cadra-rim);border-radius:7px;padding:6px 8px;color:var(--pp-accent-cyan-text,#7dd3fc);font:600 11px/1.35 Urbanist,system-ui,sans-serif;text-decoration:none}
+.project-ai-thinking{display:flex;align-items:center;gap:10px;color:var(--cadra-muted);font:500 13px Urbanist,system-ui,sans-serif}
+.project-ai-dots{display:inline-block;width:9px;height:9px;background:#7dd3fc;border-radius:50%;animation:pp-thinking 1s ease-in-out infinite alternate}
+@keyframes pp-thinking{from{opacity:.25;transform:scale(.75)}to{opacity:1;transform:scale(1)}}
+.project-ai-composer{padding:15px 17px 18px;border-top:1px solid var(--cadra-rim)}
+.project-ai-composer label{display:block;margin-bottom:9px;color:var(--cadra-text);font:700 12px Urbanist,system-ui,sans-serif}
+.project-ai-composer-row{display:flex;align-items:flex-end;gap:9px}
+.project-ai-composer textarea{flex:1;min-width:0;resize:vertical;max-height:125px;min-height:52px;border:1px solid var(--cadra-rim);border-radius:11px;background:var(--cadra-glass);color:var(--cadra-text);padding:12px;font:500 13px/1.55 Urbanist,system-ui,sans-serif}
+.project-ai-composer button{flex:none;display:grid;place-items:center;width:43px;height:43px;border:0;border-radius:11px;background:#7dd3fc;color:#082f49;cursor:pointer}
+.project-ai-composer button:disabled{opacity:.45;cursor:not-allowed}
+.project-ai-composer>p{margin:10px 0 0;color:var(--cadra-muted);font:500 11px/1.55 Urbanist,system-ui,sans-serif}
+.project-ai-dialog :is(button,textarea,a):focus-visible,.project-ai-trigger:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}
+@media(max-width:620px){.project-ai-trigger{right:12px;bottom:12px;min-height:45px;padding:12px 14px}.project-ai-trigger span{display:none}.project-ai-backdrop{padding:0}.project-ai-dialog{height:100dvh;width:100%;border-radius:0;border:0}.project-ai-header{padding:13px 14px}.project-ai-messages{padding:14px}}
+@media(prefers-reduced-motion:reduce){.project-ai-dots{animation:none}}

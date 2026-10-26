@@ -1,0 +1,74 @@
+name: Gemini Project Research Assistant QA
+on:
+  push:
+    branches: [feat/gemini-project-research-assistant]
+    paths:
+      - 'web/src/**'
+      - 'web/api/**'
+      - 'web/scripts/smoke-gemini-assistant.mjs'
+      - 'tests/test_gemini_assistant.mjs'
+      - '.github/workflows/gemini-assistant.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gemini-assistant-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  assistant-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install app and Chromium
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Build and test project-only Gemini backend without keys
+        working-directory: web
+        run: |
+          npm run build
+          node ../tests/test_gemini_assistant.mjs
+          node ../tests/test_documentation.cjs
+      - name: Create a real but secret-free local env from template
+        working-directory: web
+        run: |
+          npm run setup:gemini
+          npm run setup:gemini
+          test -f .env
+          test -z "$(sed -n '/^GEMINI_API_KEY=/s/^GEMINI_API_KEY=//p' .env)"
+          git check-ignore .env
+      - name: Start real Vite app with static Olist evidence
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/promisepulse-gemini-ui.log 2>&1 &
+          for i in {1..90}; do
+            if curl -fsS http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/promisepulse-gemini-ui.log
+          exit 1
+      - name: Verify real local Vite Gemini endpoint and secret isolation
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node ../tests/test_gemini_local_http.mjs
+      - name: Test chat, fake API answers and mobile, without real Gemini usage
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-gemini-assistant.mjs
+      - name: Keep screenshots available for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promisepulse-gemini-project-assistant-preview
+          path: web/.screenshots-gemini/
+          if-no-files-found: ignore

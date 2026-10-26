@@ -28,6 +28,27 @@ This visual update was merged to **`main`** in [PR #10](https://github.com/kasim
 
 **GitHub source versus public deployment:** Vercel reported a build-rate-limit failure for the soft-cyan merge on October 26, 2026. Therefore the public URL might still show the earlier lime theme until a successful redeployment. See the [deployment guide](docs/DEPLOYMENT.md) for verifying and retrying the production build. The [design system](docs/THEME_SYSTEM.md) documents colors, contrast, logos, and code ownership.
 
+## Optional Gemini-powered PromisePulse Research Assistant
+
+The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
+
+**Local setup:** The normal Vite dev server now serves the same `/api/ask` handler locally. Open a terminal and run:
+
+```bash
+cd ~/PromisePulse
+git switch feat/gemini-project-research-assistant
+cd web
+npm ci
+npm run setup:gemini
+nano .env
+# Add your own private GEMINI_API_KEY to the created file.
+npm run dev
+```
+
+The project commits `web/.env.example` but **never a real `web/.env`**; both Git ignore files exclude secret files. No Vercel account or Vercel CLI is necessary for local Gemini testing. After deployment, set `GEMINI_API_KEY` privately in Vercel Environment Variables as well. Do not paste API keys into GitHub or browser code. See the [complete local setup](docs/GEMINI_RESEARCH_ASSISTANT.md).
+
+Questions and selected project source excerpts are processed by Gemini; avoid entering personal data. The assistant is educational and only as accurate as the curated sources. See the complete [Gemini configuration, security, privacy, rate-limiting and architecture guide](docs/GEMINI_RESEARCH_ASSISTANT.md).
+
 ## Explore the current release
 
 | Workspace | What it does |

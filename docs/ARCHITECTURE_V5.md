@@ -57,6 +57,24 @@ flowchart LR
 - The map visualizes historic order aggregates by Brazilian state. It does not show live vehicle coordinates or customer addresses.
 - All shipped `web/public/data` assets are **publicly downloadable**. Do not place credentials or sensitive customer information there.
 
+### Optional Gemini assistant (separate server-side API boundary)
+
+The optional `feat/gemini-project-research-assistant` introduces a **new serverless Vercel Function**, distinct from the existing in-browser DuckDB-Wasm analytics. It is inactive until a Gemini key is configured and the branch is merged and deployed. The static academic warehouse and original AI Studio do not depend on this function.
+
+```mermaid
+flowchart LR
+  Q["Research question in React"] --> V["POST /api/ask: Vercel Function"]
+  V --> R["Retrieve up to 4 curated PromisePulse facts"]
+  R -->|Not relevant| Refuse["Refuse off-topic questions"]
+  R -->|Relevant| Google["Google Gemini generateContent"]
+  Key["Private GEMINI_API_KEY"] -.-> Google
+  Google --> Answer["Answer + server-selected source links"]
+  Answer --> Q
+  Olist["Static historical Olist exports"] -. "Manually curated evidence only" .-> R
+```
+
+For local development, a Vite dev-only middleware invokes the same `/api/ask` handler after loading `GEMINI_API_KEY` from ignored `web/.env`. In production, Vercel hosts that handler and reads the private key from its Environment Variables. The backend receives the visitor question, filters and validates it, and sends selected project evidence to Gemini using a server-side key. Questions therefore leave the website for Google's API processing; no persistent chat database is added. It uses a curated reference catalog rather than loading the entire private repository or generating new live SQL results. It includes best-effort application throttling, but production bot and spending protection should be configured at the edge/provider. See [GEMINI_RESEARCH_ASSISTANT.md](GEMINI_RESEARCH_ASSISTANT.md) for full limitations and setup.
+
 ## 2. Offline export and verification
 
 ```mermaid

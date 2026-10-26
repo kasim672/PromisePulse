@@ -43,3 +43,15 @@ jobs:
         run: node ../tests/test_mining_export_integrity.cjs
       - name: Verify documentation, diagrams and current screenshots
         run: node ../tests/test_documentation.cjs
+      - name: Verify Gemini project-only retrieval, secure server route and error handling
+        run: node ../tests/test_gemini_assistant.mjs
+      - name: Verify local ignored environment and Vite Gemini HTTP endpoint
+        run: |
+          npm run setup:gemini
+          npm run setup:gemini
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/promisepulse-local-gemini.log 2>&1 &
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:4173/data/manifest.json >/dev/null; then break; fi
+            sleep 1
+          done
+          node ../tests/test_gemini_local_http.mjs
