@@ -1,7 +1,7 @@
 name: Header Search Layout QA
 on:
   push:
-    branches: ['fix/header-search-fill-space']
+    branches: ['fix/header-search-fill-space', 'fix/header-search-before-theme']
     paths:
       - 'web/src/**'
       - 'web/scripts/smoke-header-search.mjs'

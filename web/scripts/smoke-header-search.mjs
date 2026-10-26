@@ -25,8 +25,10 @@ try{
    const ctaVisible=await cta.isVisible()
    const ctaBox=ctaVisible?await cta.boundingBox():null
    if(!themeBox||!searchBox)throw Error('Search or theme toggle has no bounds')
-   if(searchBox.x<themeBox.x+themeBox.width-2)throw Error('Search overlaps theme button')
-   if(ctaBox&&searchBox.x+searchBox.width>ctaBox.x+2)throw Error('Search overlaps Explore data')
+   if(searchBox.x+searchBox.width>themeBox.x+2)throw Error('Search must be before the theme toggle without overlapping it')
+   if(ctaBox&&themeBox.x+themeBox.width>ctaBox.x+2)throw Error('Theme toggle overlaps Explore data')
+   const children=await page.locator('.header-actions').locator(':scope > button').evaluateAll(nodes=>nodes.map(node=>node.className))
+   if(children[0]!=='header-search'||children[1]!=='theme-toggle'||children[2]!=='header-cta')throw Error('Header order must be Search → Theme → Explore data')
    if(width>=900&&searchBox.width<220)throw Error('Search did not expand into available desktop header space')
    if(width<=480&&searchBox.width<34)throw Error('Mobile search no longer usable')
    const empty=await header.evaluate(node=>({header:node.getBoundingClientRect().width,remaining:node.getBoundingClientRect().right-[...node.children].map(e=>e.getBoundingClientRect().right).reduce((x,v)=>Math.max(x,v),0),pageOverflow:document.documentElement.scrollWidth-window.innerWidth}))
