@@ -1,6 +1,6 @@
 /* PromisePulse 5 syllabus hub: additive styles only. Existing premium UI unchanged. */
 .syllabus-hub{gap:19px;--atlas-selected:#1d4f87;--atlas-muted:#5c5c5a;--atlas-ink:#111111}
-html[data-theme="dark"] .syllabus-hub{--atlas-selected:#c4ea84;--atlas-muted:#b4bac6;--atlas-ink:#f4f6f8}
+html[data-theme="dark"] .syllabus-hub{--atlas-selected:#7dd3fc;--atlas-muted:#b4bac6;--atlas-ink:#f4f6f8}
 .syllabus-hub-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:16px;align-items:stretch}
 .syllabus-hub-intro{background:radial-gradient(circle at 94% 6%,rgba(37,99,168,.1),transparent 50%),var(--cadra-glass);border:1px solid var(--cadra-rim);box-shadow:var(--cadra-shadow);border-radius:24px;padding:clamp(23px,3.4vw,48px);display:flex;flex-direction:column;align-items:flex-start;gap:17px}
 .syllabus-hub-intro>span{display:flex;align-items:center;gap:9px;color:var(--atlas-selected);font:700 11px 'Urbanist',sans-serif;letter-spacing:.12em}
@@ -53,8 +53,8 @@ html[data-theme="dark"] .syllabus-hub{--atlas-selected:#c4ea84;--atlas-muted:#b4
 .syllabus-hub-integrity p{font:500 12px/1.7 'Urbanist',sans-serif;color:var(--cadra-muted)}
 .syllabus-hub-integrity button{display:flex;flex:none;align-items:center;gap:8px;border:1px solid var(--cadra-line-2);border-radius:999px;padding:11px 15px;background:var(--cadra-glass-2);color:var(--cadra-text);font:600 11px 'Urbanist',sans-serif}
 html[data-theme="dark"] .syllabus-hub-intro{background:radial-gradient(circle at 94% 6%,rgba(128,166,255,.14),transparent 45%),var(--cadra-glass)}
-html[data-theme="dark"] .syllabus-hub-intro button,html[data-theme="dark"] .syllabus-hub-filters button.active{background:#c4ea84;color:#172318}
-html[data-theme="dark"] .syllabus-hub-open:hover{background:#c4ea84;color:#172318}
+html[data-theme="dark"] .syllabus-hub-intro button,html[data-theme="dark"] .syllabus-hub-filters button.active{background:#7dd3fc;color:#172318}
+html[data-theme="dark"] .syllabus-hub-open:hover{background:#7dd3fc;color:#172318}
 @media(max-width:1230px){.syllabus-hub-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.syllabus-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.syllabus-hub-hero{grid-template-columns:1fr}}
 @media(max-width:700px){.syllabus-hub-grid{grid-template-columns:1fr}.syllabus-hub-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.syllabus-hub-hero{gap:12px}.syllabus-hub-integrity{flex-direction:column;align-items:flex-start}.syllabus-hub-card{min-height:0}.syllabus-hub-guide{padding:20px}.syllabus-hub-filters{border-radius:17px}.syllabus-hub-heading{flex-direction:column;align-items:flex-start}}
