@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
-import {Activity,ArrowRight,BookOpen,BrainCircuit,Database,Download,FlaskConical,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
+import {Activity,ArrowRight,BookOpen,BrainCircuit,Database,Download,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
 import type {Warehouse} from './db'
 import type {RecordRow} from './types'
 import type {AtlasState,AtlasYear} from './atlasQueries'
@@ -47,7 +47,7 @@ function EvidenceCopilot({rows,manifest}:{rows:RecordRow[];manifest:Warehouse['m
   methodology:'PromisePulse uses an existing chronologically evaluated scikit-learn classifier at order placement. This assistant summarizes deterministic DuckDB results, not a generative language model or an external AI API. Its answers are traceable to the current aggregated table and the published evaluation manifest. Never read the risk label as a live courier forecast, and do not infer causality or statistical significance from a correlation.'
  }
  return <section className="pp-block research-copilot" aria-label="AI evidence assistant">
-  <div className="research-copilot-header"><span className="research-copilot-emblem"><Sparkles size={22}/></span><div><span className="atlas-mini-label">MODEL-BASED · TRANSPARENT ANALYSIS</span><h3>AI Evidence Assistant</h3><p>Traceable answers computed from actual evaluated Olist test rows and model metadata.</p></div></div>
+  <div className="research-copilot-header"><span className="research-copilot-emblem"><Sparkles size={22}/></span><div><h3>AI Evidence Assistant</h3><p>Traceable answers computed from actual evaluated Olist test rows and model metadata.</p></div></div>
   <div className="research-chips" aria-label="Research questions">{([
    ['signal','Where is late risk concentrated?'],['calibration','Is the model well calibrated?'],['methodology','How is this AI implemented?']
   ] as const).map(([key,label])=><button type="button" key={key} className={prompt===key?'active':''} aria-pressed={prompt===key} onClick={()=>setPrompt(key)}>{label}</button>)}</div>
@@ -55,11 +55,11 @@ function EvidenceCopilot({rows,manifest}:{rows:RecordRow[];manifest:Warehouse['m
   <p className="research-disclosure">Deterministic evidence summary · Not ChatGPT, generative AI, or an autonomous logistics agent. Source: evaluated risk_predictions and manifest.</p>
  </section>
 }
-const destinationMeta:Record<ResearchDestination,{eyebrow:string,title:string,accent:string,subtitle:string}>={
- cohorts:{eyebrow:'CUSTOMER SCIENCE / HISTORICAL COHORTS',title:'Understand customer',accent:'behavior.',subtitle:'Six views of repeat ordering, observed customer value, frequency and review outcomes. Cohorts use the first purchase within your selected filter window.'},
- promise:{eyebrow:'FULFILLMENT SCIENCE / DELIVERY EVIDENCE',title:'Measure the',accent:'promise.',subtitle:'Six additional plots on real delivery lead times, late outcomes, reported satisfaction and payments. No simulated shipping routes.'},
- studio:{eyebrow:'MARKETPLACE RESEARCH / CROSS-FUNCTIONAL LAB',title:'Discover hidden',accent:'structures.',subtitle:'Twelve new visual investigations into basket composition, merchandise weight and freight economics, without multiplying payments by items.'},
- model:{eyebrow:'EXPLAINABLE CLASSIFICATION / TEST COHORT',title:'See what AI',accent:'actually knows.',subtitle:'Six held-out model diagnostics and a grounded evidence assistant. Every number traces to evaluated model predictions.'}
+const destinationMeta:Record<ResearchDestination,{title:string,accent:string,subtitle:string}>={
+ cohorts:{title:'Understand customer',accent:'behavior.',subtitle:'Six views of repeat ordering, observed customer value, frequency and review outcomes. Cohorts use the first purchase within your selected filter window.'},
+ promise:{title:'Measure the',accent:'promise.',subtitle:'Six additional plots on real delivery lead times, late outcomes, reported satisfaction and payments. No simulated shipping routes.'},
+ studio:{title:'Discover hidden',accent:'structures.',subtitle:'Twelve new visual investigations into basket composition, merchandise weight and freight economics, without multiplying payments by items.'},
+ model:{title:'See what AI',accent:'actually knows.',subtitle:'Six held-out model diagnostics and a grounded evidence assistant. Every number traces to evaluated model predictions.'}
 }
 export function ResearchWorkspace({db,destination}:{db:Warehouse;destination:ResearchDestination}){
  const [groupId,setGroupId]=useState<ResearchGroupId>(DEFAULTS[destination])
@@ -88,7 +88,7 @@ export function ResearchWorkspace({db,destination}:{db:Warehouse;destination:Res
  },[db,groupId,year,state,isModel,evaluated])
  const totalMetrics=destination==='studio'?12:group.metrics.length
  return <div className="pp-home atlas-page research-page">
-  <div className="pp-page-top"><div><div className="pp-overline"><FlaskConical size={15}/> {meta.eyebrow}</div><h1>{meta.title} <em>{meta.accent}</em></h1><p>{meta.subtitle}</p></div><span className="pp-historical"><span/> HISTORICAL DATA ONLY</span></div>
+  <div className="pp-page-top"><div><h1>{meta.title} <em>{meta.accent}</em></h1><p>{meta.subtitle}</p></div></div>
   <div className="research-fact-strip"><div><strong>{totalMetrics}</strong><span>Interactive figures</span></div><div><strong>{group.grain}</strong><span>Source granularity</span></div><div><strong>{isModel?'2018 hold-out':'2016–2018'}</strong><span>Observation period</span></div><div><strong>CSV</strong><span>Download aggregates</span></div></div>
   {destination==='studio'&&<div className="research-switch" role="group" aria-label="Research studio datasets"><button aria-pressed={groupId==='basket'} className={groupId==='basket'?'active':''} onClick={()=>setGroupId('basket')}><Layers3 size={16}/> Basket structure · 6 charts</button><button aria-pressed={groupId==='weight'} className={groupId==='weight'?'active':''} onClick={()=>setGroupId('weight')}><Activity size={16}/> Product weight & freight · 6 charts</button></div>}
   <div className="pp-block atlas-topbar">
@@ -96,7 +96,7 @@ export function ResearchWorkspace({db,destination}:{db:Warehouse;destination:Res
    <div className="atlas-filter"><label htmlFor="research-state">Customer state</label><select id="research-state" value={state} onChange={e=>setState(e.target.value as AtlasState)}>{ATLAS_STATES.map(v=><option value={v} key={v}>{v==='ALL'?'All Brazilian states':v}</option>)}</select></div>
    <div className="atlas-filter-note"><ShieldCheck size={17}/><span>{isModel?'Fixed held-out test cohort; no retraining or year slicing. Other model metrics below are overall test-set values.':'Queries use the selected historical year and customer state. Only aggregate rows can be downloaded.'}</span></div>
   </div>
-  <div className="atlas-group-intro"><div><p>FOCUSED RESEARCH LENS</p><h2>{group.name}</h2><span>{group.subtitle}</span></div><div className="atlas-grain"><Database size={16}/>{group.grain}</div></div>
+  <div className="atlas-group-intro"><div><h2>{group.name}</h2><span>{group.subtitle}</span></div><div className="atlas-grain"><Database size={16}/>{group.grain}</div></div>
   <p className="research-method-note"><BookOpen size={16}/>{group.scope}</p>
   {isModel&&<EvidenceCopilot rows={data.rows} manifest={db.manifest}/>}
   <div className="atlas-count-line"><span>{group.metrics.length} additional live aggregate charts</span><span>{data.loading?'Querying historical warehouse…':data.error?'Data source unavailable':data.rows.length+' observed bins'}</span></div>
