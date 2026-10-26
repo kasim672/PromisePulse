@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
@@ -316,6 +316,8 @@ export default function App() {
   const [pending, setPending] = useState(true)
   const [mobileNav, setMobileNav] = useState(false)
   const [labMenuOpen, setLabMenuOpen] = useState(false)
+  const labMenuRef = useRef<HTMLDivElement>(null)
+  const labMenuButtonRef = useRef<HTMLButtonElement>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
@@ -350,6 +352,26 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
+  useEffect(() => {
+    if (!labMenuOpen) return
+    const dismissOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !labMenuRef.current?.contains(event.target)) {
+        setLabMenuOpen(false)
+      }
+    }
+    const dismissEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setLabMenuOpen(false)
+        labMenuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('pointerdown', dismissOutside)
+    document.addEventListener('keydown', dismissEscape)
+    return () => {
+      document.removeEventListener('pointerdown', dismissOutside)
+      document.removeEventListener('keydown', dismissEscape)
+    }
+  }, [labMenuOpen])
   const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
   const changePage = (tab: Tab) => {
     setActive(tab)
@@ -370,11 +392,32 @@ export default function App() {
       </div>
       <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">
         {NAV.filter(item => !(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}
-        <div className="syllabus-nav-group">
-          <button type="button" className={`header-nav-item ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'active':''}`} aria-label="Data Mining Lab modules" aria-expanded={labMenuOpen} aria-controls="syllabus-nav-submenu" onClick={()=>setLabMenuOpen(v=>!v)}><GraduationCap size={19} aria-hidden="true"/><span className="nav-label">Data Mining Lab</span><span aria-hidden="true">⌄</span></button>
-          {labMenuOpen && <div className="syllabus-nav-submenu" id="syllabus-nav-submenu" aria-label="Syllabus modules">
-            {NAV.filter(item => (['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item=><button type="button" key={item.label} className={active===item.label?'active':''} aria-current={active===item.label?'page':undefined} onClick={()=>changePage(item.label)}>{item.label}</button>)}
-          </div>}
+        <div className="syllabus-nav-group" ref={labMenuRef}>
+          <button
+            ref={labMenuButtonRef}
+            type="button"
+            className={`header-nav-item syllabus-nav-trigger ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active) || labMenuOpen ? 'active' : ''}`}
+            aria-label="Data Mining Lab"
+            aria-expanded={labMenuOpen}
+            aria-controls="syllabus-nav-submenu"
+            data-label="Data Mining Lab"
+            title="Open Data Mining Lab modules"
+            onClick={() => setLabMenuOpen(open => !open)}
+          >
+            <GraduationCap size={19} aria-hidden="true"/>
+            <span className="nav-label">Data Mining Lab</span>
+            <span className="syllabus-nav-chevron" aria-hidden="true">⌄</span>
+          </button>
+          {labMenuOpen && (
+            <div className="syllabus-nav-submenu" id="syllabus-nav-submenu" role="group" aria-label="Data Mining Lab modules">
+              <div className="syllabus-nav-heading">Data Mining Lab <small>6 syllabus modules · 30 hours</small></div>
+              {NAV.filter(item => (['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => (
+                <button type="button" key={item.label} className={active===item.label?'active':''} aria-current={active===item.label?'page':undefined} onClick={() => changePage(item.label)}>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </nav>
     </header>
