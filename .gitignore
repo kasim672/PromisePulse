@@ -33,10 +33,15 @@ data/raw/
 data/*.csv
 data/*.zip
 
-# Environments & credentials
+# Environments & credentials, including web/.env for local Gemini development
+# Never commit a real GEMINI_API_KEY or a VITE_GEMINI_API_KEY.
 .env
 .env.*
 !.env.example
+# Files produced by local Vercel tooling
+.vercel/
+# Extra local secret files
+*.local.secret
 *.pem
 *.key
 
