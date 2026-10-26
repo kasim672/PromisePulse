@@ -1,4 +1,4 @@
-name: Refresh current PromisePulse documentation screenshots
+name: Refresh PromisePulse release and AI chat screenshots
 on:
   push:
     branches: [main]
