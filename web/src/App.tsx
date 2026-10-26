@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
-import type { CSSProperties, ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import {
   Activity, ArrowRight, BarChart3, BrainCircuit, Check,
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
@@ -316,11 +315,6 @@ export default function App() {
   const [loadError, setLoadError] = useState('')
   const [pending, setPending] = useState(true)
   const [mobileNav, setMobileNav] = useState(false)
-  const [labMenuOpen, setLabMenuOpen] = useState(false)
-  const labMenuRef = useRef<HTMLDivElement>(null)
-  const labMenuPanelRef = useRef<HTMLDivElement>(null)
-  const labMenuButtonRef = useRef<HTMLButtonElement>(null)
-  const [labMenuPosition, setLabMenuPosition] = useState<CSSProperties>({})
   const [searchOpen, setSearchOpen] = useState(false)
   const [navQuery, setNavQuery] = useState('')
   const [reloading, setReloading] = useState(false)
@@ -355,59 +349,9 @@ export default function App() {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
-  useEffect(() => {
-    if (!labMenuOpen) return
-    const dismissOutside = (event: PointerEvent) => {
-      if (event.target instanceof Node && !labMenuRef.current?.contains(event.target) && !labMenuPanelRef.current?.contains(event.target)) {
-        setLabMenuOpen(false)
-      }
-    }
-    const dismissEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setLabMenuOpen(false)
-        labMenuButtonRef.current?.focus()
-      }
-    }
-    document.addEventListener('pointerdown', dismissOutside)
-    document.addEventListener('keydown', dismissEscape)
-    return () => {
-      document.removeEventListener('pointerdown', dismissOutside)
-      document.removeEventListener('keydown', dismissEscape)
-    }
-  }, [labMenuOpen])
-  // Render the syllabus flyout outside the sticky header stacking context.
-  // A nested dropdown is visible but unclickable on mobile when the main content
-  // intercepts its pointer events. Anchor a fixed portal to the dock button.
-  useEffect(() => {
-    if (!labMenuOpen) return
-    const syncPosition = () => {
-      const button = labMenuButtonRef.current?.getBoundingClientRect()
-      if (!button) return
-      const width = Math.min(310, window.innerWidth - 24)
-      const desktop = window.innerWidth >= 1100
-      const left = desktop
-        ? Math.max(12, Math.min(button.right + 18, window.innerWidth - width - 12))
-        : Math.max(12, Math.min(button.right - width, window.innerWidth - width - 12))
-      const bottom = desktop
-        ? Math.max(12, window.innerHeight - button.bottom)
-        : Math.max(12, window.innerHeight - button.top + 15)
-      setLabMenuPosition({
-        left, bottom, width,
-        maxHeight: Math.max(120, window.innerHeight - bottom - 12),
-      })
-    }
-    syncPosition()
-    window.addEventListener('resize', syncPosition)
-    window.addEventListener('scroll', syncPosition, true)
-    return () => {
-      window.removeEventListener('resize', syncPosition)
-      window.removeEventListener('scroll', syncPosition, true)
-    }
-  }, [labMenuOpen])
   const matchingNav = NAV.filter(item => (item.label + ' ' + item.description).toLowerCase().includes(navQuery.trim().toLowerCase()))
   const changePage = (tab: Tab) => {
     setActive(tab)
-    setLabMenuOpen(false)
     setMobileNav(false)
     setSearchOpen(false)
     setNavQuery('')
@@ -424,37 +368,9 @@ export default function App() {
       </div>
       <nav className={`main-nav ${mobileNav?'show':''}`} aria-label="Main navigation">
         {NAV.filter(item => !(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => { const Icon = item.icon; return <button type="button" key={item.label} aria-label={item.label} data-label={item.label} aria-current={active===item.label?'page':undefined} className={`header-nav-item ${active===item.label?'active':''}`} title={item.description} onClick={()=>changePage(item.label)}><Icon size={19} aria-hidden="true"/><span className="nav-label">{item.label}</span></button> })}
-        <div className="syllabus-nav-group" ref={labMenuRef}>
-          <button
-            ref={labMenuButtonRef}
-            type="button"
-            className={`header-nav-item syllabus-nav-trigger ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active) || labMenuOpen ? 'active' : ''}`}
-            aria-label="Data Mining Lab"
-            aria-expanded={labMenuOpen}
-            aria-controls="syllabus-nav-submenu"
-            data-label="Data Mining Lab"
-            title="Open Data Mining Lab modules"
-            onClick={() => setLabMenuOpen(open => !open)}
-          >
-            <GraduationCap size={19} aria-hidden="true"/>
-            <span className="nav-label">Data Mining Lab</span>
-            <span className="syllabus-nav-chevron" aria-hidden="true">⌄</span>
-          </button>
-
-        </div>
+        <button type="button" className={`header-nav-item ${(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'active':''}`} aria-label="Data Mining Lab" aria-current={(['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(active)?'page':undefined} data-label="Data Mining Lab" title="Open Data Mining Lab" onClick={() => changePage('Syllabus Hub')}><GraduationCap size={19} aria-hidden="true"/><span className="nav-label">Data Mining Lab</span></button>
       </nav>
     </header>
-    {labMenuOpen && createPortal(
-      <div className="syllabus-nav-submenu" id="syllabus-nav-submenu" ref={labMenuPanelRef} role="group" aria-label="Data Mining Lab modules" style={labMenuPosition}>
-        <div className="syllabus-nav-heading">Data Mining Lab <small>6 syllabus modules · 30 hours</small></div>
-        {NAV.filter(item => (['Syllabus Hub','Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classification Lab','Clustering Lab','Pattern Mining'] as Tab[]).includes(item.label)).map(item => (
-          <button type="button" key={item.label} className={active===item.label?'active':''} aria-current={active===item.label?'page':undefined} onClick={() => changePage(item.label)}>
-            {item.label}
-          </button>
-        ))}
-      </div>,
-      document.body
-    )}
     {searchOpen && <div className="command-overlay" onMouseDown={() => setSearchOpen(false)}>
       <div className="command-dialog" role="dialog" aria-modal="true" aria-label="Find a PromisePulse section" onMouseDown={event => event.stopPropagation()}>
         <div className="command-search"><Search size={20} aria-hidden="true"/><input autoFocus value={navQuery} onChange={event => setNavQuery(event.target.value)} placeholder="Search pages, insights, warehouse tools..." aria-label="Search sections"/><kbd>ESC</kbd></div>
@@ -480,12 +396,12 @@ export default function App() {
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
         {active === 'Syllabus Hub' && <SyllabusHub onNavigate={changePage}/>}
-        {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL"/>}
-        {active === 'Data Lakes' && <SyllabusLab module="Data Lakes"/>}
-        {active === 'EDA & Preprocessing' && <SyllabusLab module="EDA & Preprocessing"/>}
-        {active === 'Classification Lab' && <SyllabusLab module="Classification Lab"/>}
-        {active === 'Clustering Lab' && <SyllabusLab module="Clustering Lab"/>}
-        {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining"/>}
+        {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL" onNavigate={changePage}/>}
+        {active === 'Data Lakes' && <SyllabusLab module="Data Lakes" onNavigate={changePage}/>}
+        {active === 'EDA & Preprocessing' && <SyllabusLab module="EDA & Preprocessing" onNavigate={changePage}/>}
+        {active === 'Classification Lab' && <SyllabusLab module="Classification Lab" onNavigate={changePage}/>}
+        {active === 'Clustering Lab' && <SyllabusLab module="Clustering Lab" onNavigate={changePage}/>}
+        {active === 'Pattern Mining' && <SyllabusLab module="Pattern Mining" onNavigate={changePage}/>}
       </>}
     </main>
     <footer className="site-footer"><div className="footer-inner"><button className="footer-brand" aria-label="Back to PromisePulse landing page" onClick={()=>changePage('Welcome')}><img className="footer-logo-image" src="/promisepulse-logo.webp" alt="PromisePulse" /></button><span>Historical commerce intelligence · Brazil 2016–2018.</span><div className="footer-links"><button onClick={()=>changePage('Data Catalog')}>Data provenance</button><button onClick={()=>changePage('Pipeline & Quality')}>Methodology</button><span>© 2026 PromisePulse</span></div></div></footer>
