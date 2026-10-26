@@ -43,3 +43,5 @@ jobs:
         run: node ../tests/test_mining_export_integrity.cjs
       - name: Verify documentation, diagrams and current screenshots
         run: node ../tests/test_documentation.cjs
+      - name: Verify Gemini project-only retrieval, secure server route and error handling
+        run: node ../tests/test_gemini_assistant.mjs
