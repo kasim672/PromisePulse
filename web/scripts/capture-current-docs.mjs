@@ -23,7 +23,7 @@ async function save(page,name){
 }
 async function openLab(page,index){
  const nav=page.getByRole('navigation',{name:'Main navigation'})
- await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
+ await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).evaluate(button=>button.click()) // bypass overlapping floating chatbot trigger in narrow capture viewport
  const cards=page.locator('.syllabus-hub-grid .syllabus-hub-card')
  await cards.first().waitFor({state:'visible',timeout:90000})
  if(await cards.count()!==6)throw Error('All six mining lab sections must be visible')
