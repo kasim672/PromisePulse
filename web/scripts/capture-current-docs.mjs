@@ -1,5 +1,5 @@
 /**
- * Documentation screenshots of the merged V5 soft-cyan React + DuckDB-Wasm application.
+ * Documentation screenshots of the current V5 source, including the integrated AI chat drawer.
  * Reads bundled Olist Parquet and published mining_lab.json. No mocked metrics.
  * npm ci && npm install --no-save --package-lock=false playwright
  * npm run dev -- --host 127.0.0.1 --port 4173
@@ -14,10 +14,10 @@ const records=[]
 await fs.mkdir(output,{recursive:true})
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']})
 const errors=[]
-async function save(page,name){
+async function save(page,name,fullPage=true){
  await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo({top:0,behavior:'instant'})})
  const filename=name+'.png'
- await page.screenshot({path:path.join(output,filename),fullPage:true,animations:'disabled'})
+ await page.screenshot({path:path.join(output,filename),fullPage,animations:'disabled'})
  records.push(filename)
  console.log('Captured '+filename)
 }
@@ -54,6 +54,21 @@ async function scenario(theme,width,height,mobile=false){
   await page.locator('.pp-dashboard').waitFor({state:'visible',timeout:90000})
   await page.locator('.pp-dashboard .query-loading').first().waitFor({state:'hidden',timeout:90000})
   await save(page,prefix+'overview-'+theme)
+  // Capture the *actual* integrated Gemini chat drawer in each desktop theme.
+  // No API key is required and no user message is sent to Google for this scene.
+  if(!mobile){
+   await page.getByRole('button',{name:'Ask PromisePulse AI'}).click()
+   const chat=page.getByRole('dialog',{name:'PromisePulse Research Assistant'})
+   await chat.waitFor({state:'visible',timeout:12000})
+   await chat.getByRole('heading',{name:'Ask anything about PromisePulse'}).waitFor({state:'visible'})
+   if(theme==='light'){
+    const color=await chat.evaluate(el=>getComputedStyle(el).backgroundColor)
+    if(color!=='rgb(248, 251, 255)')throw Error('Light-chat opaque background not applied: '+color)
+   }
+   await save(page,'assistant-'+theme,false)
+   await page.getByRole('button',{name:'Close AI assistant'}).click()
+   await chat.waitFor({state:'hidden'})
+  }
   if(mobile){
    await openLab(page,null)
    await save(page,'mobile-mining-hub-'+theme)
