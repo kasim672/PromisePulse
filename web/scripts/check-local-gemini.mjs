@@ -13,7 +13,7 @@ try{
   process.exit(0)
  }
  console.error('FAIL: unexpected HTTP '+response.status+' from '+endpoint.href)
- if(response.status===404)console.error('You are viewing a stale Vite server. Stop all old npm run dev processes and restart from ~/PromisePulse/web.')
+ if(response.status===404)console.error('The Vite server is not proxying /api/ask. Stop old dev servers, pull main, then start with npm run dev (which explicitly loads vite.config.ts).')
  else console.error('Response code:',data.error||'Unexpected response shape')
  process.exitCode=1
 }catch(error){
