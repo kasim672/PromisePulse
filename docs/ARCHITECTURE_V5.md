@@ -1,265 +1,220 @@
-# PromisePulse 5.0 — Architecture and data flow
+# PromisePulse 5.0 — system architecture
 
-This document describes the **merged PromisePulse 5.0 `main` release**, including the typography improvements, algorithm walkthroughs, recoverable data-loading states, and **soft-cyan theme (`#7DD3FC`)**. The rejected V6 proposal is not part of this architecture.
+This guide describes the current `main` implementation: an **offline research data pipeline**, **static published warehouse**, **browser-run DuckDB-Wasm analytics**, and a separate **server-side Gemini assistant**. It replaces older descriptions of Gemini as an unmerged, project-only feature.
 
-![PromisePulse 5.0 system architecture](architecture.svg)
+![System architecture covering the public data path and the optional Gemini service](architecture.svg)
 
-The app has two separate execution environments: an **offline Python/DuckDB exporter** (used to generate the public analytical files) and a **static React web application** (used to explore those files in each visitor's browser). It is **not** a hosted live database, real-time logistics tracking system, or cloud ML service.
-
-## 1. End-to-end architecture
+## 1. End-to-end data and application flow
 
 ```mermaid
 flowchart LR
-    subgraph OFF["Offline build — Python / DuckDB / scikit-learn"]
-        CSV["Olist CSV sources (8 files)"]
-        ETL["build_web_data.py — ETL and dimensional modeling"]
-        ML["Optional --train — chronological delivery-risk evaluation"]
-        MINE["build_mining_lab.py — offline mining experiments"]
-        CSV --> ETL
-        ETL --> ML
-        ETL --> MINE
-    end
-
-    subgraph PUB["Versioned static assets — web/public/data"]
-        PAR["6 Parquet tables"]
-        RISK["risk_predictions.parquet — if evaluated"]
-        META["manifest.json"]
-        LAB["mining_lab.json"]
-    end
-
-    subgraph WEB["Visitor browser — static Vite/React build"]
-        UI["React workspaces + Data Mining Lab"]
-        THEME["Light/dark theme + soft-cyan CSS — presentation only"]
-        THEME --> UI
-        LOADER["db.ts — fetch, register Parquet and create read-only views"]
-        WASM["DuckDB-Wasm running in browser Web Worker"]
-        VIEW["Historical SQL aggregates, charts, tables, CSV exports"]
-        UI --> LOADER --> WASM --> VIEW --> UI
-        LAB --> UI
-    end
-
-    ETL --> PAR
-    ETL --> META
-    ML --> RISK
-    MINE --> LAB
-    PAR --> LOADER
-    RISK --> LOADER
-    META --> LOADER
+  subgraph BUILD["Offline research pipeline — Python"]
+    SRC["8 historical Olist CSVs"]
+    ETL["build_web_data.py — DuckDB ETL"]
+    TRAIN["train_risk.py — optional chronological evaluation"]
+    LABS["build_mining_lab.py — offline experiments"]
+    SRC --> ETL
+    ETL --> TRAIN
+    ETL --> LABS
+  end
+  subgraph ART["Public static website assets"]
+    PAR["6 warehouse Parquet relations"]
+    PRED["risk_predictions.parquet"]
+    JSON["manifest.json · mining_lab.json"]
+    UI["Vite/React/CSS bundle"]
+  end
+  subgraph BROWSER["Visitor browser"]
+    REACT["Welcome · 12 research views · 6 mining lab modules"]
+    DUCK["DuckDB-Wasm in Web Worker"]
+    LABUI["Precomputed mining visualizations"]
+    CHAT["Ask PromisePulse AI drawer"]
+    REACT --> DUCK
+    DUCK --> REACT
+    JSON --> LABUI
+    LABUI --> REACT
+  end
+  subgraph API["Optional Gemini service boundary"]
+    HTTP["POST /api/ask — Vercel Function"]
+    RETRIEVE["Server-only curated + website passage index"]
+    GEMINI["Google Gemini generateContent"]
+    KEY["Private GEMINI_API_KEY"]
+    HTTP --> RETRIEVE
+    RETRIEVE --> GEMINI
+    KEY -.-> GEMINI
+    GEMINI --> HTTP
+  end
+  ETL --> PAR
+  ETL --> JSON
+  TRAIN --> PRED
+  LABS --> JSON
+  UI --> REACT
+  PAR --> DUCK
+  PRED --> DUCK
+  CHAT --> HTTP
+  HTTP --> CHAT
 ```
 
-**Hosting:** Vercel serves the compiled `web/dist/` files and static datasets over HTTPS. After these files are downloaded, DuckDB SQL runs **client-side**; Vercel does not execute Python ETL jobs or handle analytics queries. CSS color tokens are independent of the warehouse: changing from lime to cyan cannot change query outcomes. A merged GitHub commit does not prove a successful Vercel deployment.
+**Boundaries that matter:** Python and scikit-learn do **not** run in the visitor's browser or in the production website request path. Vercel serves static resources for analytics. DuckDB-Wasm queries operate in a browser worker over downloaded historical data. The **only optional server-side runtime** is the Gemini assistant endpoint. A successful Vite build does not establish that the Vercel Function, Gemini API key, quota or deployment is working.
 
-### Important execution boundaries
-
-- Offline training/experiment outputs are generated ahead of time. Interactive chart controls query the static warehouse in the browser; they do not retrain models.
-- The visible AI Evidence Assistant is a deterministic explanation of published evaluation data, not a generative chatbot.
-- Some Data Lakes and dimensional alternatives in the teaching lab are **conceptual views**, not separate cloud infrastructure.
-- The map visualizes historic order aggregates by Brazilian state. It does not show live vehicle coordinates or customer addresses.
-- All shipped `web/public/data` assets are **publicly downloadable**. Do not place credentials or sensitive customer information there.
-
-### Optional Gemini assistant (separate server-side API boundary)
-
-The optional `feat/gemini-project-research-assistant` introduces a **new serverless Vercel Function**, distinct from the existing in-browser DuckDB-Wasm analytics. It is inactive until a Gemini key is configured and the branch is merged and deployed. The static academic warehouse and original AI Studio do not depend on this function.
-
-```mermaid
-flowchart LR
-  Q["Research question in React"] --> V["POST /api/ask: Vercel Function"]
-  V --> R["Retrieve up to 4 curated PromisePulse facts"]
-  R -->|Not relevant| Refuse["Refuse off-topic questions"]
-  R -->|Relevant| Google["Google Gemini generateContent"]
-  Key["Private GEMINI_API_KEY"] -.-> Google
-  Google --> Answer["Answer + server-selected source links"]
-  Answer --> Q
-  Olist["Static historical Olist exports"] -. "Manually curated evidence only" .-> R
-```
-
-For local development, the `npm run dev` launcher starts a localhost-only Node API (port 8787) and Vite proxies `/api/ask` to the same handler after loading `GEMINI_API_KEY` from ignored `web/.env`. In production, Vercel hosts that handler and reads the private key from its Environment Variables. The backend receives the visitor question, filters and validates it, and sends selected project evidence to Gemini using a server-side key. Questions therefore leave the website for Google's API processing; no persistent chat database is added. It uses a curated reference catalog rather than loading the entire private repository or generating new live SQL results. It includes best-effort application throttling, but production bot and spending protection should be configured at the edge/provider. See [GEMINI_RESEARCH_ASSISTANT.md](GEMINI_RESEARCH_ASSISTANT.md) for full limitations and setup.
-
-## 2. Offline export and verification
+## 2. Offline export and integrity
 
 ```mermaid
 flowchart TD
-    A["Eight Olist CSV source files"] --> B["DuckDB raw staging"]
-    B --> C["Dimension tables: customer, product, seller, date"]
-    B --> D["Order fact: fact_orders"]
-    B --> E["Item fact: fact_order_items"]
-    C --> F["CSV-to-Parquet export"]
-    D --> F
-    E --> F
-    B --> G["Reconciliation and missingness checks"]
-    G --> H["manifest.json + verify_export.py"]
-    D --> I["Chronological model train / validation / test (optional)"]
-    I --> J["risk_predictions.parquet + held-out metrics"]
-    F --> K["build_mining_lab.py"]
-    K --> L["Clustering, classification comparisons and frequent patterns"]
-    L --> M["mining_lab.json + verify_mining_lab.py"]
+  RAW["Olist CSVs (8 source files)"] --> STAGE["DuckDB raw staging"]
+  STAGE --> DIM["dim_customer · dim_product · dim_seller · dim_date"]
+  STAGE --> FACT["fact_orders — order grain"]
+  STAGE --> ITEMS["fact_order_items — item grain"]
+  DIM --> EXPORT["6 public Parquet tables"]
+  FACT --> EXPORT
+  ITEMS --> EXPORT
+  STAGE --> QA["Missingness, keys, payment and item reconciliation"]
+  QA --> MANIFEST["manifest.json + verify_export.py"]
+  FACT --> RISK["Optional chronological model training/validation/test"]
+  RISK --> TEST["risk_predictions.parquet + test metrics"]
+  EXPORT --> MINING["build_mining_lab.py"]
+  MINING --> RESULTS["mining_lab.json + verify_mining_lab.py"]
 ```
 
-`scripts/build_web_data.py` writes six Parquet warehouse tables and `manifest.json`; passing `--train` additionally evaluates and exports the model's held-out predictions. The independent `scripts/build_mining_lab.py` reads the local exported Parquet and produces the source-backed mining lab JSON. `scripts/verify_export.py` and `scripts/verify_mining_lab.py` check the generated artifacts. The raw Olist CSVs are **not** part of the published website.
+The source files cover customers, sellers, products, orders, order items, payments, reviews and product-category translations. `scripts/build_web_data.py` stages these files and publishes order/item facts plus dimensions. With `--train`, the separate chronological risk evaluator publishes test-period predictions. `scripts/build_mining_lab.py` reads the checked-in-style exported Parquet tables to compute and publish Data Mining Lab results. The verifier scripts check counts and statistical consistency; they do not train anything at runtime.
 
-The manifest in this revision reports an export timestamp of **2026-10-13T02:24:01Z**; it is **not** a real-time update timestamp.
+The recorded [data manifest](../web/public/data/manifest.json) was generated on **2026-10-13**, covering a historical **2016–2018** marketplace period. Its timestamp is export provenance, **not** a live service freshness indicator.
 
-## 3. Dimensional warehouse: two distinct fact grains
+### Warehouse relationship and grains
 
 ```mermaid
 erDiagram
-    DIM_CUSTOMER ||--o{ FACT_ORDERS : identifies
-    DIM_DATE ||--o{ FACT_ORDERS : purchased_on
-    DIM_PRODUCT ||--o{ FACT_ORDER_ITEMS : contains
-    DIM_SELLER ||--o{ FACT_ORDER_ITEMS : sold_by
-    FACT_ORDERS ||--|{ FACT_ORDER_ITEMS : has_items
-
-    DIM_CUSTOMER {
-        string customer_id PK
-        string customer_state
-    }
-    DIM_DATE {
-        date date_key PK
-    }
-    DIM_PRODUCT {
-        string product_id PK
-        string product_category
-    }
-    DIM_SELLER {
-        string seller_id PK
-        string seller_state
-    }
-    FACT_ORDERS {
-        string order_id PK
-        string customer_id FK
-        decimal payment_value
-        datetime purchase_ts
-    }
-    FACT_ORDER_ITEMS {
-        string order_id FK
-        int order_item_id
-        string product_id FK
-        string seller_id FK
-        decimal item_price
-        decimal freight_value
-    }
+  DIM_CUSTOMER ||--o{ FACT_ORDERS : customer_id
+  DIM_DATE ||--o{ FACT_ORDERS : calendar_date
+  FACT_ORDERS ||--o{ FACT_ORDER_ITEMS : order_id
+  DIM_PRODUCT ||--o{ FACT_ORDER_ITEMS : product_id
+  DIM_SELLER ||--o{ FACT_ORDER_ITEMS : seller_id
+  DIM_CUSTOMER {
+    string customer_id
+    string customer_state
+  }
+  FACT_ORDERS {
+    string order_id
+    string customer_id
+    decimal payment_total
+    timestamp purchase_time
+  }
+  FACT_ORDER_ITEMS {
+    string order_id
+    int item_number
+    string product_id
+    string seller_id
+    decimal price
+    decimal freight
+  }
+  DIM_PRODUCT {
+    string product_id
+    string category
+  }
+  DIM_SELLER {
+    string seller_id
+    string seller_state
+  }
+  DIM_DATE {
+    date date_key
+  }
 ```
 
-The ER diagram is *conceptual*: it illustrates the two-grain relationship, not an exact copy of every exported column or every physical foreign-key constraint. Inspect the actual Parquet files or Data Catalog for exact schemas.
+*The ER diagram is conceptual.* Actual column names, data types and join paths must be checked in the Data Catalog and generated Parquet. It is not a claim that physical foreign-key constraints are enforced by the browser.
 
-| Published table | Grain | Rows reported by manifest |
+| Relation | Grain | Published rows |
 | --- | --- | ---: |
+| `fact_orders` | Order | 99,441 |
+| `fact_order_items` | Order item | 112,650 |
 | `dim_customer` | Customer source record | 99,441 |
 | `dim_product` | Product | 32,951 |
 | `dim_seller` | Seller | 3,095 |
 | `dim_date` | Calendar date | 774 |
-| `fact_orders` | Order | 99,441 |
-| `fact_order_items` | Order item | 112,650 |
-| `risk_predictions` | Evaluated held-out prediction | 19,294 |
+| `risk_predictions` | Evaluated test prediction | 19,294 |
 
-**Do not sum order-level payments after joining to multiple item rows.** The order fact and item fact must be aggregated at the proper grain first. The manifest records **zero payment/item reconciliation delta cents** for this export and **2,971 unlabeled orders**. An order's delivery-risk label is not known for every record.
+Payments are aggregated at **order grain**; price and freight are measured at **item grain**. Joining a one-order payment to multiple line items and summing payment again inflates revenue. The published quality manifest reports payment and item reconciliation deltas of zero cents. Unknown outcomes remain unknown rather than being silently marked on time.
 
-## 4. Browser runtime and navigation
+## 3. Visitor browser and analytics SQL
 
 ```mermaid
 sequenceDiagram
-    participant V as Visitor
-    participant C as Vercel static CDN
-    participant R as React application
-    participant W as DuckDB-Wasm / Worker
-
-    V->>C: GET compiled index.html / CSS / JavaScript
-    C-->>V: Static application shell
-    R->>C: GET manifest.json and Parquet files
-    C-->>R: Versioned historical exports
-    R->>W: Initialize engine, register files, create SQL views
-    V->>R: Select workspace, period, state or chart
-    R->>W: Read-only SELECT / WITH query
-    W-->>R: Aggregated rows
-    R-->>V: Interactive chart, table or CSV export
-    V->>R: Open Data Mining Lab
-    R->>C: GET mining_lab.json
-    C-->>R: Previously computed experimental results
-    R-->>V: Six method sections and recorded plots
+  participant Visitor
+  participant React as React/Vite UI
+  participant Host as Vercel static files
+  participant DB as DuckDB-Wasm worker
+  Visitor->>React: Open dashboard
+  React->>Host: GET /data/manifest.json
+  Host-->>React: Recorded dataset metadata
+  React->>Host: GET /data/*.parquet
+  Host-->>React: Public historical files
+  React->>DB: Register buffers; CREATE VIEW for each Parquet file
+  Visitor->>React: Select chart, filter or OLAP action
+  React->>DB: Authored read-only SQL
+  DB-->>React: Aggregated rows
+  React-->>Visitor: Charts, tables, map, CSV export
+  React->>Host: GET /data/mining_lab.json
+  Host-->>React: Precomputed offline experiments
+  React-->>Visitor: Lab figures / illustrative step visualizers
 ```
 
-There are **12 original workspaces**, plus one **Data Mining Lab overview** and **six lab analysis pages**. The navigation dock has *one* graduation-cap button for the lab, **not six extra dock icons or a flyout menu**. Clicking it opens the lab overview; the six pages are accessed through overview cards and clickable in-page tabs.
+`web/src/db.ts` loads the manifest, chooses a DuckDB-Wasm bundle, creates a Web Worker, fetches the Parquet files and registers read-only views. The authored SQL wrapper permits a single leading `SELECT`, `WITH` or `EXPLAIN` query and rejects multiple statements. This is a browser-side application guard, **not** a production security sandbox for executing untrusted SQL. Source chart definitions live in `web/src/queries.ts`, `atlasQueries.ts`, `premiumQueries.ts`, and `researchQueries.ts`.
 
-The 66 registered Atlas/research chart definitions are **36 Analytics Atlas + 30 Research** charts. The Data Mining Lab adds supplementary experimental plots; do not treat those as part of the original 66 count.
+The browser does not issue SQL requests to Vercel or Gemini. The 36 Analytics Atlas chart definitions and 30 research expansion charts (66 in total) rely on the historical warehouse. The six Data Mining Lab modules use selected offline experiment exports and explicitly illustrative step-by-step K-Means/Tree/Apriori/FP-Growth/Eclat visualizers. Real fitted models are **not** replayed in those teaching animations.
 
-### In-browser algorithm teaching and loading states
-
-The new visualizer is **separate from the published Olist experiment export**. It computes deterministic examples in memory and does not change the dataset, retrain the original scikit-learn models, or insert new tables into DuckDB.
+## 4. Gemini research assistant: independent service boundary
 
 ```mermaid
-flowchart LR
-  Click["Visitor selects a step"] --> Demo["AlgorithmPlayground.tsx"]
-  Demo --> Math["algorithmSteps.ts: sample-only calculations"]
-  Math --> Scene["SVG scene and accessible explanation"]
-  Olist["mining_lab.json: published experiment metrics"] --> Existing["Existing empirical panels"]
-  Scene -. "No data mutation" .-> Existing
+sequenceDiagram
+  actor Visitor
+  participant Drawer as React ProjectAssistant
+  participant API as /api/ask (Node locally / Vercel Function)
+  participant Index as Server-only retrieved website facts
+  participant Google as Google Gemini
+  Visitor->>Drawer: Ask about website or general topic
+  Drawer->>API: POST JSON question + bounded prior user questions
+  API->>API: Validate JSON, origin, length and rate limit
+  API->>Index: Search curated facts and generated documentation/aggregate index
+  Index-->>API: Up to 6 relevant passages / source links
+  alt Private API key configured, Gemini available
+    API->>Google: Bounded evidence + question, server API key
+    Google-->>API: Generated response
+    API-->>Drawer: Answer + related links
+  else No key or upstream unavailable
+    API-->>Drawer: Clearly labeled reference excerpts or setup/error message
+  end
+  Drawer-->>Visitor: Response in light/dark chat interface
 ```
 
-The K-Means demonstrator recalculates squared Euclidean distances and arithmetic means of six visible points; Decision Tree follows two displayed example rules; Apriori, FP-Growth, and Eclat use the **same five illustrative baskets**, allowing support and TID intersections to be checked by hand. Their five-basket denominator must never be conflated with the real **649 eligible Olist baskets**.
+**Implemented on `main`:** `web/src/ProjectAssistant.tsx` presents the drawer; `web/api/ask.js` handles `POST /api/ask`. Its `_knowledge.mjs`, `_retrieval.mjs` and generated server-only `_site-index.mjs` select evidence from the README, user guides, technical documentation, `manifest.json` and **selected aggregate** `mining_lab.json` output. `web/scripts/build-assistant-index.mjs` refreshes that index during `predev` and `prebuild`. The API does **not** read entire raw Olist CSVs, run SQL on individual orders, access arbitrary websites, or consume the current visitor's DuckDB query results.
 
-The browser's `loadWarehouse` reports actual loading stages via `WarehouseProgress`: manifest fetch, DuckDB-Wasm initialization, then how many required Parquet tables have been registered. It deliberately does **not** display a fictional overall completion percentage; individual SQL and mining JSON requests have unknown durations. An abort signal prevents stale fetch results from updating a navigated-away view, and failures expose **Retry loading data**. Measured data is never replaced by illustrative examples.
+- **Local:** `npm run dev` starts `web/scripts/local-gemini-server.mjs` bound to `127.0.0.1:8787`, verifies its health, and starts Vite on `127.0.0.1:5173`. `vite.config.ts` explicitly proxies `/api/ask` to loopback. The key is read only from ignored `web/.env`.
+- **Vercel:** `web/api/ask.js` is deployed as a Function next to the static site. The private `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) is configured in Vercel Settings, never through a `VITE_*` frontend variable.
+- **Safety and limits:** Requests have same-origin checks, limited question length, basic per-instance throttling and upstream timeout. These controls are **not** a replacement for Vercel edge/bot protections and Google usage/spending quotas. Google processes questions and selected evidence when Gemini is used; no persistent chat database was added.
+- **Reference fallbacks:** Without a key, or when Gemini is inaccessible, the UI may display retrieved project passages labeled as references. Such passages should not be described as an AI-generated explanation or a successful Gemini service check.
+- **Model name:** The code currently defaults to `gemini-3.5-flash` if `GEMINI_MODEL` is unset. Actual Google model availability and billing vary by account; verify supported model IDs for your own key.
 
-```mermaid
-stateDiagram-v2
-  [*] --> Manifest
-  Manifest --> WebAssembly: manifest parsed
-  WebAssembly --> Parquet: DuckDB-Wasm initialized
-  Parquet --> Parquet: registered N of total tables
-  Parquet --> Ready: all views created
-  Manifest --> Error: network or format failure
-  WebAssembly --> Error: engine startup fails
-  Parquet --> Error: file or SQL failure
-  Error --> Manifest: user selects Retry
-```
+See the [assistant guide](GEMINI_RESEARCH_ASSISTANT.md) for detailed configuration and limitations.
 
-See [the full worked algorithm examples](ALGORITHM_PLAYGROUND.md) and [the current screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md).
+## 5. Research results and caveats
 
-### Presentation-layer theme and file responsibilities
+The published held-out risk evaluation uses a threshold of **0.60**, train/validation/test sizes of **58,731 / 12,435 / 19,294**, and held-out precision ≈ **0.049**, recall ≈ **0.288**, ROC AUC ≈ **0.698**. A low positive predictive value limits operational applicability. The six-module Data Mining Lab's classification experiment uses a **different** chronological evaluation population; do not merge those metrics.
 
-```mermaid
-flowchart TD
-   Entry["main.tsx"] --> Measured["measured-glass.css"]
-   Measured --> Mode["theme.css — light/dark values"]
-   Mode --> Editorial["editorial.css — typography"]
-   Editorial --> Teaching["algorithm-playground.css — five method demos"]
-   Teaching --> Cyan["soft-cyan.css — #7DD3FC final overrides"]
-   Cyan --> Welcome["Welcome, cards and CTAs"]
-   Cyan --> Atlas["Atlas chart interactions and Brazil selection"]
-   Cyan --> Lab["Mining lab and algorithm controls"]
-   Data["web/public/data/*.parquet, mining_lab.json"] --> Core["DuckDB-Wasm SQL and offline experiment displays"]
-   Welcome --> Core
-   Atlas --> Core
-   Lab --> Core
-```
+The deterministic RFM clustering experiment samples **950** customers (Ward dendrogram at most 52 records). Frequent-pattern analysis uses **649 selected eligible** multi-category baskets, not every Olist order. Data Lakes conceptual diagrams do not imply a deployed cloud object store. The geographic map reports historical Brazilian state aggregates, not real GPS. [Methodology](RESEARCH_REPRODUCIBILITY.md) · [Lab syllabus](SYLLABUS_V5.md) · [Chart-to-SQL map](ANALYTICS_ATLAS_METHODOLOGY.md).
 
-The source of truth for the brand color is `--pp-accent-cyan: #7DD3FC`. The light-background text alternative is `#0369A1`, while dark navy `#082F49` provides readable text on bright cyan selections. The previous CSS names containing “lime” or “green” remain **compatibility aliases**, not evidence of green rendering. The original purple lettering is kept; the brand logo uses a targeted green-pixel recolor filter and the favicon uses `web/public/favicon-cyan.svg`.
+## 6. Presentation, snapshots and code ownership
 
-The color system is documented in [THEME_SYSTEM.md](THEME_SYSTEM.md). Screenshots in [SCREENSHOT_GALLERY_CURRENT.md](SCREENSHOT_GALLERY_CURRENT.md) are captured from the actual source app, not from a simulated graphic or a promised Vercel deployment.
+The color system uses soft cyan `#7DD3FC`, graphite dark mode and an opaque white/pale-blue AI drawer in light mode. `web/src/theme.css`, `soft-cyan.css`, and `project-assistant.css` affect appearance, not analytics. The brand wordmark remains purple. Screenshot provenance is recorded in the [screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md); earlier captures should not be confused with a newly deployed Vercel build.
 
-## 5. Historical model and mining-sample limits
-
-The published manifest's delivery-risk model was evaluated on **19,294** time-held-out prediction rows. Its positive-class precision at the published 0.60 threshold is about **0.049**, with recall about **0.288**. These are weak results; no production predictive capability is claimed. The separate syllabus classification module uses an independently exported experimental test cohort and should not be conflated with these 19,294 rows.
-
-The syllabus mining export uses **950** sampled customer RFM vectors and at most **52** Ward-dendrogram records; its frequent-pattern dataset contains **649** eligible multi-category baskets. Support denominators apply to that selected basket population, not the full order table. See [SYLLABUS_V5.md](SYLLABUS_V5.md) and [RESEARCH_REPRODUCIBILITY.md](RESEARCH_REPRODUCIBILITY.md).
-
-## 6. Code ownership and entry points
-
-| File / folder | Role |
+| Responsibility | Source |
 | --- | --- |
-| `scripts/build_web_data.py` | Offline ETL, warehouse export and optional model evaluation |
-| `scripts/train_risk.py` | Risk modeling/evaluation implementation |
-| `scripts/build_mining_lab.py` | Offline six-area mining experiment export |
-| `scripts/verify_export.py`, `scripts/verify_mining_lab.py` | Reproducibility/integrity checks |
-| `web/src/db.ts` | Browser DuckDB-Wasm initialization and read-only query wrapper |
-| `web/src/App.tsx` | Application shell, routing state and native analysis workspaces |
-| `web/src/AnalyticsAtlas.tsx`, `web/src/ResearchWorkspace.tsx` | Charting and research analyses |
-| `web/src/SyllabusHub.tsx`, `web/src/SyllabusLab.tsx` | Mining overview and six lab screens |
-| `web/src/algorithmSteps.ts`, `web/src/AlgorithmPlayground.tsx` | Computed, labeled teaching-step visualizations (not empirical training traces) |
-| `web/src/DataStates.tsx` | Real progress stages, accessible query loading and retryable errors |
-| `web/public/data/` | Static historical analytical data; do not publish secrets |
-| `web/src/editorial.css` | Readable typography and de-emphasis of decorative microcopy |
-| `web/src/theme.css`, `web/src/soft-cyan.css` | Light/dark theme, cyan tokens and contrast-safe overrides |
-| `web/public/favicon-cyan.svg` | Soft-cyan product favicon, preserving fallback icon |
-| `docs/screenshots/current/` | Current-release browser captures (see manifest) |
+| Offline ETL and risk evaluation | `scripts/build_web_data.py`, `scripts/train_risk.py` |
+| Export quality and mining evidence | `scripts/verify_export.py`, `scripts/build_mining_lab.py`, `scripts/verify_mining_lab.py` |
+| Browser engine | `web/src/db.ts` |
+| Analytics application shell | `web/src/App.tsx`, `web/src/Premium.tsx`, `web/src/AnalyticsAtlas.tsx`, `web/src/ResearchWorkspace.tsx` |
+| Lab and algorithm walkthroughs | `web/src/SyllabusHub.tsx`, `web/src/SyllabusLab.tsx`, `web/src/AlgorithmPlayground.tsx` |
+| Chat drawer | `web/src/ProjectAssistant.tsx`, `web/src/project-assistant.css` |
+| Local Gemini development API | `web/scripts/dev.mjs`, `web/scripts/local-gemini-server.mjs`, `web/vite.config.ts` |
+| Vercel Gemini endpoint and evidence | `web/api/ask.js`, `web/api/_knowledge.mjs`, `web/api/_retrieval.mjs`, `web/api/_site-index.mjs` |
+| Build-time website evidence refresh | `web/scripts/build-assistant-index.mjs` |
+| Capture scripts | `web/scripts/capture-current-docs.mjs`, `web/scripts/smoke-algorithms.mjs` |
 
-See [Deployment](DEPLOYMENT.md) for the actual public Vercel setup and build commands.
+For verified local and production setup, consult [deployment](DEPLOYMENT.md).
