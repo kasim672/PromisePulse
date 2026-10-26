@@ -32,8 +32,12 @@ const aliases={
 function expand(ts){const output=new Set(ts);for(const t of ts)for(const a of aliases[t]||[])output.add(a.toLowerCase());return [...output]}
 const indexed=SOURCES.map(source=>({...source,words:new Set(tokens(source.terms+' '+source.text+' '+source.title))}))
 const topicWords=new Set('promisepulse project olist duckdb kmeans fpgrowth apriori eclat olap parquet rfm syllabus vercel warehouse clustering classification etl pca'.split(' '))
+// Unambiguous project-research terms must work as one-word questions, too.
+// Generic terms such as "data", "hello" and "weather" deliberately stay out.
+const distinctiveTerms=new Set('threshold precision recall confusion auc f1 silhouette parquet dashboard datasets dataset cohorts cohort prediction predictive risk payments revenue delivery latency refunds mining apriori association frequent eclat clustering classifier classifiers forecast training testing reconciliation etl warehouse star-schema sql duckdb metadata manifest lineage olap anomaly regression'.split(' '))
 /** Server-side bounded retrieval, never passes external/user-supplied sources to Gemini. */
 export function retrieve(question,limit=4){
+ if(/^(?:what can you do|how can you help(?: me)?|what are your capabilities|help)\??$/i.test(question.trim()))return retrieve('PromisePulse project overview architecture dataset analytics mining',limit)
  const ts=tokens(question)
  if(!ts.length)return []
  const expanded=expand(ts)
@@ -43,7 +47,7 @@ export function retrieve(question,limit=4){
   for(const t of expanded){const hit=doc.words.has(t)||[...doc.words].some(w=>w.startsWith(t)&&t.length>=5);if(hit){hits++;score+=headings.has(t)?3:1}}
   return {doc,score,hits}
  }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||b.hits-a.hits)
- const anchored=ts.some(x=>topicWords.has(x))
+ const anchored=ts.some(x=>topicWords.has(x)||distinctiveTerms.has(x))
  const best=ranked[0]
  if(!best||(!anchored&&best.hits<2))return []
  return ranked.filter(x=>x.score>=1).slice(0,limit).map(({doc})=>({id:doc.id,title:doc.title,url:doc.url,text:doc.text}))
