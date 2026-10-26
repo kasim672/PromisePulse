@@ -31,7 +31,7 @@ This release develops the approved platform experience improvements. It **does n
 - **Static public data:** Olist historical transactions (2016–2018), not live commerce, and client-side DuckDB-Wasm. The website does not run a persistent backend.
 - **Algorithm stepper:** Illustrative educational steps. It does not retrain models when a visitor presses Next. Empirical results remain the reproducible offline exports.
 - **Shared filters:** State applies to Atlas and Research SQL queries. Overview and Intelligence currently support the shared **year** only. Held-out classification evaluation remains a fixed cohort; it is not resliced by the global year.
-- **Dashboard customization:** Reorders the landing page's workspace shortcuts locally, not arbitrary chart positions. It is not synced between browsers.
+- **Dashboard customization:** Reorders landing-page workspace shortcuts and three data-backed analytical widgets on Overview. Changes are stored locally per browser, not synced across accounts; underlying queries and calculations remain unchanged.
 - **Report:** Uses print/PDF save in the browser; no server renders PDFs. Included chart depicts measured row counts rather than a screenshot of another dashboard.
 - **Performance:** Route/code splitting limits initial JavaScript parsing. DuckDB-Wasm assets and Parquet still require substantial downloads on a first visit. No unsupported performance target or Lighthouse score is claimed.
 - **SEO:** The SPA has a single indexable URL; individual in-app views are not prerendered or separately indexed.
