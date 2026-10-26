@@ -84,12 +84,31 @@ def export_eda(orders,items):
     dist=orders.groupby("customer_state",dropna=False).agg(orders=("order_id","size"),payments=("payment_total","sum")).reset_index().sort_values("orders",ascending=False)
     return {"summary":summary,"missing":missing,"histograms":hist,"correlations":matrix,"quality":quality,"states":records(dist.head(27))}
 
-def prepare_features(df,features,include_state=True):
-    base=df[features].copy()
-    for col in base:
-        if col=="customer_state": base[col]=base[col].fillna("Unknown").astype(str)
-        else:base[col]=pd.to_numeric(base[col],errors="coerce").fillna(base[col].median() if base[col].notna().any() else 0)
-    return pd.get_dummies(base,dummy_na=False,dtype=float)
+def prepare_features(train_rows, test_rows, features):
+    """Train-only median imputation and categorical vocabulary, never fit on test.
+
+    Unknown categorical values at evaluation time map to the all-zero
+    one-hot baseline rather than changing the fitted feature dimension.
+    Returns two identical-column numeric DataFrames.
+    """
+    train=train_rows[features].copy()
+    test=test_rows[features].copy()
+    for col in features:
+        if col=="customer_state":
+            train[col]=train[col].fillna("Unknown").astype(str)
+            test[col]=test[col].fillna("Unknown").astype(str)
+        else:
+            tr=pd.to_numeric(train[col],errors="coerce")
+            te=pd.to_numeric(test[col],errors="coerce")
+            fill=float(tr.median()) if tr.notna().any() else 0.0
+            train[col]=tr.fillna(fill)
+            test[col]=te.fillna(fill)
+    train=pd.get_dummies(train,dummy_na=False,dtype=float)
+    test=pd.get_dummies(test,dummy_na=False,dtype=float)
+    test=test.reindex(columns=train.columns,fill_value=0.0)
+    if list(train.columns)!=list(test.columns):
+        raise AssertionError("Train and holdout features diverged")
+    return train,test
 
 def valid_split(df,test_ratio=.23):
     df=df.sort_values(["purchase_ts","order_id"]).reset_index(drop=True)
@@ -106,8 +125,9 @@ def classification(orders):
     feats=["payment_total","item_total","freight_total","item_count","purchase_month","purchase_weekday","customer_state"]
     # Reassemble with identical one-hot columns after sorting; avoid index leaks.
     ordered=d.sort_values(["purchase_ts","order_id"]).reset_index(drop=True)
-    x=prepare_features(ordered,feats)
-    split=len(train);xt=x.iloc[:split].to_numpy();xv=x.iloc[split:].to_numpy()
+    split=len(train)
+    x_train,x_test=prepare_features(ordered.iloc[:split],ordered.iloc[split:],feats)
+    xt=x_train.to_numpy();xv=x_test.to_numpy()
     y=ordered.label.to_numpy();yt=y[:split];yv=y[split:]
     scaler=StandardScaler();zt=scaler.fit_transform(xt);zv=scaler.transform(xv)
     models={
@@ -137,7 +157,7 @@ def classification(orders):
     return {"metrics":metrics,"calibration":curves,"train_rows":int(len(yt)),"test_rows":int(len(yv)),
        "train_end":str(ordered.purchase_ts.iloc[split-1].date()),"test_start":str(ordered.purchase_ts.iloc[split].date()),
        "base_late_rate_pct":number(100*yv.mean(),3),"features":feats,
-       "selection":"Chronological 77/23 split; train-fitted transforms; fixed 0.5 decision threshold; no test-set tuning."}
+       "selection":"Chronological 77/23 split; TRAIN-only median/category/scaler fitting; fixed 0.5 decision threshold; no test-set tuning."}
 
 def regression(orders):
     d=orders.loc[orders.delivery_days.notna() & orders.purchase_ts.notna()].copy()
@@ -153,14 +173,14 @@ def regression(orders):
       ("Decision tree regression",["item_count","item_total","freight_total","month","customer_state"],DecisionTreeRegressor(max_depth=6,min_samples_leaf=100,random_state=SEED)),
     ]
     for name,feats,model in models:
-        x=prepare_features(ordered,feats).to_numpy()
-        model.fit(x[:split],y[:split])
-        pred=model.predict(x[split:])
+        x_train,x_test=prepare_features(ordered.iloc[:split],ordered.iloc[split:],feats)
+        model.fit(x_train.to_numpy(),y[:split])
+        pred=model.predict(x_test.to_numpy())
         results.append({"name":name,"mae_days":number(mean_absolute_error(y[split:],pred),3),
             "rmse_days":number(np.sqrt(mean_squared_error(y[split:],pred)),3),
             "r2":number(r2_score(y[split:],pred),4),"features":len(feats)})
     return {"metrics":results,"train_rows":split,"test_rows":int(len(y)-split),
-        "notes":"Delivered orders only, target purchase-to-receipt days. Features available near purchase, but delivered-only selection biases estimates. No future labels in features."}
+        "notes":"Delivered orders only, target purchase-to-receipt days. Train-only median and category transformations; delivered-only selection biases estimates. No future labels in features."}
 
 def clustering(orders):
     d=orders[orders.purchase_ts.notna() & orders.customer_unique_id.notna()].copy()
