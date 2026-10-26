@@ -1,69 +1,113 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="660" viewBox="0 0 1440 660" role="img" aria-labelledby="title desc">
-<title id="title">PromisePulse 5.0 soft-cyan application architecture</title>
-<desc id="desc">Offline Olist CSV data passes through Python and DuckDB modeling, producing Parquet and JSON files. Vercel hosts those static files, and a React browser application uses a DuckDB WebAssembly worker to query them. Mining analysis results were generated offline. Soft-cyan #7DD3FC styles change appearance only.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="740" viewBox="0 0 1440 740" role="img" aria-labelledby="title desc">
+<title id="title">PromisePulse 5.0 — offline warehouse, browser analytics, and optional Gemini assistant</title>
+<desc id="desc">Four clearly separated execution environments. Offline Python and DuckDB convert eight Olist CSV datasets to public Parquet and JSON. Vercel serves a React website, which queries Parquet in a browser DuckDB-Wasm worker. Separately, a Vercel serverless API retrieves server-side project documentation and optionally calls Google Gemini using a private key. No live production scoring or server-side SQL analytics.</desc>
 <defs>
- <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#101a2b"/><stop offset="1" stop-color="#19283b"/></linearGradient>
- <linearGradient id="offline" x1="0" x2="1"><stop stop-color="#22577a"/><stop offset="1" stop-color="#21445f"/></linearGradient>
- <linearGradient id="static" x1="0" x2="1"><stop stop-color="#155e75"/><stop offset="1" stop-color="#164e63"/></linearGradient>
- <linearGradient id="browser" x1="0" x2="1"><stop stop-color="#424475"/><stop offset="1" stop-color="#303b67"/></linearGradient>
- <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7DD3FC"/></marker>
- <style>
-  text{font-family:Inter,Arial,Helvetica,sans-serif}
-  .heading{fill:#f4f7fa;font-size:36px;font-weight:700}
-  .subtitle{fill:#bdcad9;font-size:17px}
-  .panel{stroke:#65758a;stroke-width:1.7;rx:18}
-  .label{fill:#f5f8fc;font-size:21px;font-weight:700}
-  .body{fill:#e0e8f2;font-size:15px}
-  .micro{fill:#cad6e4;font-size:13px}
-  .node{fill:#0e1c2b;stroke:#6099ba;stroke-width:1.2;rx:12}
-  .nodeTitle{fill:#f6f8fb;font-size:18px;font-weight:650}
-  .nodeInfo{fill:#c5d1df;font-size:14px}
-  .arrow{fill:none;stroke:#7DD3FC;stroke-width:3;marker-end:url(#arrow)}
- </style>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0f1929"/><stop offset="1" stop-color="#1c2e45"/></linearGradient>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#7DD3FC"/></marker>
+  <style>
+   text {font-family:Inter,"Segoe UI",Arial,sans-serif}
+   .title {font-size:34px;font-weight:750;fill:#f3f9ff}
+   .subtitle {font-size:16px;fill:#b9cee1}
+   .lane {fill:#1b3046;stroke:#557186;stroke-width:1.5}
+   .lane-head {fill:#7DD3FC;font-size:17px;font-weight:700;letter-spacing:.3px}
+   .lane-sub {fill:#b3c9da;font-size:13px}
+   .node {fill:#102235;stroke:#54758c;stroke-width:1.2}
+   .node-title {fill:#fff;font-size:17px;font-weight:700}
+   .node-line {fill:#cbdbe9;font-size:13px}
+   .arrow {stroke:#7DD3FC;stroke-width:2.7;fill:none;marker-end:url(#arr)}
+   .annotation {fill:#c3d4e2;font-size:14px}
+   .divider {stroke:#48647b;stroke-width:1}
+  </style>
 </defs>
-<rect x="0" y="0" width="1440" height="660" rx="22" fill="url(#bg)"/>
-<text x="56" y="60" class="heading">PromisePulse 5.0</text>
-<text x="58" y="90" class="subtitle">Historical Olist data → static Parquet exports → browser SQL + soft-cyan research UI</text>
-<rect x="48" y="122" width="421" height="430" class="panel" fill="url(#offline)"/>
-<rect x="511" y="122" width="421" height="430" class="panel" fill="url(#static)"/>
-<rect x="974" y="122" width="418" height="430" class="panel" fill="url(#browser)"/>
-<text x="76" y="159" class="label">01  Offline processing</text>
-<text x="539" y="159" class="label">02  Published files</text>
-<text x="1002" y="159" class="label">03  Visitor browser</text>
-<rect x="76" y="186" width="360" height="77" class="node"/>
-<text x="95" y="215" class="nodeTitle">Olist source CSVs</text><text x="95" y="238" class="nodeInfo">8 datasets · historical 2016–2018</text>
-<rect x="76" y="286" width="360" height="78" class="node"/>
-<text x="95" y="314" class="nodeTitle">Python + DuckDB ETL</text><text x="95" y="340" class="nodeInfo">Two fact grains · dimensions · checks</text>
-<rect x="76" y="389" width="360" height="119" class="node"/>
-<text x="95" y="420" class="nodeTitle">Offline experiments</text>
-<text x="95" y="445" class="nodeInfo">Chronological model evaluation</text>
-<text x="95" y="466" class="nodeInfo">Clustering and frequent-pattern export</text>
-<text x="95" y="488" class="micro">No server-side analytics at runtime</text>
-<path d="M256 263 V283" class="arrow"/>
-<path d="M256 364 V387" class="arrow"/>
-<rect x="539" y="186" width="364" height="101" class="node"/>
-<text x="557" y="215" class="nodeTitle">Parquet warehouse</text>
-<text x="557" y="240" class="nodeInfo">fact_orders / fact_order_items</text>
-<text x="557" y="261" class="nodeInfo">4 dimensions + held-out predictions</text>
-<rect x="539" y="311" width="364" height="89" class="node"/>
-<text x="557" y="339" class="nodeTitle">JSON evidence</text>
-<text x="557" y="364" class="nodeInfo">manifest.json · mining_lab.json</text>
-<rect x="539" y="426" width="364" height="82" class="node"/>
-<text x="557" y="456" class="nodeTitle">Vercel static hosting</text>
-<text x="557" y="480" class="nodeInfo">HTTPS · compiled web/dist assets</text>
-<path d="M721 287 V308" class="arrow"/><path d="M721 400 V424" class="arrow"/>
-<path d="M436 328 H487 V235 H535" class="arrow"/>
-<path d="M436 448 H490 V354 H535" class="arrow"/>
-<rect x="1002" y="186" width="362" height="82" class="node"/>
-<text x="1020" y="216" class="nodeTitle">React + Vite UI</text>
-<text x="1020" y="240" class="nodeInfo">12 workspaces + 6 mining lab pages</text>
-<rect x="1002" y="301" width="362" height="88" class="node"/>
-<text x="1020" y="331" class="nodeTitle">DuckDB-Wasm Worker</text>
-<text x="1020" y="355" class="nodeInfo">Read-only local SQL on Parquet views</text>
-<rect x="1002" y="423" width="362" height="85" class="node"/>
-<text x="1020" y="452" class="nodeTitle">Analysis and downloads</text>
-<text x="1020" y="475" class="nodeInfo">Charts · OLAP · teaching · CSV</text>
-<path d="M1182 268 V298" class="arrow"/><path d="M1182 389 V420" class="arrow"/>
-<path d="M903 464 H952 V339 H997" class="arrow"/>
-<text x="64" y="604" class="body">Theme #7DD3FC changes presentation only. Payments and item sales keep separate grains; exports are public, not live feeds.</text>
+<rect width="1440" height="740" rx="23" fill="url(#bg)"/>
+<text x="44" y="57" class="title">PromisePulse 5.0 — application architecture</text>
+<text x="46" y="86" class="subtitle">Historical Olist research · static browser SQL · separate optional Gemini service · soft cyan #7DD3FC</text>
+
+<rect x="42" y="122" width="318" height="495" rx="19" class="lane"/>
+<rect x="379" y="122" width="318" height="495" rx="19" class="lane"/>
+<rect x="716" y="122" width="318" height="495" rx="19" class="lane"/>
+<rect x="1053" y="122" width="343" height="495" rx="19" class="lane"/>
+<text x="59" y="158" class="lane-head">01  OFFLINE DATA PIPELINE</text>
+<text x="59" y="182" class="lane-sub">Python / DuckDB / scikit-learn</text>
+<text x="396" y="158" class="lane-head">02  PUBLISHED ASSETS</text>
+<text x="396" y="182" class="lane-sub">Vercel static data + build output</text>
+<text x="733" y="158" class="lane-head">03  VISITOR BROWSER</text>
+<text x="733" y="182" class="lane-sub">React / DuckDB WebAssembly</text>
+<text x="1070" y="158" class="lane-head">04  OPTIONAL GEMINI API</text>
+<text x="1070" y="182" class="lane-sub">Vercel Function, never browser key</text>
+
+<rect x="59" y="207" width="284" height="91" rx="13" class="node" />
+<rect x="59" y="207" width="5" height="91" rx="2" fill="#79d4fb"/>
+<text x="78" y="237" class="node-title">8 source CSV datasets</text>
+<text x="78" y="259" class="node-line">Olist marketplace · 2016–2018</text>
+<rect x="59" y="326" width="284" height="105" rx="13" class="node" />
+<rect x="59" y="326" width="5" height="105" rx="2" fill="#79d4fb"/>
+<text x="78" y="356" class="node-title">Python ETL + quality</text>
+<text x="78" y="378" class="node-line">Order/item facts + 4 dimensions</text>
+<text x="78" y="398" class="node-line">Payment and missingness checks</text>
+<rect x="59" y="459" width="284" height="119" rx="13" class="node" />
+<rect x="59" y="459" width="5" height="119" rx="2" fill="#79d4fb"/>
+<text x="78" y="489" class="node-title">Offline experiments</text>
+<text x="78" y="511" class="node-line">Chronological delivery-risk test</text>
+<text x="78" y="531" class="node-line">Clustering / classification /</text>
+<text x="78" y="551" class="node-line">frequent patterns</text>
+<rect x="396" y="207" width="284" height="91" rx="13" class="node" />
+<rect x="396" y="207" width="5" height="91" rx="2" fill="#79d4fb"/>
+<text x="415" y="237" class="node-title">Warehouse Parquet</text>
+<text x="415" y="259" class="node-line">6 fact/dimension tables</text>
+<rect x="396" y="326" width="284" height="105" rx="13" class="node" />
+<rect x="396" y="326" width="5" height="105" rx="2" fill="#79d4fb"/>
+<text x="415" y="356" class="node-title">Published evaluations</text>
+<text x="415" y="378" class="node-line">risk_predictions.parquet</text>
+<text x="415" y="398" class="node-line">manifest.json · mining_lab.json</text>
+<rect x="396" y="459" width="284" height="119" rx="13" class="node" />
+<rect x="396" y="459" width="5" height="119" rx="2" fill="#79d4fb"/>
+<text x="415" y="489" class="node-title">Versioned static hosting</text>
+<text x="415" y="511" class="node-line">web/dist + web/public/data</text>
+<text x="415" y="531" class="node-line">HTTP(S) files; no SQL server</text>
+<text x="415" y="551" class="node-line">Assets are publicly downloadable</text>
+<rect x="733" y="207" width="284" height="91" rx="13" class="node" />
+<rect x="733" y="207" width="5" height="91" rx="2" fill="#79d4fb"/>
+<text x="752" y="237" class="node-title">React + Vite pages</text>
+<text x="752" y="259" class="node-line">12 research views + mining labs</text>
+<rect x="733" y="326" width="284" height="105" rx="13" class="node" />
+<rect x="733" y="326" width="5" height="105" rx="2" fill="#79d4fb"/>
+<text x="752" y="356" class="node-title">DuckDB-Wasm worker</text>
+<text x="752" y="378" class="node-line">Local read-only SQL aggregates</text>
+<text x="752" y="398" class="node-line">Downloads static Parquet views</text>
+<rect x="733" y="459" width="284" height="119" rx="13" class="node" />
+<rect x="733" y="459" width="5" height="119" rx="2" fill="#79d4fb"/>
+<text x="752" y="489" class="node-title">Research experience</text>
+<text x="752" y="511" class="node-line">Charts · OLAP · maps · CSV</text>
+<text x="752" y="531" class="node-line">Teaching visualizers</text>
+<text x="752" y="551" class="node-line">Ask PromisePulse AI drawer</text>
+<rect x="1070" y="207" width="309" height="91" rx="13" class="node" />
+<rect x="1070" y="207" width="5" height="91" rx="2" fill="#c8b5ff"/>
+<text x="1089" y="237" class="node-title">POST /api/ask</text>
+<text x="1089" y="259" class="node-line">Validates input and rate limits</text>
+<rect x="1070" y="326" width="309" height="105" rx="13" class="node" />
+<rect x="1070" y="326" width="5" height="105" rx="2" fill="#c8b5ff"/>
+<text x="1089" y="356" class="node-title">Server-only retrieval</text>
+<text x="1089" y="378" class="node-line">Docs + manifest + mining aggregates</text>
+<text x="1089" y="398" class="node-line">Limited excerpts per question</text>
+<rect x="1070" y="459" width="309" height="119" rx="13" class="node" />
+<rect x="1070" y="459" width="5" height="119" rx="2" fill="#c8b5ff"/>
+<text x="1089" y="489" class="node-title">Google Gemini (if enabled)</text>
+<text x="1089" y="511" class="node-line">Private API key on server only</text>
+<text x="1089" y="531" class="node-line">Fallback: labeled project references</text>
+<text x="1089" y="551" class="node-line">No live SQL or raw CSV access</text>
+
+<path d="M202 299V323" class="arrow"/><path d="M202 431V455" class="arrow"/>
+<path d="M538 299V323" class="arrow"/><path d="M538 431V455" class="arrow"/>
+<path d="M875 299V323" class="arrow"/><path d="M875 431V455" class="arrow"/>
+<path d="M1224 299V323" class="arrow"/><path d="M1224 431V455" class="arrow"/>
+<path d="M343 372H374V249H391" class="arrow"/>
+<path d="M343 518H370V380H391" class="arrow"/>
+<path d="M680 512H705V371H728" class="arrow"/>
+<path d="M1017 527H1044V249H1066" class="arrow"/>
+<path d="M1380 562H1415V642H875V581" class="arrow"/>
+
+<path d="M42 646H1396" class="divider"/>
+<text x="46" y="677" class="annotation">Browser analytics: static warehouse → local DuckDB-Wasm → charts. AI: chat → serverless retrieval → Gemini only when configured.</text>
+<text x="46" y="701" class="annotation">Published figures are historical research results. Soft-cyan/light/dark styling is presentation only; no live order feed or model inference.</text>
 </svg>
