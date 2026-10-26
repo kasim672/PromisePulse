@@ -27,6 +27,8 @@ jobs:
         run: node ../tests/test_sql_generation.cjs
       - name: Verify light and dark theme coverage
         run: node ../tests/test_theme.cjs
+      - name: Verify readable editorial hierarchy and absence of decorative micro-labels
+        run: node ../tests/test_editorial_hierarchy.cjs
       - name: Validate Analytics Atlas chart registry and SQL semantics
         run: node ../tests/test_atlas.cjs
       - name: Verify 12-route research expansion and 30 additional figures
