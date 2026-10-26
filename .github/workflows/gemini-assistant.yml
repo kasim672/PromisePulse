@@ -37,6 +37,14 @@ jobs:
           npm run build
           node ../tests/test_gemini_assistant.mjs
           node ../tests/test_documentation.cjs
+      - name: Create a real but secret-free local env from template
+        working-directory: web
+        run: |
+          npm run setup:gemini
+          npm run setup:gemini
+          test -f .env
+          test -z "$(sed -n '/^GEMINI_API_KEY=/s/^GEMINI_API_KEY=//p' .env)"
+          git check-ignore .env
       - name: Start real Vite app with static Olist evidence
         working-directory: web
         run: |
@@ -47,6 +55,11 @@ jobs:
           done
           cat /tmp/promisepulse-gemini-ui.log
           exit 1
+      - name: Verify real local Vite Gemini endpoint and secret isolation
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node ../tests/test_gemini_local_http.mjs
       - name: Test chat, fake API answers and mobile, without real Gemini usage
         working-directory: web
         env:
