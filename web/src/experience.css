@@ -88,3 +88,17 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .atlas-chart-card.atlas-chart-expanded .atlas-svg{max-height:min(65vh,700px)}
 .atlas-chart-card.atlas-chart-expanded .atlas-raw-table{max-height:45vh;overflow:auto}
 @media (max-width:760px){.atlas-chart-card.atlas-chart-expanded{inset:3vh 2vw;padding:12px}.atlas-visual-actions{gap:4px}}
+
+/* Data-backed dashboard widgets preserve their original SQL and panel charts. */
+.overview-customization{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap;margin:22px 0 10px}
+.overview-customization h2{font:650 21px/1.25 'Urbanist',sans-serif;color:var(--cadra-text);margin:0}
+.overview-customization button,.overview-widget-controls button{border:1px solid var(--ux-line);border-radius:10px;padding:9px 12px;background:var(--cadra-glass-2);color:var(--cadra-text);font:600 12px 'Urbanist',sans-serif;cursor:pointer}
+.overview-widget{min-width:0;display:flex;flex-direction:column;gap:9px}
+.overview-widget>.pp-block{flex:1;min-width:0}
+.overview-widget-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;border-radius:12px;border:1px solid var(--ux-line);padding:7px;color:var(--cadra-text)}
+.overview-widget-controls>span{flex:1;font:650 12px 'Urbanist',sans-serif}
+.syllabus-retry,.workspace-error button{border:1px solid var(--ux-line);border-radius:10px;padding:10px 13px;background:var(--cadra-glass-2);color:var(--cadra-text);font:650 13px 'Urbanist',sans-serif;cursor:pointer}
+.workspace-error{border:1px solid var(--ux-line);border-radius:16px;padding:26px;background:var(--cadra-glass);color:var(--cadra-text)}
+.workspace-error h2{font:650 clamp(21px,3vw,32px)/1.2 'Urbanist',sans-serif}
+.workspace-error p,.workspace-error details{font:500 14px/1.7 'Urbanist',sans-serif}
+.workspace-error div{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
