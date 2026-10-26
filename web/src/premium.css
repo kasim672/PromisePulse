@@ -11,10 +11,8 @@ body{background:radial-gradient(ellipse at 55% -15%,rgba(112,65,255,.16),transpa
 .pp-brand-name span{color:#7dd3fc}
 .header-nav-item{color:#a6a6ad;font-weight:600;font-size:12px;border:0;border-radius:999px;padding:12px 18px}
 .header-nav-item:hover,.header-nav-item.active{background:#f8f8f5;color:#111}
-.header-version{color:#b8b7bc}
 .header-cta,.primary-btn{color:#141414;background:#7dd3fc;border-color:#7dd3fc;box-shadow:none;border-radius:999px}
 .header-cta:hover,.primary-btn:hover{background:#bae6fd;box-shadow:0 10px 24px #7dd3fc33}
-.header-online{background:#7dd3fc;box-shadow:0 0 0 3px #7dd3fc25}
 .main-content{max-width:1660px;padding:34px clamp(20px,3.5vw,60px) 75px}
 .site-footer{background:#101013;border-color:#27272b}
 .footer-inner{max-width:1660px}
@@ -43,7 +41,6 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .spinner{border-color:#626262;border-top-color:#7dd3fc}
 .threshold input[type=range]{accent-color:#7dd3fc}
 .source-logo{background:#8859ff}
-.header-online.offline{background:#f6ba64}
 .pp-home{display:flex;flex-direction:column;gap:20px;color:#f9f9f8}
 .pp-page-top{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:16px 1px 14px}
 .pp-overline{display:flex;align-items:center;gap:8px;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#7dd3fc}
