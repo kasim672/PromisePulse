@@ -20,7 +20,9 @@ jobs:
           for branch in \
             'feat/promisepulse-3-measured-glass' \
             'feat/cadra-measured-glass-workspace' \
-            'feat/promisepulse-4-research-expansion'
+            'feat/promisepulse-4-research-expansion' \
+            'docs/current-release-documentation' \
+            'docs/finalize-release-captures'
           do
             if git ls-remote --heads origin "$branch" | grep -q .; then
               git push origin --delete "$branch"
