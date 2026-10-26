@@ -5,6 +5,8 @@ on:
     paths:
       - 'web/src/**'
       - 'web/scripts/smoke-v6.mjs'
+      - 'tests/test_experience.cjs'
+      - 'tests/test_performance_budget.cjs'
       - '.github/workflows/v6-experience-smoke.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +36,7 @@ jobs:
           test -s dist/data/mining_lab.json
           test -s dist/data/fact_orders.parquet
           node ../tests/test_experience.cjs
+          node ../tests/test_performance_budget.cjs
       - name: Run local website
         working-directory: web
         run: |
