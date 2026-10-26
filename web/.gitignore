@@ -14,3 +14,7 @@ __pycache__/
 .vscode/
 .idea/
 coverage/
+
+# TypeScript-generated Vite config can shadow the real config and break /api/ask.
+/vite.config.js
+/vite.config.d.ts
