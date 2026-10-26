@@ -37,3 +37,5 @@ jobs:
         run: node ../tests/test_syllabus_modules.cjs
       - name: Verify published data-mining experimental integrity
         run: node ../tests/test_mining_export_integrity.cjs
+      - name: Verify documentation, diagrams and current screenshots
+        run: node ../tests/test_documentation.cjs
