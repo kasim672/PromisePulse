@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useState} from 'react'
 import type {ReactNode,CSSProperties} from 'react'
-import {BookOpen,Download,ShieldCheck} from 'lucide-react'
+import {Download,ShieldCheck} from 'lucide-react'
 import {ChartCard} from './AnalyticsAtlas'
 import type {AtlasMetric} from './atlasQueries'
 import type {RecordRow,Tab} from './types'
@@ -27,7 +27,7 @@ function sourceCsv(rows:Row[],name:string){
  const a=document.createElement('a');a.href=u;a.download='promisepulse-'+name+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)
 }
 function Panel({title,note,children}:{title:string;note:string;children:ReactNode}){
- return <section className="pp-block syllabus-card"><div className="pp-block-header"><span className="atlas-mini-label">HISTORICAL OLIST DATA</span><h3>{title}</h3><p>{note}</p></div>{children}</section>
+ return <section className="pp-block syllabus-card"><div className="pp-block-header"><h3>{title}</h3><p>{note}</p></div>{children}</section>
 }
 function Export({rows,name}:{rows:Row[];name:string}){return <button className="syllabus-download" type="button" disabled={!rows.length} onClick={()=>sourceCsv(rows,name)}><Download size={15}/> Export empirical CSV</button>}
 function Table({rows,cols,limit=32}:{rows:Row[];cols:[string,string][];limit?:number}){
@@ -195,7 +195,7 @@ export function SyllabusLab({module,onNavigate}:{module:SyllabusModule;onNavigat
  const [result,setResult]=useState<Evidence|null>(null),[pending,setPending]=useState(true),[error,setError]=useState('')
  useEffect(()=>{let live=true;void fetch(import.meta.env.BASE_URL+'data/mining_lab.json').then(res=>{if(!res.ok)throw Error('Mining export missing: install requirements-mining.txt and run python scripts/build_mining_lab.py.');return res.json() as Promise<Evidence>}).then(v=>{if(live){setResult(v);setPending(false)}}).catch(e=>{if(live){setPending(false);setError(String(e))}});return()=>{live=false}},[])
  return <div className="pp-home atlas-page syllabus-page">
-  <div className="pp-page-top"><div><div className="pp-overline"><BookOpen size={15}/> DATA MINING LAB</div><h1>{module.split(' ')[0]} <em>{module.split(' ').slice(1).join(' ')}</em></h1><p>Explore historical Olist data, inspect the underlying methods, and compare verified results.</p></div><span className="pp-historical"><span/> HISTORICAL DATA · 2016–2018</span></div>
+  <div className="pp-page-top"><div><h1>{module.split(' ')[0]} <em>{module.split(' ').slice(1).join(' ')}</em></h1><p>Explore historical Olist data, inspect the underlying methods, and compare verified results.</p></div></div>
   <nav className="syllabus-tabs" aria-label="Data Mining Lab sections">
     <button type="button" onClick={()=>onNavigate('Syllabus Hub')}>Overview</button>
     {sequence.map(name=><button type="button" key={name} className={name===module?'active':''} aria-current={name===module?'page':undefined} onClick={()=>onNavigate(name)}>{name}</button>)}
