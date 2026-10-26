@@ -1,6 +1,6 @@
 # PromisePulse 5.0 — Architecture and data flow
 
-This document describes the **current `main` release**, including the editorial typography cleanup. It does not describe the abandoned V6 proposal.
+This document describes the **merged PromisePulse 5.0 `main` release**, including the typography improvements, algorithm walkthroughs, recoverable data-loading states, and **soft-cyan theme (`#7DD3FC`)**. The rejected V6 proposal is not part of this architecture.
 
 ![PromisePulse 5.0 system architecture](architecture.svg)
 
@@ -29,6 +29,8 @@ flowchart LR
 
     subgraph WEB["Visitor browser — static Vite/React build"]
         UI["React workspaces + Data Mining Lab"]
+        THEME["Light/dark theme + soft-cyan CSS — presentation only"]
+        THEME --> UI
         LOADER["db.ts — fetch, register Parquet and create read-only views"]
         WASM["DuckDB-Wasm running in browser Web Worker"]
         VIEW["Historical SQL aggregates, charts, tables, CSV exports"]
@@ -45,7 +47,7 @@ flowchart LR
     META --> LOADER
 ```
 
-**Hosting:** Vercel serves the compiled `web/dist/` files and static datasets over HTTPS. After these files are downloaded, DuckDB SQL runs **client-side**; Vercel does not execute Python ETL jobs or handle analytics queries.
+**Hosting:** Vercel serves the compiled `web/dist/` files and static datasets over HTTPS. After these files are downloaded, DuckDB SQL runs **client-side**; Vercel does not execute Python ETL jobs or handle analytics queries. CSS color tokens are independent of the warehouse: changing from lime to cyan cannot change query outcomes. A merged GitHub commit does not prove a successful Vercel deployment.
 
 ### Important execution boundaries
 
@@ -194,6 +196,28 @@ stateDiagram-v2
 
 See [the full worked algorithm examples](ALGORITHM_PLAYGROUND.md) and [the current screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md).
 
+### Presentation-layer theme and file responsibilities
+
+```mermaid
+flowchart TD
+   Entry["main.tsx"] --> Measured["measured-glass.css"]
+   Measured --> Mode["theme.css — light/dark values"]
+   Mode --> Editorial["editorial.css — typography"]
+   Editorial --> Teaching["algorithm-playground.css — five method demos"]
+   Teaching --> Cyan["soft-cyan.css — #7DD3FC final overrides"]
+   Cyan --> Welcome["Welcome, cards and CTAs"]
+   Cyan --> Atlas["Atlas chart interactions and Brazil selection"]
+   Cyan --> Lab["Mining lab and algorithm controls"]
+   Data["web/public/data/*.parquet, mining_lab.json"] --> Core["DuckDB-Wasm SQL and offline experiment displays"]
+   Welcome --> Core
+   Atlas --> Core
+   Lab --> Core
+```
+
+The source of truth for the brand color is `--pp-accent-cyan: #7DD3FC`. The light-background text alternative is `#0369A1`, while dark navy `#082F49` provides readable text on bright cyan selections. The previous CSS names containing “lime” or “green” remain **compatibility aliases**, not evidence of green rendering. The original purple lettering is kept; the brand logo uses a targeted green-pixel recolor filter and the favicon uses `web/public/favicon-cyan.svg`.
+
+The color system is documented in [THEME_SYSTEM.md](THEME_SYSTEM.md). Screenshots in [SCREENSHOT_GALLERY_CURRENT.md](SCREENSHOT_GALLERY_CURRENT.md) are captured from the actual source app, not from a simulated graphic or a promised Vercel deployment.
+
 ## 5. Historical model and mining-sample limits
 
 The published manifest's delivery-risk model was evaluated on **19,294** time-held-out prediction rows. Its positive-class precision at the published 0.60 threshold is about **0.049**, with recall about **0.288**. These are weak results; no production predictive capability is claimed. The separate syllabus classification module uses an independently exported experimental test cohort and should not be conflated with these 19,294 rows.
@@ -215,7 +239,9 @@ The syllabus mining export uses **950** sampled customer RFM vectors and at most
 | `web/src/algorithmSteps.ts`, `web/src/AlgorithmPlayground.tsx` | Computed, labeled teaching-step visualizations (not empirical training traces) |
 | `web/src/DataStates.tsx` | Real progress stages, accessible query loading and retryable errors |
 | `web/public/data/` | Static historical analytical data; do not publish secrets |
-| `web/src/editorial.css` | Current heading hierarchy and de-emphasis of decorative microcopy |
+| `web/src/editorial.css` | Readable typography and de-emphasis of decorative microcopy |
+| `web/src/theme.css`, `web/src/soft-cyan.css` | Light/dark theme, cyan tokens and contrast-safe overrides |
+| `web/public/favicon-cyan.svg` | Soft-cyan product favicon, preserving fallback icon |
 | `docs/screenshots/current/` | Current-release browser captures (see manifest) |
 
 See [Deployment](DEPLOYMENT.md) for the actual public Vercel setup and build commands.
