@@ -47,7 +47,7 @@ export default async function handler(req,res){
  const sources=retrieve(question,4)
  if(!sources.length)return json(res,200,{answer:REFUSAL,sources:[],grounded:false})
  const key=process.env.GEMINI_API_KEY
- if(!key)return json(res,503,{error:'The AI assistant is not configured yet. The site administrator needs to add GEMINI_API_KEY in Vercel.'})
+ if(!key)return json(res,503,{error:'The Gemini assistant is not configured. Add GEMINI_API_KEY to web/.env for local development, or configure it privately in Vercel for deployment.'})
  const model=process.env.GEMINI_MODEL||'gemini-2.5-flash'
  if(!/^gemini-[a-z0-9.-]+$/.test(model))return json(res,503,{error:'Invalid configured Gemini model.'})
  const evidence=sources.map((s,i)=>'['+(i+1)+'] '+s.title+'\n'+s.text).join('\n\n')
