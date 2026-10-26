@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="660" viewBox="0 0 1440 660" role="img" aria-labelledby="title desc">
-<title id="title">PromisePulse 5.0 soft-cyan application architecture</title>
-<desc id="desc">Offline Olist CSV data passes through Python and DuckDB modeling, producing Parquet and JSON files. Vercel hosts those static files, and a React browser application uses a DuckDB WebAssembly worker to query them. Mining analysis results were generated offline. Soft-cyan #7DD3FC styles change appearance only.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="830" viewBox="0 0 1440 830" role="img" aria-labelledby="title desc">
+<title id="title">PromisePulse 5.0 browser warehouse and optional serverless Gemini architecture</title>
+<desc id="desc">Offline Olist CSV data passes through Python and DuckDB modeling, producing Parquet and JSON files. Vercel hosts those static files, and a React browser application uses a DuckDB WebAssembly worker to query them. Mining analysis results were generated offline. A separate Vercel API gateway retrieves server-side documented evidence and calls Google Gemini with a private API key, when configured. Soft-cyan #7DD3FC styles change appearance only.</desc>
 <defs>
  <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#101a2b"/><stop offset="1" stop-color="#19283b"/></linearGradient>
  <linearGradient id="offline" x1="0" x2="1"><stop stop-color="#22577a"/><stop offset="1" stop-color="#21445f"/></linearGradient>
@@ -21,9 +21,9 @@
   .arrow{fill:none;stroke:#7DD3FC;stroke-width:3;marker-end:url(#arrow)}
  </style>
 </defs>
-<rect x="0" y="0" width="1440" height="660" rx="22" fill="url(#bg)"/>
+<rect x="0" y="0" width="1440" height="830" rx="22" fill="url(#bg)"/>
 <text x="56" y="60" class="heading">PromisePulse 5.0</text>
-<text x="58" y="90" class="subtitle">Historical Olist data → static Parquet exports → browser SQL + soft-cyan research UI</text>
+<text x="58" y="90" class="subtitle">Historical Olist exports → browser SQL  |  Separate serverless Gemini research assistant</text>
 <rect x="48" y="122" width="421" height="430" class="panel" fill="url(#offline)"/>
 <rect x="511" y="122" width="421" height="430" class="panel" fill="url(#static)"/>
 <rect x="974" y="122" width="418" height="430" class="panel" fill="url(#browser)"/>
@@ -65,5 +65,22 @@
 <text x="1020" y="475" class="nodeInfo">Charts · OLAP · teaching · CSV</text>
 <path d="M1182 268 V298" class="arrow"/><path d="M1182 389 V420" class="arrow"/>
 <path d="M903 464 H952 V339 H997" class="arrow"/>
-<text x="64" y="604" class="body">Theme #7DD3FC changes presentation only. Payments and item sales keep separate grains; exports are public, not live feeds.</text>
+<rect x="48" y="578" width="1344" height="176" rx="18" fill="#132e43" stroke="#6099ba" stroke-width="1.7"/>
+<text x="76" y="612" class="label">04  Optional AI gateway  —  server-side, separate from browser SQL</text>
+<rect x="76" y="632" width="285" height="88" class="node"/>
+<text x="92" y="658" class="nodeTitle">React chat → /api/ask</text>
+<text x="92" y="682" class="nodeInfo">Local Node or Vercel Function</text>
+<text x="92" y="704" class="micro">Private key never in browser</text>
+<rect x="422" y="632" width="355" height="88" class="node"/>
+<text x="440" y="658" class="nodeTitle">Server-side knowledge index</text>
+<text x="440" y="682" class="nodeInfo">Docs + historical aggregate JSON</text>
+<text x="440" y="704" class="micro">Bounded passages; no raw-row SQL</text>
+<rect x="838" y="632" width="526" height="88" class="node"/>
+<text x="856" y="658" class="nodeTitle">Google Gemini (optional)</text>
+<text x="856" y="682" class="nodeInfo">Generated answer + source links</text>
+<text x="856" y="704" class="micro">Without a key: labeled documentation fallback</text>
+<path d="M361 678 H417" class="arrow"/>
+<path d="M777 678 H833" class="arrow"/>
+<path d="M1182 508 V562 H218 V628" class="arrow"/>
+<text x="64" y="801" class="body">#7DD3FC is a presentation color. Payments and item sales keep separate grains. Published files are historical, not live feeds.</text>
 </svg>
