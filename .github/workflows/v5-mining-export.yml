@@ -24,6 +24,8 @@ jobs:
           cache-dependency-path: requirements-export.txt
       - name: Install scientific stack
         run: python -m pip install -r requirements-export.txt
+      - name: Validate leakage-free train/test boundary on numerical fixtures
+        run: python tests/test_mining_training_boundary.py
       - name: Run real Olist ML and data-mining experiments
         run: python scripts/build_mining_lab.py
       - name: Check quantitative output provenance
