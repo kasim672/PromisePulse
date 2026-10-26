@@ -20,6 +20,19 @@ async function capture(theme,viewport,mobile=false){
  await page.goto(root,{waitUntil:'domcontentloaded',timeout:100000})
  await page.locator('.pp-welcome').waitFor({timeout:120000})
  const suffix=(mobile?'-mobile':'')+'-'+theme
+ await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Syllabus Hub',exact:true}).click()
+ await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible',timeout:120000})
+ await page.waitForFunction(()=>document.querySelectorAll('.syllabus-hub-stat-grid strong').length===6,null,{timeout:120000})
+ const cards=await page.locator('.syllabus-hub-grid .syllabus-hub-card').count()
+ if(cards!==6)throw Error('Syllabus Hub must open all six academically grounded modules, got '+cards)
+ await page.getByRole('button',{name:'Modelling',exact:true}).click()
+ if(await page.locator('.syllabus-hub-grid .syllabus-hub-card').count()!==2)throw Error('Syllabus phase filter failed')
+ await page.getByRole('button',{name:'All',exact:true}).click()
+ const first='syllabus-hub'+suffix+'.png'
+ await page.evaluate(async()=>{await document.fonts.ready;window.scrollTo({top:0,behavior:'instant'})})
+ await page.screenshot({path:path.join(folder,first),fullPage:true,animations:'disabled'})
+ screenshots.push(first)
+ console.log('Verified six-module navigator and 30-hour summary: '+first)
  for(let i=0;i<labels.length;i++){
   if(mobile&&i!==2&&i!==4)continue
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:labels[i],exact:true}).click()
@@ -59,7 +72,7 @@ try{
  await capture('dark',{width:1440,height:900})
  await capture('light',{width:390,height:844},true)
  if(errors.length)throw Error('JavaScript runtime exception: '+errors.slice(0,4).join('; '))
- const manifest={source:'Actual Olist Parquet and offline scikit-learn/mlxtend export',when_utc:new Date().toISOString(),viewports:['1440x900 light/dark','390x844 mobile light'],screenshots,notes:'Six working syllabus modules, real static experimental figures; original Overview preserved'}
+ const manifest={source:'Actual Olist Parquet and offline scikit-learn/mlxtend export',when_utc:new Date().toISOString(),viewports:['1440x900 light/dark','390x844 mobile light'],screenshots,notes:'Six working syllabus modules plus syllabus hub, empirical figures, both theme modes and original Overview preserved; train-only fitted preprocessing'}
  await fs.writeFile(path.join(folder,'CAPTURE_MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n')
  console.log('PASS: '+screenshots.length+' authentic university module captures')
 }catch(e){console.error(e);process.exitCode=1}finally{await browser.close()}
