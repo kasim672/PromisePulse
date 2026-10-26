@@ -244,6 +244,8 @@ PromisePulse/
 │   ├── ARCHITECTURE_V5.md     # Editable flow, ER and sequence diagrams
 │   ├── architecture.svg       # Standalone overview diagram
 │   ├── DEPLOYMENT.md          # Vercel and local deployment instructions
+│   ├── GEMINI_RESEARCH_ASSISTANT.md # AI scope, security and configuration
+│   ├── RELEASE_NOTES.md       # Implemented features and evidence boundaries
 │   ├── THEME_SYSTEM.md        # Cyan palette, dark/light mode, logo, contrast
 │   ├── SCREENSHOT_GALLERY_CURRENT.md
 │   ├── SYLLABUS_V5.md         # Method mapping and empirical caveats
@@ -260,7 +262,8 @@ PromisePulse/
 ├── tests/                     # Data, query, UX and export regression checks
 ├── web/
 │   ├── public/data/           # Shipped Parquet and JSON; public on Vercel
-│   ├── scripts/               # Actual Chromium browser/capture checks
+│   ├── api/                   # /api/ask and server-only website evidence index
+│   ├── scripts/               # Dev API, index generation and browser QA
 │   ├── src/
 │   │   ├── App.tsx            # Shell, navigation and original workspaces
 │   │   ├── db.ts              # DuckDB-Wasm and SELECT-only query API
@@ -269,6 +272,8 @@ PromisePulse/
 │   │   ├── ResearchWorkspace.tsx
 │   │   ├── SyllabusHub.tsx    # Single-click Data Mining Lab overview
 │   │   ├── SyllabusLab.tsx    # Six analysis areas and clickable tabs
+│   │   ├── ProjectAssistant.tsx # Website-grounded AI chat drawer
+│   │   ├── project-assistant.css # Light/dark and responsive chat styling
 │   │   ├── editorial.css      # Readable typography refinements
 │   │   └── soft-cyan.css      # Final cyan accent overrides
 │   ├── package.json
