@@ -31,7 +31,7 @@ The navigation dock includes the **12 retained research/analytics workspaces** p
 | **Customer Cohorts** | Six first-observed customer cohort charts | Compare repeats, value, frequency and reviews, while accounting for uneven follow-up |
 | **Delivery Lab** | Six promised-window and delivery-duration charts | Filter observed delivered orders and compare actual vs estimated lead times |
 | **Research Studio** | Twelve basket and product-weight research plots | Switch Basket vs Weight & Freight to preserve correct order/item financial grains |
-| **AI Studio** | Six held-out model evaluation charts and a deterministic evidence assistant | Compare predicted vs observed risk, inspect lift and change evidence questions; not an LLM |
+| **AI Studio** | Six held-out model evaluation charts and a deterministic evidence view | Compare predicted vs observed risk, inspect lift and evaluation limits; distinct from the floating Gemini chat drawer |
 | **Overview** | KPI summary, monthly payment patterns, state choropleth, high-level delivery and category indicators | Change the purchase year; select a Brazilian state on the historical map; compare order counts and late outcomes |
 | **Intelligence** | Historical trends and descriptive comparisons | Look for differences by weekday, delivery periods, ratings and categories |
 | **Analytics Atlas** | 36 focused charts across nine analysis lenses | Filter by purchase year and customer state; switch chart forms; inspect individual bins and export source aggregates |
@@ -60,6 +60,18 @@ Do not treat those steps as outputs from the fitted Olist methods. The genuine O
 These are separate analysis views, **not separate data providers**. The application works from the same historical Olist source and verified Parquet export. The **66 registered research chart definitions** comprise the original 36 Atlas views plus 30 new empirical views; changing a chart form does not create a distinct research figure.
 
 For the four originally added research destinations, see [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) and [New screenshot gallery](SCREENSHOT_GALLERY_V4.md).
+
+## Ask PromisePulse AI (website-wide chatbot)
+
+The floating **Ask PromisePulse AI** button opens the embedded research assistant. This feature is part of the current `main` release; it is **separate** from the historical model diagnostics and deterministic research figures in AI Studio.
+
+You can ask about the Olist data sources, which page contains an analysis, how warehouse order/item grains differ, what the model thresholds mean, or how the six Data Mining Lab modules work. Example questions include **“Tell me about the data used on this website”**, **“Compare the classification models”** and **“Explain DuckDB-Wasm in simple terms.”** With a valid private server-side Gemini key, it can also answer general conversational questions.
+
+Answers about PromisePulse may contain linked documentation references chosen from a server-only index built from repository guides and selected published aggregate data. The assistant **does not query your current SQL results**, rerun the model, browse the web, or inspect individual unindexed Parquet records. When Gemini is not configured or available, it labels retrieved passages as **reference information**, not generated answers. A browser greeting can work even if the server API or Gemini is down.
+
+To test local routing, run `npm run check:gemini` from the `web` directory while `npm run dev` is running. That checks for the local `/api/ask` endpoint without contacting Google. For real generated responses, add `GEMINI_API_KEY` privately in `web/.env` and use a `GEMINI_MODEL` supported by your account; follow the [assistant guide](GEMINI_RESEARCH_ASSISTANT.md).
+
+**Appearance:** The drawer follows the site theme automatically. Light mode uses white message cards and soft-blue user bubbles; dark mode uses graphite panels. Keyboard Escape closes the dialog. Avoid sharing secrets or personal data in prompts: when Gemini is enabled, prompts and selected research passages are sent to Google.
 
 ## Light mode, dark mode and search
 
