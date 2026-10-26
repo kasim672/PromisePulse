@@ -41,8 +41,12 @@ html[data-theme="dark"] {
   --cadra-text:#f4f6f8;
   --cadra-muted:#b4bac6;
   --cadra-faint:#949ead;
-  --cadra-accent:#a9c9fa;
-  --cadra-primary-ink:#bedbff;
+  --cadra-accent:#7dd3fc;
+  --pp-accent-cyan:#7dd3fc;
+  --pp-accent-cyan-hover:#bae6fd;
+  --pp-accent-cyan-text:#7dd3fc;
+  --pp-accent-cyan-ink:#082f49;
+  --cadra-primary-ink:#7dd3fc;
   --cadra-glass:rgba(31,36,47,.89);
   --cadra-glass-2:rgba(31,36,47,.94);
   --cadra-rim:rgba(226,234,246,.105);
@@ -50,12 +54,12 @@ html[data-theme="dark"] {
   --cadra-line-2:rgba(233,240,250,.21);
   --cadra-shadow:0 1px 0 rgba(255,255,255,.045) inset,0 22px 46px -29px rgba(0,0,0,.73);
   --cadra-shadow-pop:0 20px 54px -24px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.3);
-  --cadra-brand-lime:#7dd3fc;
+  --cadra-brand-lime:var(--pp-accent-cyan);
   --cadra-brand-violet:#bba1f7;
   --blue:#a9c9fa;--blue-dark:#d6e8ff;--light-blue:#1d2e40;
   --ink:#f4f6f8;--secondary:#b4bac6;--quiet:#949ead;
   --surface:#202630;--border:rgba(233,240,250,.12);--border-soft:rgba(233,240,250,.07);
-  --pp-chart-green:#7dd3fc;
+  --pp-chart-green:var(--pp-accent-cyan);
   --pp-chart-blue:#91baff;
   --pp-chart-sky:#bca9fa;
   --pp-chart-orange:#ffaf81;
@@ -76,7 +80,7 @@ html[data-theme="dark"] body {
   background-attachment:fixed;
 }
 html[data-theme="dark"] .app-shell {background:transparent!important}
-html[data-theme="dark"] ::selection{background:#7dd3fc;color:#142018}
+html[data-theme="dark"] ::selection{background:#7dd3fc;color:#082f49}
 html[data-theme="dark"] :focus-visible{outline-color:#7dd3fc!important}
 
 /* Navigation, theme control, search and feedback */
@@ -306,7 +310,7 @@ html[data-theme="dark"] .pp-state-shape text{fill:#eff6ff;font-weight:700;text-s
 html[data-theme="dark"] .pp-state-shape:hover path,
 html[data-theme="dark"] .pp-state-shape:focus-visible path {stroke:#eff7ff;filter:brightness(1.14)}
 html[data-theme="dark"] .pp-state-shape.selected path {stroke:#e0f2fe;stroke-width:2.7}
-html[data-theme="dark"] .pp-state-shape.selected text{fill:#13221b;text-shadow:none}
+html[data-theme="dark"] .pp-state-shape.selected text{fill:#082f49;text-shadow:none}
 html[data-theme="dark"] .pp-map-inspector{background:rgba(19,26,37,.84);border-color:#414d61;box-shadow:none}
 html[data-theme="dark"] .pp-map-inspector-overline{color:#7dd3fc}
 html[data-theme="dark"] .pp-map-inspector-overline span{color:#acb6c4}
