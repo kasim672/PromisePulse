@@ -64,7 +64,9 @@ jobs:
         working-directory: web
         env:
           PP_BASE_URL: http://127.0.0.1:4173/
-        run: node ../tests/test_gemini_local_http.mjs
+        run: |
+          node ../tests/test_gemini_local_http.mjs
+          npm run check:gemini
       - name: Test chat, fake API answers and mobile, without real Gemini usage
         working-directory: web
         env:
