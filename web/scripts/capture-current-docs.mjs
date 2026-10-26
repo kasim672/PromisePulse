@@ -1,5 +1,5 @@
 /**
- * Documentation screenshots of the actual V5 React + DuckDB-Wasm application.
+ * Documentation screenshots of the merged V5 soft-cyan React + DuckDB-Wasm application.
  * Reads bundled Olist Parquet and published mining_lab.json. No mocked metrics.
  * npm ci && npm install --no-save --package-lock=false playwright
  * npm run dev -- --host 127.0.0.1 --port 4173
@@ -43,6 +43,8 @@ async function scenario(theme,width,height,mobile=false){
  try{
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000})
   await page.locator('.pp-welcome').waitFor({state:'visible',timeout:90000})
+  const cyan=await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--pp-accent-cyan').trim().toLowerCase())
+  if(cyan!=='#7dd3fc')throw Error('Current-release cyan theme missing: '+cyan)
   await page.waitForFunction(()=>document.body.textContent?.includes('WAREHOUSE CONNECTED'),null,{timeout:90000})
   await page.locator('.welcome-history svg').waitFor({state:'visible',timeout:90000})
   const prefix=mobile?'mobile-':''
@@ -50,7 +52,7 @@ async function scenario(theme,width,height,mobile=false){
   const nav=page.getByRole('navigation',{name:'Main navigation'})
   await nav.getByRole('button',{name:'Overview',exact:true}).click()
   await page.locator('.pp-dashboard').waitFor({state:'visible',timeout:90000})
-  await page.waitForFunction(()=>[...document.querySelectorAll('.pp-placeholder')].every(e=>!e.textContent?.includes('Querying historical warehouse')),null,{timeout:90000})
+  await page.locator('.pp-dashboard .query-loading').first().waitFor({state:'hidden',timeout:90000})
   await save(page,prefix+'overview-'+theme)
   if(mobile){
    await openLab(page,null)
@@ -82,7 +84,7 @@ try{
  await scenario('light',390,844,true)
  if(errors.length)throw Error('Runtime JavaScript exceptions: '+errors.slice(0,4).join('; '))
  const manifest={
-  release:'PromisePulse 5.0 with post-release editorial typography cleanup',
+  release:'PromisePulse 5.0 with editorial typography, interactive mining algorithms and soft cyan #7DD3FC',
   captured_at_utc:new Date().toISOString(),
   git_sha:process.env.GITHUB_SHA||'local',
   source:'Actual checked-in Olist Parquet, manifest.json and mining_lab.json',

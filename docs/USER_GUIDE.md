@@ -2,6 +2,12 @@
 
 This guide describes the working **historical Olist analytics application** from the PromisePulse GitHub source, not live production shipment tracking. For methodology and exact chart-level SQL lineage, see [Analytics Atlas Methodology](ANALYTICS_ATLAS_METHODOLOGY.md). For the architecture and research workflow, see [Research Reproducibility](RESEARCH_REPRODUCIBILITY.md).
 
+## Look and feel of the current release
+
+The merged PromisePulse 5.0 release uses **soft-cyan `#7DD3FC`** instead of the former lime/acid-green accent on selected navigation, the highlighted Overview KPI, Brazil map state selection, actionable buttons, charts, Data Mining Lab controls and favicon. The original purple logo lettering and dark graphite layout remain intact. Light mode uses a darker blue for text contrast; high-contrast navy text appears on cyan buttons. Theme selection remains persistent across visits.
+
+See the [current screenshots](SCREENSHOT_GALLERY_CURRENT.md) and [complete design system](THEME_SYSTEM.md). If the live Vercel site still has the previous colors, compare the deployed Git SHA with `main` in the [deployment guide](DEPLOYMENT.md): Vercel was rate-limited after the theme merge.
+
 ## Starting the dashboard
 
 ```bash

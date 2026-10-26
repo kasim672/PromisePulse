@@ -1,0 +1,80 @@
+name: Refresh merged cyan release screenshots
+on:
+  push:
+    branches: [docs/current-soft-cyan-release]
+    paths:
+      - '.github/workflows/current-cyan-documentation.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: current-cyan-docs-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install source app and headless Chromium
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Verify current V5 and cyan palette without altering app
+        working-directory: web
+        run: |
+          npm run build
+          node ../tests/test_soft_cyan_theme.cjs
+          node ../tests/test_algorithm_playground.cjs
+          test -s public/data/fact_orders.parquet
+          test -s public/data/mining_lab.json
+      - name: Serve bundled historical data
+        working-directory: web
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 4173 >/tmp/cyan-docs-capture.log 2>&1 &
+          for i in {1..90}; do
+            if curl -fsS http://127.0.0.1:4173/data/manifest.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/cyan-docs-capture.log
+          exit 1
+      - name: Capture all current-release pages, desktop and mobile
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/capture-current-docs.mjs
+      - name: Capture all five computed teaching algorithms and verify retries
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173/
+        run: node scripts/smoke-algorithms.mjs
+      - name: Verify screenshot count and palette provenance
+        run: |
+          test "$(find docs/screenshots/current -maxdepth 1 -name '*.png' | wc -l)" -ge 28
+          node -e "const fs=require('fs');const d='docs/screenshots/current/';const a=JSON.parse(fs.readFileSync(d+'CAPTURE_MANIFEST.json'));const b=JSON.parse(fs.readFileSync(d+'ALGORITHM_CAPTURE_MANIFEST.json'));if(a.images.length!==13||b.images.length!==15||!a.release.includes('#7DD3FC'))process.exit(1);console.log('Captured',a.images.length+b.images.length,'authentic cyan screenshots')"
+      - name: Attach screenshot set
+        uses: actions/upload-artifact@v4
+        with:
+          name: promisepulse-current-soft-cyan-28-screenshots
+          path: docs/screenshots/current/
+          retention-days: 30
+      - name: Commit verified screenshot binaries to docs branch only
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/current/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "docs: refresh 28 real screenshots for merged soft cyan release"
+          git fetch --no-tags origin docs/current-soft-cyan-release
+          git rebase FETCH_HEAD
+          git push origin HEAD:refs/heads/docs/current-soft-cyan-release

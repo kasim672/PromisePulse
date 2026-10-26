@@ -14,6 +14,8 @@ async function test(theme,width,height){
  const capture=async name=>{const file=(mobile?'mobile-':'')+'algorithm-'+name+'-'+theme+'.png';await page.screenshot({path:path.join(dir,file),animations:'disabled',fullPage:true});names.push(file)}
  try{
   await page.goto(url,{waitUntil:'domcontentloaded'})
+  const cyan=await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--pp-accent-cyan').trim().toLowerCase())
+  if(cyan!=='#7dd3fc')throw Error('Expected soft cyan release for screenshots: '+cyan)
   const nav=page.getByRole('navigation',{name:'Main navigation'})
   const hub=()=>nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
   const open=async index=>{await hub();const cards=page.locator('.syllabus-hub-grid .syllabus-hub-card');await cards.first().waitFor({state:'visible',timeout:90000});await cards.nth(index).getByRole('button',{name:'Open analysis'}).click();await page.getByRole('region',{name:'Interactive algorithm visualizer'}).waitFor({state:'visible',timeout:90000})}
