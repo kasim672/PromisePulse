@@ -1,53 +1,55 @@
 # PromisePulse 5.0 — Architecture and data flow
 
-This document describes the **merged PromisePulse 5.0 `main` release**, including the typography improvements, algorithm walkthroughs, recoverable data-loading states, and **soft-cyan theme (`#7DD3FC`)**. The rejected V6 proposal is not part of this architecture.
+This document describes the **current merged `main` source release**: PromisePulse 5.0's historical analytics, six mining lab sections, five teaching visualizers, soft-cyan **`#7DD3FC`** light/dark UI, and the optional website-wide Gemini research assistant. AI generation is an additional server-side function; it is not a replacement for the in-browser SQL architecture.
 
 ![PromisePulse 5.0 system architecture](architecture.svg)
 
-The app has two separate execution environments: an **offline Python/DuckDB exporter** (used to generate the public analytical files) and a **static React web application** (used to explore those files in each visitor's browser). It is **not** a hosted live database, real-time logistics tracking system, or cloud ML service.
+The app has **three separate execution boundaries**: offline Python/DuckDB data preparation; a static React website running analytical SQL locally in DuckDB-Wasm; and an optional `/api/ask` serverless Gemini gateway for the research chat. The public dataset is historical and the gateway is neither a hosted analytical SQL engine nor a live logistics service.
 
 ## 1. End-to-end architecture
 
 ```mermaid
 flowchart LR
-    subgraph OFF["Offline build — Python / DuckDB / scikit-learn"]
-        CSV["Olist CSV sources (8 files)"]
-        ETL["build_web_data.py — ETL and dimensional modeling"]
-        ML["Optional --train — chronological delivery-risk evaluation"]
-        MINE["build_mining_lab.py — offline mining experiments"]
-        CSV --> ETL
-        ETL --> ML
-        ETL --> MINE
+    subgraph OFF["Offline build: Python, DuckDB, scikit-learn"]
+        CSV["Eight Olist CSVs (2016–2018)"] --> ETL["ETL + data-quality checks"]
+        ETL --> ML["Optional chronological model evaluation"]
+        ETL --> MIN["Offline data-mining experiments"]
     end
 
-    subgraph PUB["Versioned static assets — web/public/data"]
-        PAR["6 Parquet tables"]
-        RISK["risk_predictions.parquet — if evaluated"]
-        META["manifest.json"]
-        LAB["mining_lab.json"]
+    subgraph STATIC["Published, publicly downloadable assets"]
+        PAR["Six Parquet warehouse tables"]
+        RISK["risk_predictions.parquet"]
+        JSON["manifest.json + mining_lab.json"]
+        WEB["Compiled React/Vite site"]
     end
 
-    subgraph WEB["Visitor browser — static Vite/React build"]
-        UI["React workspaces + Data Mining Lab"]
-        THEME["Light/dark theme + soft-cyan CSS — presentation only"]
-        THEME --> UI
-        LOADER["db.ts — fetch, register Parquet and create read-only views"]
-        WASM["DuckDB-Wasm running in browser Web Worker"]
-        VIEW["Historical SQL aggregates, charts, tables, CSV exports"]
-        UI --> LOADER --> WASM --> VIEW --> UI
-        LAB --> UI
+    subgraph CLIENT["Visitor browser: no server-side SQL"]
+        UI["React dashboard + six mining labs"]
+        DB["DuckDB-Wasm Web Worker"]
+        CHARTS["Historical charts, OLAP, CSV"]
+        UI --> DB --> CHARTS --> UI
+        JSON --> UI
+        PAR --> DB
+        RISK --> DB
+    end
+
+    subgraph AI["Optional private Vercel Function"]
+        API["POST /api/ask"]
+        INDEX["Reviewed docs + aggregate evidence index"]
+        LLM["Google Gemini"]
+        API --> INDEX --> LLM
     end
 
     ETL --> PAR
-    ETL --> META
+    ETL --> JSON
     ML --> RISK
-    MINE --> LAB
-    PAR --> LOADER
-    RISK --> LOADER
-    META --> LOADER
+    MIN --> JSON
+    WEB --> UI
+    UI -. "questions (not SQL)" .-> API
+    LLM -. "generated answer + source links" .-> UI
 ```
 
-**Hosting:** Vercel serves the compiled `web/dist/` files and static datasets over HTTPS. After these files are downloaded, DuckDB SQL runs **client-side**; Vercel does not execute Python ETL jobs or handle analytics queries. CSS color tokens are independent of the warehouse: changing from lime to cyan cannot change query outcomes. A merged GitHub commit does not prove a successful Vercel deployment.
+**Hosting:** Vercel serves static `web/dist` build outputs and published data over HTTPS and deploys `web/api/ask.js` as a separate function. The browser runs analytical SQL against its own DuckDB-Wasm views; Vercel never acts as a warehouse query service. The AI function reads the private Gemini key and its indexed documentary evidence and does not access individual Parquet rows. A GitHub merge is not proof that the corresponding Vercel deployment is Ready.
 
 ### Important execution boundaries
 
@@ -57,23 +59,37 @@ flowchart LR
 - The map visualizes historic order aggregates by Brazilian state. It does not show live vehicle coordinates or customer addresses.
 - All shipped `web/public/data` assets are **publicly downloadable**. Do not place credentials or sensitive customer information there.
 
-### Optional Gemini assistant (separate server-side API boundary)
+### Integrated Gemini research assistant: separate trust boundary
 
-The optional `feat/gemini-project-research-assistant` introduces a **new serverless Vercel Function**, distinct from the existing in-browser DuckDB-Wasm analytics. It is inactive until a Gemini key is configured and the branch is merged and deployed. The static academic warehouse and original AI Studio do not depend on this function.
+The website-wide research assistant is **already part of `main`**, introduced through [PR #18](https://github.com/kasim672/PromisePulse/pull/18) and refined by [PR #19](https://github.com/kasim672/PromisePulse/pull/19). Unlike the deterministic **AI Studio** analytics panels, it can produce generative replies if the Google API is configured.
 
 ```mermaid
-flowchart LR
-  Q["Research question in React"] --> V["POST /api/ask: Vercel Function"]
-  V --> R["Retrieve up to 4 curated PromisePulse facts"]
-  R -->|Not relevant| Refuse["Refuse off-topic questions"]
-  R -->|Relevant| Google["Google Gemini generateContent"]
-  Key["Private GEMINI_API_KEY"] -.-> Google
-  Google --> Answer["Answer + server-selected source links"]
-  Answer --> Q
-  Olist["Static historical Olist exports"] -. "Manually curated evidence only" .-> R
+sequenceDiagram
+    actor Visitor
+    participant React as React chat drawer
+    participant API as Vercel /api/ask (or local Node)
+    participant Index as Server-side docs and aggregates
+    participant Gemini as Google Gemini API
+
+    Visitor->>React: Ask a question
+    React->>API: POST question + bounded user-question history
+    API->>API: Validate JSON, origin, length, rate limit
+    API->>Index: Retrieve up to six relevant project passages
+    alt Valid API key and Gemini available
+        Index-->>API: Grounded excerpts + document links
+        API->>Gemini: Question + selected excerpts (private key)
+        Gemini-->>API: Generated response
+        API-->>React: Answer + related source links
+    else Key missing / Gemini unavailable
+        Index-->>API: Reviewed snippets when relevant
+        API-->>React: Labeled reference answer or setup error
+    end
+    React-->>Visitor: Display response and citations
 ```
 
-For local development, the `npm run dev` launcher starts a localhost-only Node API (port 8787) and Vite proxies `/api/ask` to the same handler after loading `GEMINI_API_KEY` from ignored `web/.env`. In production, Vercel hosts that handler and reads the private key from its Environment Variables. The backend receives the visitor question, filters and validates it, and sends selected project evidence to Gemini using a server-side key. Questions therefore leave the website for Google's API processing; no persistent chat database is added. It uses a curated reference catalog rather than loading the entire private repository or generating new live SQL results. It includes best-effort application throttling, but production bot and spending protection should be configured at the edge/provider. See [GEMINI_RESEARCH_ASSISTANT.md](GEMINI_RESEARCH_ASSISTANT.md) for full limitations and setup.
+The generator `web/scripts/build-assistant-index.mjs` reads checked-in docs, the historical warehouse `manifest.json` and **selected aggregate** `mining_lab.json` results. It runs automatically before local development and production builds. `web/api/_retrieval.mjs` searches the server-side index and forwards a bounded subset to Gemini; neither arbitrary visitor URLs nor every Parquet row are indexed. A model might answer general conversation without project citations; project-specific numerical claims should be checked against their links. This is not a live code repository browser or arbitrary SQL execution service.
+
+**Local path:** `npm run dev` starts a loopback-only Node adapter (`127.0.0.1:8787`) and Vite (`127.0.0.1:5173`), with an explicit `vite.config.ts` proxy. **Production path:** Vercel routes `/api/ask` to the serverless handler and reads `GEMINI_API_KEY` from private project settings. Without a key, the analytics site still operates and the assistant shows labeled excerpts for documented questions. Questions and selected excerpts are sent to Google when generation succeeds, so apply privacy, spending and abuse controls. Read [AI configuration and limitations](GEMINI_RESEARCH_ASSISTANT.md).
 
 ## 2. Offline export and verification
 
@@ -257,6 +273,10 @@ The syllabus mining export uses **950** sampled customer RFM vectors and at most
 | `web/src/algorithmSteps.ts`, `web/src/AlgorithmPlayground.tsx` | Computed, labeled teaching-step visualizations (not empirical training traces) |
 | `web/src/DataStates.tsx` | Real progress stages, accessible query loading and retryable errors |
 | `web/public/data/` | Static historical analytical data; do not publish secrets |
+| `web/src/ProjectAssistant.tsx`, `web/src/project-assistant.css` | Chat drawer, citations, light/dark presentation |
+| `web/api/ask.js`, `web/api/_retrieval.mjs` | Server-side Gemini gateway, bounded source retrieval and fallback |
+| `web/api/_site-index.mjs`, `web/scripts/build-assistant-index.mjs` | Generated source-evidence index and build-time refresh |
+| `web/scripts/local-gemini-server.mjs`, `web/scripts/dev.mjs` | Loopback-only local API and Vite startup |
 | `web/src/editorial.css` | Readable typography and de-emphasis of decorative microcopy |
 | `web/src/theme.css`, `web/src/soft-cyan.css` | Light/dark theme, cyan tokens and contrast-safe overrides |
 | `web/public/favicon-cyan.svg` | Soft-cyan product favicon, preserving fallback icon |
