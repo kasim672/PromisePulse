@@ -5,29 +5,19 @@
 
 PromisePulse 5.0 uses **soft-cyan `#7DD3FC` accents** and is a **static Vite/React application** with DuckDB-Wasm running in the visitor's browser. Python, scikit-learn and the DuckDB desktop package are required to **rebuild data**, but not to **serve the production website**. The GitHub repository already contains the historical exports under `web/public/data/`.
 
-## Deployment state versus GitHub release
+## GitHub source versus live deployment
 
-The soft-cyan theme was merged into `main` on **October 26, 2026** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), merge commit `0ddf3b69a8d33b2a448dca0a31f5eeb2a456a4eb`. Its GitHub web validation succeeded, but the corresponding **Vercel deployment returned “Deployment rate limited — retry in 24 hours.”**
+The official release branch is **`main`**. It contains the original analytics, six mining sections, interactive teaching visualizers, the merged website-wide Gemini assistant and its improved light/dark chatbot styling. Earlier feature branches have been removed; **do not check out deleted `feat/*` or `fix/*` refs**.
 
-Until Vercel reports a successful deployment for that commit or a newer `main` commit, the public URL might still show the previous lime design. **Do not describe GitHub's successful merge or local screenshots as proof that the live website updated.** This is a deployment-account limit, not a TypeScript compilation failure.
+Previous Vercel checks reported a **build-rate-limit** failure even when GitHub web validation succeeded. This is not proof that today's production deployment is Ready or on the newest SHA. In the [Vercel project dashboard](https://vercel.com/dashboard) open **Deployments**, inspect the latest production build, and confirm all three: **Ready**, production-domain assignment, and the deployed `main` Git SHA. If the build is blocked by account limits, resolve the limit and redeploy `main`. Do not claim that screenshots or a successful `npm run build` verify the hosted deployment.
 
-To publish the merged design when the limit clears:
+### Assistant is merged but Gemini is optional
 
-1. Open the [Vercel project dashboard](https://vercel.com/kasim5) and select the PromisePulse project.
-2. Open **Deployments** and inspect the deployment associated with the newest `main` commit.
-3. If Vercel is still rate-limiting builds, wait until it allows another deployment or review the plan's build allowance.
-4. Use **Redeploy** for the latest production commit, if available, or trigger a fresh deployment from `main`.
-5. Confirm **Ready**, the production domain assignment, and the displayed Git commit SHA before opening the public site and checking its theme.
+The `web/api/ask.js` function is part of `main` and can be deployed alongside the Vite frontend. Set `GEMINI_API_KEY` as a **private server-side** environment variable in Vercel Settings; optionally set `GEMINI_MODEL=gemini-3.5-flash` (the code's current default, subject to access by your Google API project). Do not prefix secrets with `VITE_`. Vercel must complete a fresh deployment after environment changes.
 
-The release screenshots in this repository are from Chromium rendering the source application with actual checked-in historical data. They provide UI evidence **even if a Vercel deployment is pending**.
+On `npm run dev`, a local Node process runs the same handler at **`127.0.0.1:8787`**, with Vite on **`127.0.0.1:5173`** forwarding `/api/ask`. `npm run check:gemini` validates the route without consuming Google credits. Successful route validation does **not** verify Gemini key validity, quota, model access or generated response quality. Gemini may return labelled **reference excerpts** when unavailable.
 
-### Optional project-only Gemini assistant
-
-A pending feature branch, `feat/gemini-project-research-assistant`, adds the `/api/ask` Vercel Function to the Vite project root (`web/api/ask.js`). It must be merged and deployed before that endpoint exists in production. This new feature does not change the static Parquet warehouse or existing machine-learning results.
-
-To enable it locally, run `cd web && npm run setup:gemini`, put your own key in the new **ignored** `web/.env`, and use ordinary `npm run dev`. The local Node server serves `/api/ask` through Vite's proxy, using the same server-side handler as Vercel, without exposing the key to React. For deployment later, set `GEMINI_API_KEY` **privately in Vercel project Environment Variables**, not in source or a `VITE_*` variable. The server defaults to `GEMINI_MODEL=gemini-2.5-flash`; change it only to an available model. Review request quotas, Google billing, Vercel firewall rules and user-data implications first. See [Gemini Research Assistant](GEMINI_RESEARCH_ASSISTANT.md).
-
-The normal static frontend build remains unchanged. The Gemini feature requires a real Vercel deployment with Functions support; a successful `npm run build` does not by itself test Gemini authentication or confirm the Vercel API route is live.
+The knowledge index is rebuilt from checked-in documentation, `manifest.json` and selected mining aggregates on `predev` and `prebuild`. Neither Vercel nor the browser runs the Python ETL or executes chat-requested SQL over raw Parquet files. See [AI architecture and security](GEMINI_RESEARCH_ASSISTANT.md).
 
 ## 1. Deploy to Vercel from GitHub
 
@@ -43,12 +33,12 @@ The normal static frontend build remains unchanged. The Gemini feature requires 
 | Install command | `npm ci` |
 | Build command | `npm run build` |
 | Output directory | `dist` |
-| Environment variables | None required for bundled historical data |
+| Environment variables | None for static analytics; private `GEMINI_API_KEY` needed for generated AI responses |
 | Production branch | `main` |
 
 Vercel builds the React application and copies `web/public/` into its output. `index.html`, versioned JavaScript/CSS, `manifest.json`, Parquet files and the mining lab JSON are served as static assets.
 
-**Do not configure** a Python/Flask/FastAPI server, a live PostgreSQL/DuckDB service, or an API key just to deploy the current dashboard. All analytical queries run in browser memory through DuckDB-Wasm.
+**No Python/FastAPI service or hosted SQL database is needed** to serve the historical dashboard. Read-only analytics queries run in browser memory through DuckDB-Wasm. Gemini, unlike the dashboard, depends on a private serverless API function and Google credentials.
 
 ## 2. Verify a production deployment
 
@@ -85,6 +75,16 @@ node ../tests/test_documentation.cjs
 ```
 
 The source-backed browser checks in `web/scripts/smoke-soft-cyan.mjs`, `capture-current-docs.mjs` and `smoke-algorithms.mjs` verify the selected cyan states, responsive pages, experimental teaching steps and retry behavior. Playwright is installed separately by CI; it is **not** a permanent frontend dependency. The live smoke workflow can fail when Vercel has not deployed the current commit, even if the local source build passes.
+
+### Verify the optional AI assistant
+
+1. Open **Ask PromisePulse AI** in both light and dark mode and check message readability, focus visibility and mobile layout.
+2. Submit a project question (for example, “Which data sources are used?”). Expect documented source links, or a clearly identified reference fallback if Gemini is unavailable.
+3. Submit a general question with a configured and quota-enabled Gemini key to verify the generative path. A browser-only greeting is insufficient.
+4. Verify `POST /api/ask` reaches a Vercel Function, **not** the Vite SPA's `index.html`. HTTP 404 means the production function may be missing; an upstream model HTTP 404 means a different problem (model access).
+5. Confirm credentials are not present in browser Network requests, static bundles, Git or `web/public`. Server logs may indicate authentication/quota errors but must never print the secret.
+
+For local diagnostics, run `npm run check:gemini` from `web`. For production, confirm the correct Vercel deployment, function logs, and server-only variables. Review quotas, firewall/rate-limiting and billing alerts before enabling a public chat endpoint.
 
 ## 3. Local development (no source CSV download required)
 
