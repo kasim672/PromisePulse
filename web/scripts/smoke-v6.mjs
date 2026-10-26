@@ -39,7 +39,7 @@ async function run(width,height,theme){
   await page.getByText('Step 2 of 4').waitFor({state:'visible'})
   await tabs.getByRole('button',{name:'Pattern Mining',exact:true}).click()
   await page.getByRole('button',{name:'Eclat',exact:true}).click()
-  await page.getByText('Index baskets vertically').waitFor({state:'visible'})
+  await page.getByRole('heading',{name:'Index baskets vertically'}).waitFor({state:'visible'})
   await nav.getByRole('button',{name:'Pipeline & Quality',exact:true}).click()
   const lineage=page.getByRole('region',{name:'Interactive ETL lineage'})
   await lineage.waitFor({state:'visible',timeout:100000})
