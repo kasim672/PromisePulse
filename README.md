@@ -28,6 +28,14 @@ This visual update was merged to **`main`** in [PR #10](https://github.com/kasim
 
 **GitHub source versus public deployment:** Vercel reported a build-rate-limit failure for the soft-cyan merge on October 26, 2026. Therefore the public URL might still show the earlier lime theme until a successful redeployment. See the [deployment guide](docs/DEPLOYMENT.md) for verifying and retrying the production build. The [design system](docs/THEME_SYSTEM.md) documents colors, contrast, logos, and code ownership.
 
+## Optional Gemini-powered PromisePulse Research Assistant
+
+The proposed **project-only AI chat** uses Google's Gemini API, with a private `GEMINI_API_KEY` held inside a Vercel Function. The React app opens the assistant from a floating **Ask PromisePulse AI** control; it sends questions to `POST /api/ask`. The server retrieves only reviewed PromisePulse facts, refuses unrelated topics when no relevant source exists, and returns an answer with server-selected links to the project's GitHub docs. The site never embeds a Gemini key in client-side code.
+
+**Configuration required:** this assistant does **not** work until an authorized administrator creates a Gemini key in [Google AI Studio](https://aistudio.google.com/apikey), stores `GEMINI_API_KEY` in Vercel Environment Variables, and successfully deploys the Vercel Function. Vite-only local development does not run `/api/ask`; use `vercel dev` for end-to-end local testing. Do not commit or paste API keys.
+
+Questions and selected project source excerpts are processed by Gemini; avoid entering personal data. The assistant is educational and only as accurate as the curated sources. See the complete [Gemini configuration, security, privacy, rate-limiting and architecture guide](docs/GEMINI_RESEARCH_ASSISTANT.md).
+
 ## Explore the current release
 
 | Workspace | What it does |
