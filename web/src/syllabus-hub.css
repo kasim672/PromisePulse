@@ -1,0 +1,63 @@
+/* PromisePulse 5 syllabus hub: additive styles only. Existing premium UI unchanged. */
+.syllabus-hub{gap:19px}
+.syllabus-hub-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:16px;align-items:stretch}
+.syllabus-hub-intro{background:radial-gradient(circle at 94% 6%,rgba(37,99,168,.1),transparent 50%),var(--cadra-glass);border:1px solid var(--cadra-rim);box-shadow:var(--cadra-shadow);border-radius:24px;padding:clamp(23px,3.4vw,48px);display:flex;flex-direction:column;align-items:flex-start;gap:17px}
+.syllabus-hub-intro>span{display:flex;align-items:center;gap:9px;color:var(--atlas-selected);font:700 11px 'Urbanist',sans-serif;letter-spacing:.12em}
+.syllabus-hub-intro h2{max-width:17ch;font:600 clamp(31px,3.5vw,52px)/1.05 'Urbanist',sans-serif;letter-spacing:-.04em;color:var(--cadra-text)}
+.syllabus-hub-intro h2 em{color:var(--cadra-primary-ink);font-style:normal}
+.syllabus-hub-intro p{font:500 13px/1.7 'Urbanist',sans-serif;color:var(--cadra-muted);max-width:64ch}
+.syllabus-hub-intro button{border:none;border-radius:999px;padding:12px 19px;background:#111;color:#f7f7f5;display:flex;gap:13px;align-items:center;font:700 12.5px 'Urbanist',sans-serif}
+.syllabus-hub-intro button:hover{background:#1d4f87;color:#fff;transform:translateY(-1px)}
+.syllabus-hub-hours{display:flex;flex-direction:column;justify-content:space-between;gap:17px;padding:26px;border:1px solid var(--cadra-rim);border-radius:24px;background:var(--cadra-glass);box-shadow:var(--cadra-shadow)}
+.syllabus-hub-hours button{border:0;background:transparent;color:var(--cadra-text);padding:4px 0;display:grid;grid-template-columns:27px minmax(0,1fr) 36px;align-items:center;gap:13px}
+.syllabus-hub-hours button>span:first-child{font:700 12px 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-hours button strong{font:700 12px 'Urbanist',sans-serif}
+.syllabus-hub-track{height:11px;border-radius:99px;background:var(--cadra-line);overflow:hidden}
+.syllabus-hub-track i{display:block;height:100%;background:linear-gradient(90deg,var(--cadra-primary-ink),var(--atlas-selected));border-radius:99px}
+.syllabus-hub-hours button:hover .syllabus-hub-track i{filter:brightness(1.18)}
+.syllabus-hub-hours small{font:500 10px/1.6 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-evidence{padding:20px 22px;background:var(--cadra-glass);border:1px solid var(--cadra-rim);border-radius:22px;box-shadow:var(--cadra-shadow);display:flex;flex-direction:column;gap:18px}
+.syllabus-hub-evidence-head{display:flex;align-items:center;gap:12px}
+.syllabus-hub-evidence-head>svg{color:var(--atlas-selected)}
+.syllabus-hub-evidence-head>div{display:flex;flex-direction:column;gap:3px}
+.syllabus-hub-evidence-head strong{font:600 15px 'Urbanist',sans-serif;color:var(--cadra-text)}
+.syllabus-hub-evidence-head span{font:500 11px 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-evidence p{font:500 12px/1.6 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-stat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:11px}
+.syllabus-hub-stat-grid>div{background:var(--cadra-glass-2);border:1px solid var(--cadra-rim);border-radius:14px;padding:13px 14px;display:flex;flex-direction:column;gap:10px}
+.syllabus-hub-stat-grid span{color:var(--cadra-muted);font:500 10px/1.4 'Urbanist',sans-serif}
+.syllabus-hub-stat-grid strong{color:var(--cadra-text);font:700 clamp(18px,1.9vw,25px)/1.2 'Urbanist',sans-serif;font-variant-numeric:tabular-nums}
+.syllabus-hub-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:15px 1px 0}
+.syllabus-hub-heading>div>span{font:700 10px 'Urbanist',sans-serif;color:var(--atlas-selected);letter-spacing:.12em}
+.syllabus-hub-heading h2{color:var(--cadra-text);font:600 clamp(25px,2.5vw,33px) 'Urbanist',sans-serif;margin:10px 0 7px}
+.syllabus-hub-heading p{color:var(--cadra-muted);font:500 12px/1.6 'Urbanist',sans-serif}
+.syllabus-hub-filters{display:flex;flex-wrap:wrap;gap:5px;max-width:100%;border:1px solid var(--cadra-rim);border-radius:999px;padding:5px;background:var(--cadra-glass)}
+.syllabus-hub-filters button{background:transparent;color:var(--cadra-muted);border:none;border-radius:999px;padding:9px 13px;font:600 11px 'Urbanist',sans-serif}
+.syllabus-hub-filters button.active{background:#111;color:#f7f7f5}
+.syllabus-hub-filters button:hover:not(.active){background:var(--cadra-glass-2);color:var(--cadra-text)}
+.syllabus-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.syllabus-hub-card{display:flex;flex-direction:column;gap:13px;min-height:340px;padding:23px}
+.syllabus-hub-card-top{display:flex;justify-content:space-between;gap:10px;color:var(--cadra-muted);font:700 10px 'Urbanist',sans-serif;letter-spacing:.08em}
+.syllabus-hub-card-top>.syllabus-hub-module{color:var(--atlas-selected)}
+.syllabus-hub-icon{display:grid;place-items:center;width:43px;height:43px;color:var(--atlas-selected);background:var(--cadra-glass-2);border:1px solid var(--cadra-rim);border-radius:12px}
+.syllabus-hub-card h3{color:var(--cadra-text);font:600 19px/1.3 'Urbanist',sans-serif}
+.syllabus-hub-card>p{color:var(--cadra-muted);font:500 12px/1.6 'Urbanist',sans-serif}
+.syllabus-hub-learning,.syllabus-hub-measure{display:flex;flex-direction:column;gap:5px;font:500 11px/1.5 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-learning strong,.syllabus-hub-measure strong{color:var(--cadra-text);font:650 11px 'Urbanist',sans-serif;display:flex;align-items:center;gap:6px}
+.syllabus-hub-learning svg{color:var(--atlas-selected)}
+.syllabus-hub-open{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:9px;border:1px solid var(--cadra-line-2);border-radius:999px;background:var(--cadra-glass-2);padding:12px 15px;color:var(--cadra-text);font:650 11.5px 'Urbanist',sans-serif}
+.syllabus-hub-open:hover{background:var(--cadra-primary-ink);color:var(--cadra-bg)}
+.syllabus-hub-integrity{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:23px}
+.syllabus-hub-integrity>div{max-width:800px}
+.syllabus-hub-integrity svg{color:var(--atlas-selected)}
+.syllabus-hub-integrity h3{font:600 18px 'Urbanist',sans-serif;color:var(--cadra-text);margin:7px 0}
+.syllabus-hub-integrity p{font:500 12px/1.7 'Urbanist',sans-serif;color:var(--cadra-muted)}
+.syllabus-hub-integrity button{display:flex;flex:none;align-items:center;gap:8px;border:1px solid var(--cadra-line-2);border-radius:999px;padding:11px 15px;background:var(--cadra-glass-2);color:var(--cadra-text);font:600 11px 'Urbanist',sans-serif}
+html[data-theme="dark"] .syllabus-hub-intro{background:radial-gradient(circle at 94% 6%,rgba(128,166,255,.14),transparent 45%),var(--cadra-glass)}
+html[data-theme="dark"] .syllabus-hub-intro button,html[data-theme="dark"] .syllabus-hub-filters button.active{background:#c4ea84;color:#172318}
+html[data-theme="dark"] .syllabus-hub-open:hover{background:#c4ea84;color:#172318}
+@media(max-width:1230px){.syllabus-hub-stat-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.syllabus-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.syllabus-hub-hero{grid-template-columns:1fr}.syllabus-hub-hours{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.syllabus-hub-hours small{grid-column:1/-1}}
+@media(max-width:700px){.syllabus-hub-grid{grid-template-columns:1fr}.syllabus-hub-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.syllabus-hub-hero{gap:12px}.syllabus-hub-integrity{flex-direction:column;align-items:flex-start}.syllabus-hub-card{min-height:0}.syllabus-hub-hours{padding:18px}.syllabus-hub-filters{border-radius:17px}.syllabus-hub-heading{flex-direction:column;align-items:flex-start}}
+@media(max-width:374px){.syllabus-hub-hours{grid-template-columns:1fr}.syllabus-hub-stat-grid{grid-template-columns:1fr}.syllabus-hub-filters button{padding:8px}}
+@media(prefers-reduced-motion:reduce){.syllabus-hub *{transition:none!important}}
