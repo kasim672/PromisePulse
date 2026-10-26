@@ -4,9 +4,9 @@
 
 Capture script: [`web/scripts/capture-v5.mjs`](../web/scripts/capture-v5.mjs). Machine-readable manifest: [`docs/screenshots/v5/CAPTURE_MANIFEST.json`](screenshots/v5/CAPTURE_MANIFEST.json).
 
-The completed capture suite checked **six additional syllabus routes**, actual chart marks, true Ward dendrogram linkage, the persisted original Overview, both themes, and 390px mobile modules. These screenshots demonstrate browser rendering; they are not an independent scientific peer review.
+The completed capture suite checked the **Syllabus Hub plus six additional syllabus routes**, actual chart marks, true Ward dendrogram linkage, the persisted original Overview, both themes, and 390px mobile modules. These screenshots demonstrate browser rendering; they are not an independent scientific peer review.
 
-**Final verified capture:** 2026-10-25 13:59 UTC. All 16 screenshots were regenerated after the 74 verified closed itemsets were added and after mobile card headings, association-rate units, runtime units, and box-plot scale labeling were corrected. [GitHub Actions screenshot smoke passed](https://github.com/kasim672/PromisePulse/actions/runs/40200006679).
+**Current review capture:** October 26, 2026, with 19 authentic browser screenshots, including Syllabus Hub in both themes and 390px mobile. The screenshot capture checks module switching, published experimental data, and the original Overview. See the current CAPTURE_MANIFEST.json for its exact UTC timestamp and file list.
 
 | University syllabus module | Light theme | Dark theme | Key empirical evidence |
 | --- | --- | --- | --- |
@@ -28,7 +28,17 @@ The completed capture suite checked **six additional syllabus routes**, actual c
 
 **Math and methodology:** [SYLLABUS_V5.md](SYLLABUS_V5.md) provides the complete 30-hour syllabus mapping, actual evaluated outcomes and caveats. The existing [V4 gallery](SCREENSHOT_GALLERY_V4.md) and [V3 gallery](SCREENSHOT_GALLERY.md) remain available unchanged.
 
-### Responsible screenshot interpretation
+### Academic syllabus hub — choose all six modules
+
+| Light theme (full page) | Dark theme (full page) |
+| --- | --- |
+| [![Syllabus Hub Light](screenshots/v5/syllabus-hub-light.png)](screenshots/v5/syllabus-hub-light.png) | [![Syllabus Hub Dark](screenshots/v5/syllabus-hub-dark.png)](screenshots/v5/syllabus-hub-dark.png) |
+
+[View 390px responsive Syllabus Hub](screenshots/v5/syllabus-hub-mobile-light.png).
+
+The new hub is a standalone 19th navigation destination *in addition* to the original 12 and six syllabus laboratories. It presents the **8 + 3 + 5 + 5 + 4 + 5 = 30 academic contact hours**, explicit implementation caveats, and actual numbers from `mining_lab.json`: **99,441** orders, **112,650** items, **22,189** classification test orders, **950** sampled customers, **52** dendrogram leaves, and **649** eligible multi-category baskets. These are source-backed measurements with different denominators, not interchangeable counts.
+
+## Responsible screenshot interpretation
 
 - The 950-customer cluster fit and 52-record dendrogram represent deterministic tractability samples, not a hierarchical analysis of all 96,096 observed unique customers.
 - Newly evaluated classifiers have weak minority-class precision. Do not interpret attractive confusion and calibration figures as superior performance or a production risk service.
