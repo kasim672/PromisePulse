@@ -51,23 +51,58 @@ Responses include linked **related project sources** selected by the backend. Th
 
 Gemini request processing can incur charges or exhaust a free quota. This public endpoint has **basic best-effort in-memory per-IP throttling** (8 requests per 10 minutes per warm function instance) but serverless instances do not share that state. For public use, additionally configure **Vercel Firewall/rate limiting, bot protection, Google API quotas and spend alerts**. Do not advertise the simple in-memory limit as comprehensive abuse prevention.
 
-### Local development
+### Run locally on Ubuntu (no Vercel account or CLI needed)
 
-The existing `npm run dev` uses Vite for the static React frontend. **Vite alone does not run Vercel Functions**; the UI will show a clear service-unavailable message when the API route is missing.
+**The usual `npm run dev` now runs the Gemini endpoint locally.** A development-only Vite middleware serves `POST /api/ask` by calling the **same server handler** used by Vercel in production. The Gemini key is read from the **server-side `web/.env`**; it is never injected into browser JavaScript.
 
-Run in Vercel's local function environment:
+The repository intentionally tracks **`web/.env.example` only**, not `web/.env`. To create your own local file without overwriting a key you might already have:
 
 ```bash
-cd PromisePulse/web
+cd ~/PromisePulse
+git fetch origin
+git switch feat/gemini-project-research-assistant
+git pull --ff-only
+cd web
 npm ci
-npx vercel login
-npx vercel link
-npx vercel dev
+npm run setup:gemini
+nano .env
 ```
 
-Use the local URL provided by `vercel dev`. Keep `GEMINI_API_KEY` in Vercel environment settings and pull to the local Vercel runtime when necessary, rather than committing `.env` files. Alternatively, use a local, untracked environment file read by the Vercel CLI and keep it out of version control.
+In the newly created `web/.env`, set your private value:
 
-The website's bundled Olist Parquet and `mining_lab.json` remain unchanged; you do not need to regenerate academic experiments to use the chat.
+```dotenv
+GEMINI_API_KEY=PASTE_YOUR_OWN_KEY_HERE
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+**`PASTE_YOUR_OWN_KEY_HERE` is just an example; replace it with the actual value inside your local file only.** Do not send the value to the chat or GitHub. You can generate an API key in [Google AI Studio](https://aistudio.google.com/apikey).
+
+Then:
+
+```bash
+npm run dev
+```
+
+Open **http://127.0.0.1:5173/**, click **Ask PromisePulse AI**, and ask **“How does the PromisePulse warehouse work?”**. The chat will call your *local* `/api/ask` route, which sends the selected project evidence to Gemini over HTTPS. Restart `npm run dev` after changing `.env`.
+
+If you prefer, `cp .env.example .env` does the same initialization manually, but **`npm run setup:gemini` is safer** because it refuses to overwrite an existing local `.env`.
+
+#### Local architecture
+
+```mermaid
+flowchart LR
+  Browser["React site at localhost:5173"] --> Vite["Vite development server"]
+  Vite --> Route["Local /api/ask middleware"]
+  Route --> Handler["Same web/api/ask.js used by Vercel"]
+  Env["Ignored web/.env: GEMINI_API_KEY"] -. "Node server only" .-> Handler
+  Handler --> Sources["Curated project-only evidence"]
+  Handler --> Google["Gemini API over HTTPS"]
+  Google --> Browser
+```
+
+**No Gemini key is required** just to run the analytics website. With an empty/missing `GEMINI_API_KEY`, the assistant explains the missing configuration; normal Olist dashboards still work. Vercel environment variables are required *later* when deploying, not for this local setup. Both the root `.gitignore` and `web/.gitignore` exclude all real `.env` variants, but allow the example template. Run `git check-ignore web/.env` at the repository root to verify your local key file remains ignored.
+
+The historical Olist Parquet and `mining_lab.json` remain unchanged; no dataset rebuild is needed.
 
 ### Test without any real Gemini key
 
@@ -76,6 +111,8 @@ cd PromisePulse/web
 npm ci
 npm run build
 node ../tests/test_gemini_assistant.mjs
+# Local HTTP test requires npm run dev in a separate terminal and an empty local key
+node ../tests/test_gemini_local_http.mjs
 ```
 
 The test intercepts the outgoing Gemini `fetch` request and verifies a mocked answer, references, refusal behavior, bad input, cross-origin blocking, missing key handling, throttling contract and upstream error responses. It never calls Google's live API or consumes tokens.
