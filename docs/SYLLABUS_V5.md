@@ -1,6 +1,6 @@
 # PromisePulse 5.0 — Full 30-hour Data Warehousing & Data Mining syllabus
 
-**Release status:** feature branch only. This document maps the six university syllabus modules supplied by the student to genuine implementations, clearly separated from conceptual architecture illustrations. All original 12 workspaces, the initial 66 scientific chart definitions, the Brazil state-level geographic map, the AI evidence studio, both visual themes and OLAP tools are preserved. Six syllabus modules add six dock destinations, plus one syllabus overview hub (**19 total**). No removal or replacement was performed.
+**Release status:** feature branch only. This document maps the six university syllabus modules supplied by the student to genuine implementations, clearly separated from conceptual architecture illustrations. All original 12 workspaces, the initial 66 scientific chart definitions, the Brazil state-level geographic map, the AI evidence studio, both visual themes and OLAP tools are preserved. One Data Mining Lab dock icon opens the hub directly, and six analysis pages are reached by clicking the overview cards or the internal tabs. The original 12 workspaces remain intact.
 
 ## Module-by-module syllabus coverage
 
@@ -93,7 +93,7 @@ The experimental train/test split is **chronological 77/23**, not a random shuff
 
 ## UI and academic evaluation
 
-- **19 floating navigation destinations**: 12 previous pages, six new syllabus pages, plus the Syllabus Hub with phase filtering, the 30-hour breakdown, verified source statistics, and direct links. Desktop dock scrolls vertically when needed; tablet/mobile dock scrolls horizontally.
+- **Streamlined navigation**: the 12 original workspace entries remain, with one Data Mining Lab icon opening the overview directly. Its six analysis areas are accessible via cards and clickable internal tabs. Teaching-hour breakdowns and numbered academic banners are kept out of the website interface.
 - Existing glass cards, charts, Brazil map, page structure, website branding, favicon, light/dark colors and routes remain unchanged.
 - Experiments use actual historical data; when the mining JSON cannot be loaded, the module explicitly says so rather than substituting invented numbers.
 - Controls include schema-variant selector, variable profile selector, correlation cell inspection, classifier comparison metric and confusion matrix selector, cluster-algorithm switch, dendrogram focus, and rule support/confidence sliders.
