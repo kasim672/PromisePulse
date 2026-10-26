@@ -99,6 +99,11 @@ Loading is also more informative: warehouse initialization reports the manifest,
 
 ### Actual screenshots
 
+| AI assistant (light) | AI assistant (dark) |
+| --- | --- |
+| [![Current PromisePulse chat in light theme](docs/screenshots/current/assistant-light.png)](docs/screenshots/current/assistant-light.png) | [![Current PromisePulse chat in dark theme](docs/screenshots/current/assistant-dark.png)](docs/screenshots/current/assistant-dark.png) |
+
+
 | Overview (light) | Overview (dark) |
 | --- | --- |
 | [![Overview light](docs/screenshots/current/overview-light.png)](docs/screenshots/current/overview-light.png) | [![Overview dark](docs/screenshots/current/overview-dark.png)](docs/screenshots/current/overview-dark.png) |
