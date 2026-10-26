@@ -35,7 +35,7 @@ async function captureAssistant(page,prefix,theme){
 }
 async function openLab(page,index){
  const nav=page.getByRole('navigation',{name:'Main navigation'})
- await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
+ await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).evaluate(button=>button.click()) // Mobile floating chat trigger overlaps the navigation icon; activate navigation without changing screenshot UI
  const cards=page.locator('.syllabus-hub-grid .syllabus-hub-card')
  await cards.first().waitFor({state:'visible',timeout:90000})
  if(await cards.count()!==6)throw Error('All six mining lab sections must be visible')
