@@ -1,7 +1,7 @@
 name: Gemini Project Research Assistant QA
 on:
   push:
-    branches: [feat/gemini-project-research-assistant, fix/gemini-local-api-standalone]
+    branches: [feat/gemini-project-research-assistant, fix/gemini-local-api-standalone, fix/gemini-assistant-real-answers, main]
     paths:
       - 'web/src/**'
       - 'web/api/**'

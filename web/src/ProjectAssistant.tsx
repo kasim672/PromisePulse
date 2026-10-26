@@ -3,7 +3,7 @@ import type {FormEvent,KeyboardEvent} from 'react'
 import {ArrowUp,BookOpen,MessageCircle,ShieldCheck,SquareArrowOutUpRight,X} from 'lucide-react'
 
 type Source={id:string;title:string;url:string}
-type Message={role:'user'|'assistant';text:string;sources?:Source[];error?:boolean}
+type Message={role:'user'|'assistant';text:string;sources?:Source[];error?:boolean;notice?:string;mode?:'gemini'|'reference'}
 const examples=[
  'What is PromisePulse and how does it work?',
  'Explain the DuckDB-Wasm architecture',
@@ -51,16 +51,16 @@ export function ProjectAssistant(){
   const controller=new AbortController()
   request.current=controller
   try{
-   const response=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q}),signal:controller.signal})
+   const response=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:messages.filter(m=>m.role==='user').slice(-3).map(m=>m.text)}),signal:controller.signal})
    const body:unknown=await response.json().catch(()=>null)
-   const result=body&&typeof body==='object'?body as {answer?:unknown;sources?:unknown;error?:unknown}:null
+   const result=body&&typeof body==='object'?body as {answer?:unknown;sources?:unknown;error?:unknown;mode?:unknown;notice?:unknown}:null
    if(!response.ok||typeof result?.answer!=='string'){
     const msg=typeof result?.error==='string'?result.error:response.status===404?'The /api/ask route was not found on '+window.location.origin+'. Open the Vite development address (usually http://127.0.0.1:5173), run npm run dev from the web folder, and refresh. This is a missing local route, not a Gemini key error.':'The assistant could not answer right now. Please try again.'
     throw new Error(msg)
    }
    if(controller.signal.aborted)return
    const sources=Array.isArray(result.sources)?result.sources.filter((s:unknown):s is Source=>typeof s==='object'&&s!==null&&typeof (s as Source).title==='string'&&typeof (s as Source).url==='string'&&String((s as Source).url).startsWith('https://github.com/kasim672/PromisePulse/')).slice(0,4):[]
-   setMessages(prev=>[...prev,{role:'assistant',text:result.answer as string,sources}])
+   setMessages(prev=>[...prev,{role:'assistant',text:result.answer as string,sources,mode:result.mode==='reference'?'reference':'gemini',notice:typeof result.notice==='string'?result.notice:undefined}])
   }catch(error){
    if(!controller.signal.aborted)setMessages(prev=>[...prev,{role:'assistant',text:error instanceof Error?error.message:'Unable to contact the assistant.',error:true}])
   }finally{if(request.current===controller){request.current=null;setWorking(false)}}
@@ -82,7 +82,7 @@ export function ProjectAssistant(){
   {open&&<div className="project-ai-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
    <div className="project-ai-dialog" role="dialog" aria-modal="true" aria-labelledby="project-ai-title" onKeyDown={trap}>
     <div className="project-ai-header">
-     <div className="project-ai-heading"><span className="project-ai-symbol"><BookOpen size={21} aria-hidden="true"/></span><div><h2 id="project-ai-title">PromisePulse Research Assistant</h2><p>Gemini · Answers grounded in this project</p></div></div>
+     <div className="project-ai-heading"><span className="project-ai-symbol"><BookOpen size={21} aria-hidden="true"/></span><div><h2 id="project-ai-title">PromisePulse Research Assistant</h2><p>Project-grounded Gemini · Verified reference fallback</p></div></div>
      <button className="project-ai-close" type="button" aria-label="Close AI assistant" onClick={close}><X size={21}/></button>
     </div>
     <div className="project-ai-messages" role="log" aria-live="polite" aria-label="Assistant conversation">
@@ -95,6 +95,7 @@ export function ProjectAssistant(){
      {messages.map((msg,i)=><article key={i} className={'project-ai-message '+msg.role+(msg.error?' is-error':'')}>
       <strong>{msg.role==='user'?'You':'PromisePulse AI'}</strong>
       <p>{msg.text}</p>
+      {msg.notice&&<small className="project-ai-answer-note" role="status">{msg.notice}</small>}
       {Boolean(msg.sources?.length)&&<div className="project-ai-sources"><span>Related project sources</span>{msg.sources?.map(s=><a href={s.url} target="_blank" rel="noopener noreferrer" key={s.id}>{s.title}<SquareArrowOutUpRight size={12} aria-hidden="true"/></a>)}</div>}
      </article>)}
      {working&&<div className="project-ai-thinking" role="status"><span className="project-ai-dots" aria-hidden="true"/><span>Checking PromisePulse documentation with Gemini…</span></div>}
