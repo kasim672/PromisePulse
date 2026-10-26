@@ -1,6 +1,6 @@
-# PromisePulse 3.0 — Architecture, Evaluation and Research Reproducibility
+# PromisePulse — Warehouse, Model Evaluation and Research Reproducibility
 
-**Latest extension:** [PromisePulse 4.0 Research Expansion](RESEARCH_EXPANSION_V4.md) adds 30 chart definitions and a grounded model explanation module. The original warehouse and classifier are unchanged. See [V4 screenshot evidence](SCREENSHOT_GALLERY_V4.md).
+**Current release:** PromisePulse 5.0 retains the original warehouse and risk model, the [V4 Research Expansion](RESEARCH_EXPANSION_V4.md), and the six [Data Mining Lab experiments](SYLLABUS_V5.md). This document focuses on the original warehouse/model research boundary. See the [current architecture](ARCHITECTURE_V5.md), [new screenshots](SCREENSHOT_GALLERY_CURRENT.md), and [deployment guide](DEPLOYMENT.md) for the present web application.
 
 **Status:** documented implementation and descriptive analytics, **not** evidence of journal acceptance, statistical significance or validated production predictive performance.
 
