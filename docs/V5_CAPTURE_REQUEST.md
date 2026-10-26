@@ -10,3 +10,6 @@ Verify non-loading SVG chart data, actual PCA and Ward dendrogram segments, mine
 Final screenshot refresh after browser QA: vertically stacked academic headings, signed-log1p box-plot display disclosure, association percentages and millisecond algorithm timings. Re-verify original Overview and 390px mobile pages.
 
 Final closed-itemset capture after empirical rerun: 74 closed frequent itemsets filtered from 75 true Apriori itemsets, with 47 association rules. Re-capture all six light/dark pages and mobile checks from the same checked JSON.
+
+## Consolidated review branch: refreshed browser evidence
+Capture all six empirical syllabus modules in light and dark, original Overview preserved, two mobile lab views, and **three additional Syllabus Hub screenshots** (desktop light/dark and mobile light). Verify the hub reads its six real evidence counters, links to six modules, changes its academic phase filter, and that visible algorithms/dendrograms are real, not placeholder data. Export JSON now uses train-only model feature fitting. Reject browser exceptions. Commit only confirmed screenshots with a new provenance manifest.
