@@ -53,3 +53,12 @@
 .syllabus-page .mining-progress,.syllabus-hub .mining-progress{max-width:none}
 @media(max-width:800px){.algorithm-step-layout{grid-template-columns:1fr}.algorithm-playground{padding:16px}.algorithm-explanation{padding:17px}.algorithm-step-nav{gap:5px}.algorithm-step-nav button{min-width:32px;min-height:37px}}
 @media(prefers-reduced-motion:reduce){.algorithm-playground *,.warehouse-progress *,.mining-progress *{animation:none!important;transition:none!important}}
+
+.query-loading{display:grid;gap:9px;min-height:125px;align-content:center;padding:18px;color:var(--cadra-text,var(--atlas-ink,#111));background:var(--cadra-glass);border:1px solid var(--cadra-rim);border-radius:12px}
+.query-loading strong{font:650 14px/1.4 Urbanist,sans-serif}
+.query-loading p{font:500 12px/1.5 Urbanist,sans-serif;color:var(--cadra-muted,var(--atlas-muted))}
+.query-loading progress{width:100%;height:7px;accent-color:var(--atlas-selected,#6688a9)}
+.query-loading-placeholder{display:flex;gap:6px;align-items:flex-end;height:24px}
+.query-loading-placeholder i{display:block;width:25%;height:9px;background:var(--cadra-rim);border-radius:5px}
+.query-loading-placeholder i:nth-child(2){height:17px;width:38%}
+.query-loading-placeholder i:nth-child(3){height:12px;width:20%}
