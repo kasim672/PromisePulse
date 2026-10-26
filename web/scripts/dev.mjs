@@ -35,7 +35,7 @@ try{
   await delay(150)
  }
  if(!ready)throw new Error('Local Gemini API failed to start; check whether port '+port+' is in use.')
- vite=spawn(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1',...process.argv.slice(2)],{cwd:web,stdio:'inherit',env:process.env})
+ vite=spawn(process.execPath,['node_modules/vite/bin/vite.js','--config','vite.config.ts','--host','127.0.0.1',...process.argv.slice(2)],{cwd:web,stdio:'inherit',env:process.env})
  const result=await new Promise((resolve,reject)=>{
   vite.on('error',reject)
   vite.on('exit',(code,signal)=>resolve({code,signal}))
