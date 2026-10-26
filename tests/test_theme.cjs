@@ -47,6 +47,7 @@ for (const selector of [
   assert.ok(chat.includes('html[data-theme="light"] ' + selector + ' {'),
     'light chatbot needs an explicit opaque style for ' + selector)
 }
+assert.match(chat,/\.project-ai-trigger\{right:12px;bottom:86px;/,'mobile AI launcher must clear bottom navigation')
 assert.doesNotMatch(chat,/html\[data-theme="dark"\]\s+\.project-ai-/,
   'dark chatbot appearance should not be changed by light-only overrides')
 assert.match(chat,/--ai-surface:\s*#f8fbff/i)
