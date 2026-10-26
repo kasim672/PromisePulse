@@ -9,6 +9,11 @@ async function visit(width,height,theme){
  const context=await browser.newContext({viewport:{width,height},colorScheme:theme,reducedMotion:'reduce'})
  await context.addInitScript(value=>{localStorage.setItem('promisepulse-theme',value)},theme)
  const page=await context.newPage()
+ // Do NOT mock this request: it must reach the actual Vite -> Node API route.
+ const health=await context.request.post(new URL('api/ask',url).href,{
+   data:{question:'hi'},headers:{'Content-Type':'application/json'}
+ })
+ if(health.status()!==400)throw Error('Real local /api/ask route failed: expected HTTP 400 for invalid question, got '+health.status())
  const errors=[]
  page.on('pageerror',e=>errors.push(e.message))
  let calls=0
