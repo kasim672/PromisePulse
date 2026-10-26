@@ -361,6 +361,22 @@ export default function App() {
     window.scrollTo({top:0,behavior:reduced?'auto':'smooth'})
   }
   return <div className="app-shell">
+    {/* Preserve the original PromisePulse logo artwork and purple lettering.
+        Recolor only the image's lime pixels with the site-wide soft cyan. */}
+    <svg className="pp-brand-accent-filter" aria-hidden="true" focusable="false" width="0" height="0">
+      <defs>
+        <filter id="pp-brand-cyan" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
+          <feColorMatrix in="SourceGraphic" type="matrix"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -0.6 1.2 -0.7 0 -0.12"
+            result="greenMask"/>
+          <feComponentTransfer in="greenMask" result="cyanMask"><feFuncA type="linear" slope="3" intercept="-0.2"/></feComponentTransfer>
+          <feFlood floodColor="#7DD3FC" result="cyanTint"/>
+          <feComposite in="cyanTint" in2="cyanMask" operator="in" result="cyanAccent"/>
+          <feComposite in="SourceGraphic" in2="cyanMask" operator="out" result="originalWithoutGreen"/>
+          <feMerge><feMergeNode in="originalWithoutGreen"/><feMergeNode in="cyanAccent"/></feMerge>
+        </filter>
+      </defs>
+    </svg>
     <a className="skip-link" href="#main-content">Skip to main content</a>
     <header className="site-header">
       <div className="header-inner">
