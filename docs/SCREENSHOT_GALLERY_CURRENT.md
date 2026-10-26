@@ -26,6 +26,22 @@ The Overview retains the historical state-level map. This is **not** a live cour
 
 The lab overview opens from the graduation-cap icon **without a popup**. Its six analysis sections use overview cards and internal tabs. The teaching hour breakdown is kept in the [course documentation](SYLLABUS_V5.md), not displayed as tiny banners on the website.
 
+## New step-by-step algorithm visualizations
+
+The five methods below use **computed, explicitly illustrative inputs**. They are browser screenshots of the working visualizer, not images fabricated by a graphics tool. The actual Olist experiment figures remain on the same pages below the teaching scenes.
+
+| K-Means calculated centroid updates | Decision Tree sample path |
+| --- | --- |
+| [![K-Means example visualizer](screenshots/current/algorithm-k-means-light.png)](screenshots/current/algorithm-k-means-light.png) | [![Decision Tree example visualizer](screenshots/current/algorithm-decision-tree-light.png)](screenshots/current/algorithm-decision-tree-light.png) |
+
+| Apriori candidate counting | FP-Growth prefix counts | Eclat TID intersections |
+| --- | --- | --- |
+| [![Apriori example](screenshots/current/algorithm-apriori-light.png)](screenshots/current/algorithm-apriori-light.png) | [![FP-Growth example](screenshots/current/algorithm-fp-growth-light.png)](screenshots/current/algorithm-fp-growth-light.png) | [![Eclat example](screenshots/current/algorithm-eclat-light.png)](screenshots/current/algorithm-eclat-light.png) |
+
+[Dark mode visualizer capture](screenshots/current/algorithm-k-means-dark.png) · [Mobile visualizer capture](screenshots/current/mobile-algorithm-k-means-light.png) · [Algorithm screenshot provenance](screenshots/current/ALGORITHM_CAPTURE_MANIFEST.json).
+
+These scenes use **six sample points for K-Means** and **five small baskets for pattern mining**. Actual scientific results come from Olist's exported experiments. See [the worked algorithm guide](ALGORITHM_PLAYGROUND.md) for formulas, sample inputs and limitations.
+
 ## Dark mode and mobile
 
 | Dark Welcome | Dark Data Mining Lab |
