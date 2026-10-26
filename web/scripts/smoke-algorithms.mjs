@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 const url=process.env.PP_BASE_URL||'http://127.0.0.1:4173/'
 const dir=path.resolve('../docs/screenshots/current')
-const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']})
+const browser=await chromium.launch({headless:true,channel:process.env.PP_BROWSER_CHANNEL==='chrome'?'chrome':undefined,args:['--no-sandbox','--disable-dev-shm-usage']})
 const names=[]
 async function test(theme,width,height){
  const ctx=await browser.newContext({viewport:{width,height},colorScheme:theme,reducedMotion:'reduce'})
