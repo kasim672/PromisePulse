@@ -4,6 +4,7 @@ import {Download,ShieldCheck} from 'lucide-react'
 import {ChartCard} from './AnalyticsAtlas'
 import type {AtlasMetric} from './atlasQueries'
 import type {RecordRow,Tab} from './types'
+import {AlgorithmWalkthrough} from './AlgorithmWalkthrough'
 export type SyllabusModule='Warehouse & ETL'|'Data Lakes'|'EDA & Preprocessing'|'Classification Lab'|'Clustering Lab'|'Pattern Mining'
 type Row=Record<string,unknown>
 type Evidence={
@@ -208,6 +209,10 @@ export function SyllabusLab({module,onNavigate}:{module:SyllabusModule;onNavigat
     {module==='Classification Lab'&&<Classification d={result}/>}
     {module==='Clustering Lab'&&<Cluster d={result}/>}
     {module==='Pattern Mining'&&<Rules d={result}/>}
+     {module==='Classification Lab'&&<AlgorithmWalkthrough topic="classification"/>}
+     {module==='Clustering Lab'&&<AlgorithmWalkthrough topic="clustering"/>}
+     {module==='Pattern Mining'&&<AlgorithmWalkthrough topic="patterns"/>}
+     <div className="reproducibility-links"><h3>Reproduce the analysis</h3><p>Download the recorded results or inspect the offline exporter. Walkthroughs are educational; measured results come from published data.</p><a href={import.meta.env.BASE_URL+'data/mining_lab.json'} download="mining_lab.json">Download experiment results (JSON)</a><a href="https://github.com/kasim672/PromisePulse/blob/main/scripts/build_mining_lab.py" target="_blank" rel="noreferrer">View exporter source</a></div>
     <div className="atlas-methodology"><ShieldCheck size={18}/><p><strong>Interpretation notes.</strong> Offline analyses use real historical Olist source data and a deterministic script, not simulated charts. Clustering samples and rule denominators are disclosed. Relationships are exploratory, not causal; manuscript-level statistical testing and independent validation remain separate work.</p></div>
   </>}
  </div>
