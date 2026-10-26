@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://promise-pulse-rose.vercel.app/sitemap.xml
