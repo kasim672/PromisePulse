@@ -770,7 +770,7 @@ Version 6 adds **platform usability tools** while preserving the existing Olist 
 
 - **Faster workspace loading:** Suspense-based route splitting and lazy DuckDB engine download.
 - **Shared historical filters:** Purchase year is synchronized between Overview, Intelligence, Atlas and Research; customer state between Atlas and Research. Fixed held-out model cohort metrics remain separate.
-- **Custom workspace order:** Reorder the landing page's workspace shortcuts with accessible Move earlier/later buttons; settings remain in browser local storage.
+- **Custom workspace order:** Reorder the landing page's workspace shortcuts and three Overview analytics widgets with accessible Move earlier/later buttons; settings remain in browser local storage.
 - **Focus mode for charts:** Select Focus on chart, use existing chart-style and raw-data tools, exit with Escape.
 - **Method walkthroughs:** Decision Tree, K-Means, Apriori, FP-Growth and Eclat, clearly labeled educational examples. Live retraining is not claimed.
 - **Evidence reports:** Header → Report → select measured tables/warehouse chart → Print/Save as PDF in your browser.
