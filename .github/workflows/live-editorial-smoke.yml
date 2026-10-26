@@ -1,0 +1,38 @@
+name: Verify live PromisePulse editorial UI
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-editorial-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install Playwright Chromium
+        working-directory: web
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Inspect public Vercel website in four layouts
+        working-directory: web
+        env:
+          PP_LIVE_URL: https://promise-pulse-rose.vercel.app/
+        run: node scripts/smoke-live-editorial.mjs
+      - name: Archive production visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promisepulse-production-editorial
+          path: web/.screenshots-live/
+          if-no-files-found: ignore
