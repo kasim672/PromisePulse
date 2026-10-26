@@ -1,12 +1,12 @@
 # PromisePulse 5.0 — Release Review and Empirical Quality Gate
 
-**Status:** implementation complete on a **draft feature branch only**. `main` has not been modified. This review is grounded in `web/public/data/mining_lab.json`, `docs/screenshots/v5/CAPTURE_MANIFEST.json`, source code and GitHub Actions as inspected on October 25, 2026.
+**Status:** implementation complete on a **draft feature branch only**. `main` has not been modified. This review is grounded in `web/public/data/mining_lab.json`, `docs/screenshots/v5/CAPTURE_MANIFEST.json`, source code and GitHub Actions as extended and revalidated on October 26, 2026.
 
 ## Additive delivery contract
 
-GitHub comparison with `main` reports **37 changed files** (new algorithm exporter, immutable historical data export, syllabus pages, documentation, screenshots and tests). Existing premium CSS, the state-level choropleth, the original Analytics Atlas 36 views, Research Workspaces 30 views, original Risk Center, OLAP, homepage, logo and theme implementations are **not replaced**. The only modified application/navigation files are `App.tsx`, `types.ts` and `main.tsx`, to register and render the six new modules.
+GitHub comparison with `main` documents additive algorithm exporters, generated historical experiment data, six syllabus pages, a syllabus overview hub, documentation, screenshots and tests. Existing premium CSS, the state-level choropleth, the original Analytics Atlas 36 views, Research Workspaces 30 views, original Risk Center, OLAP, homepage, logo and theme implementations are **not replaced**. Only integration points in the original app shell (`App.tsx`, `types.ts`, `main.tsx`) are modified to register and render additional modules; all original dashboards and CSS files are retained, with new styles isolated in `syllabus.css` and `syllabus-hub.css`.
 
-New dock destinations: Warehouse & ETL, Data Lakes, EDA & Preprocessing, Classification Lab, Clustering Lab and Pattern Mining. Total destinations: 12 original + 6 new = **18**. Do not misrepresent the number of empirical visualizations: the retained Atlas + research workspace register **66** chart definitions, while the new syllabus labs add supplementary figures, diagrams, data tables and analytical selectors with different grains.
+New dock destinations: Warehouse & ETL, Data Lakes, EDA & Preprocessing, Classification Lab, Clustering Lab and Pattern Mining. Total destinations: 12 original + 6 syllabus modules + 1 syllabus hub = **19**. Do not misrepresent the number of empirical visualizations: the retained Atlas + research workspace register **66** chart definitions, while the new syllabus labs add supplementary figures, diagrams, data tables and analytical selectors with different grains.
 
 ## The six syllabus modules, implemented and verifiable
 
@@ -85,14 +85,20 @@ python scripts/verify_mining_lab.py
 
 Consult `requirements-export.txt` and the script's CLI flags/inputs before regenerating the published JSON. The static JSON is checked into the branch to allow browser exploration without running Python.
 
-`docs/screenshots/v5/` contains **16 genuine UI captures**, spanning all six modules and previous Overview in light/dark, plus two representative mobile views. The manifest documents the browser/run metadata. Screenshots verify presentation, not statistical significance or independent paper-level replication.
+`docs/screenshots/v5/` contains **19 genuine UI captures** after the latest browser verification, spanning all six modules and previous Overview in light/dark, plus two representative mobile views. The manifest documents the browser/run metadata. Screenshots verify presentation, not statistical significance or independent paper-level replication.
 
 ## Before student approval / merge
 
 1. Open the **draft PR** and compare against `main`. Do not merge on our behalf.
-2. Run the branch locally and select each of the 18 nav destinations; check long-page scrolling and mobile dock interactions.
+2. Run the branch locally and select each of the 19 nav destinations; check long-page scrolling and mobile dock interactions.
 3. Change chart selectors, cluster methods, confidence/support filters; export sample aggregate CSVs and verify source labels.
 4. Show the professor the **actual** weak classification and regression results, limited cluster sample, and restricted basket denominator. Consider further experiments rather than presentation-level fixes.
 5. For journal purposes, define a hypothesis, evaluate more suitable baselines, test temporal and geographic transfer, and include uncertainty and limitations.
 
 **Academic integrity:** This is a rigorous syllabus-aligned interactive educational/research prototype, not evidence that a Scopus Q1 journal has accepted the work. Neither the 66 existing charts nor additional instructional diagrams should be equated with peer-reviewed findings.
+
+## Consolidated review branch — academic hub and methodological correction
+
+A dedicated `feat/promisepulse-5-full-syllabus-review` branch inherits all six empirical module implementations without modifying `main`. It adds a seventh *academic* navigation destination, **Syllabus Hub**, with the six official syllabus hours (8, 3, 5, 5, 4, 5), clickable module cards, a phase selector and source-backed counters from the published experiment JSON.
+
+The original exporter performed median imputation and categorical one-hot encoding across the chronological training and evaluation periods together; this could expose the training transform to future holdout feature distributions. The review branch corrects this by fitting missing-value medians and category vocabulary on training data alone and applying those parameters unchanged to the historical test period. See `tests/test_mining_training_boundary.py` for explicit unseen-category/outlier fixtures. Model classification quality remains weak and must not be exaggerated. The experiment is regenerated from source Parquet and requires independent journal-level replication.
