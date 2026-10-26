@@ -60,7 +60,7 @@ async function scenario(theme,width,height,mobile=false){
   if(theme==='light'){
    await nav.getByRole('button',{name:'Analytics Atlas',exact:true}).click()
    await page.locator('.atlas-page .atlas-chart-card').first().waitFor({state:'visible',timeout:90000})
-   await page.locator('.atlas-loading').first().waitFor({state:'hidden',timeout:90000})
+   await page.locator('.atlas-page .atlas-plot-wrap').first().waitFor({state:'visible',timeout:90000})
    await save(page,'analytics-atlas-'+theme)
   }
   await openLab(page,null)
