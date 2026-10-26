@@ -24,12 +24,14 @@ The product's dark graphite surfaces, purple logo lettering and original Olist d
 | Brazil state map | Selected-state fill and outline emphasis; geographic data unchanged |
 | Analytics Atlas and Research | Selected chart/analysis lens, focus and chart tokens |
 | Six Data Mining Lab screens | Tab/active controls and teaching visualizations |
-| Brand assets | New `web/public/favicon-cyan.svg`; the existing PNG remains as an alternate favicon |
+| Brand assets | `web/public/favicon-cyan.svg`; the existing PNG remains an alternate favicon |
+| Gemini chat in light mode | Opaque white cards, navy text, pale-blue user bubbles and darker cyan links in `project-assistant.css` ([PR #19](https://github.com/kasim672/PromisePulse/pull/19)) |
+| Gemini chat in dark mode | Existing dark surfaces and cyan emphasis are retained; separate CSS rules do not recolor dark messages |
 | Logo artwork | Existing raster logo is retained; an SVG filter targets the old green detail while leaving the purple wordmark |
 
 ### Color tokens and CSS cascade
 
-The main entry point `web/src/main.tsx` loads the component styles, then `theme.css`, `editorial.css`, `algorithm-playground.css`, and finally **`soft-cyan.css`**. That last file applies cross-surface accent corrections.
+The main entry point `web/src/main.tsx` loads base styles, `theme.css`, feature styles, then **`soft-cyan.css`** and **`project-assistant.css`**. The latter is intentionally last so the chat drawer can use **scoped** light-mode overrides without changing unrelated dashboard cards or dark-mode chat surfaces. The root element carries `html[data-theme="light"|"dark"]`, set before the first React paint.
 
 ```css
 :root {
@@ -51,7 +53,8 @@ flowchart TD
     Base --> Theme["Theme + light/dark variables"]
     Theme --> Editorial["Typography + accessible hierarchy"]
     Editorial --> Algorithm["Algorithm visualizer styles"]
-    Algorithm --> Cyan["soft-cyan.css · final overrides"]
+    Algorithm --> Cyan["soft-cyan.css · global accent overrides"]
+    Cyan --> Chat["project-assistant.css · scoped chat light/dark"]
     Cyan --> Nav["Navigation + CTAs"]
     Cyan --> Charts["Charts + Brazil map + KPI"]
     Cyan --> Labs["Algorithm and course lab controls"]
@@ -60,9 +63,16 @@ flowchart TD
     Nav --> UI
     Charts --> UI
     Labs --> UI
+    Chat --> UI
 ```
 
 The SVG logo filter is defined in `web/src/App.tsx` as `pp-brand-cyan` and applied to `.brand-logo-image` and `.footer-logo-image`. It is a visual filter rather than a replacement of the source logo asset; the original PNG/WebP can therefore still be reused.
+
+## Accessible chat appearance
+
+The assistant's light theme uses solid `#F8FBFF` dialog surfaces, white `#FFFFFF` response cards, navy `#10263E` foreground, `#4B6077` muted copy and `#DEF2FF` user bubbles. Links use a darker blue (`#075985`) rather than light cyan text. Focus-visible rings and button disabled states remain explicit. Theme contrast checks in `tests/test_theme.cjs` validate the principal pairings; they are **not** a substitute for hands-on mobile or browser accessibility testing.
+
+The standard analytics background remains distinct from the chat drawer. The dark theme keeps the original graphite appearance and cyan accents. No Gemini model, user text or historical data are changed by these CSS rules.
 
 ## Accessibility and usage
 
