@@ -22,7 +22,9 @@ jobs:
             'feat/cadra-measured-glass-workspace' \
             'feat/promisepulse-4-research-expansion' \
             'docs/current-release-documentation' \
-            'docs/finalize-release-captures'
+            'docs/finalize-release-captures' \
+            'docs/current-release-professional-review' \
+            'fix/docs-screenshot-capture-current'
           do
             if git ls-remote --heads origin "$branch" | grep -q .; then
               git push origin --delete "$branch"
