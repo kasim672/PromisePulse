@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --config vite.config.ts",
     "preview": "vite preview --host 127.0.0.1",
     "setup:gemini": "node scripts/setup-local-gemini.mjs",
     "check:gemini": "node scripts/check-local-gemini.mjs"
