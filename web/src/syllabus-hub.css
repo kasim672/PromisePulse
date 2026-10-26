@@ -1,5 +1,6 @@
 /* PromisePulse 5 syllabus hub: additive styles only. Existing premium UI unchanged. */
-.syllabus-hub{gap:19px}
+.syllabus-hub{gap:19px;--atlas-selected:#1d4f87;--atlas-muted:#5c5c5a;--atlas-ink:#111111}
+html[data-theme="dark"] .syllabus-hub{--atlas-selected:#c4ea84;--atlas-muted:#b4bac6;--atlas-ink:#f4f6f8}
 .syllabus-hub-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:16px;align-items:stretch}
 .syllabus-hub-intro{background:radial-gradient(circle at 94% 6%,rgba(37,99,168,.1),transparent 50%),var(--cadra-glass);border:1px solid var(--cadra-rim);box-shadow:var(--cadra-shadow);border-radius:24px;padding:clamp(23px,3.4vw,48px);display:flex;flex-direction:column;align-items:flex-start;gap:17px}
 .syllabus-hub-intro>span{display:flex;align-items:center;gap:9px;color:var(--atlas-selected);font:700 11px 'Urbanist',sans-serif;letter-spacing:.12em}
