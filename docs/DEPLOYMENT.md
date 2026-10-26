@@ -3,7 +3,23 @@
 **Live website:** https://promise-pulse-rose.vercel.app/  
 **Source:** [`kasim672/PromisePulse`](https://github.com/kasim672/PromisePulse) · **production branch:** `main`
 
-PromisePulse 5.0 is a **static Vite/React application** with DuckDB-Wasm running in the visitor's browser. Python, scikit-learn and the DuckDB desktop package are required to **rebuild data**, but not to **serve the production website**. The GitHub repository already contains the historical exports under `web/public/data/`.
+PromisePulse 5.0 uses **soft-cyan `#7DD3FC` accents** and is a **static Vite/React application** with DuckDB-Wasm running in the visitor's browser. Python, scikit-learn and the DuckDB desktop package are required to **rebuild data**, but not to **serve the production website**. The GitHub repository already contains the historical exports under `web/public/data/`.
+
+## Deployment state versus GitHub release
+
+The soft-cyan theme was merged into `main` on **October 26, 2026** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), merge commit `0ddf3b69a8d33b2a448dca0a31f5eeb2a456a4eb`. Its GitHub web validation succeeded, but the corresponding **Vercel deployment returned “Deployment rate limited — retry in 24 hours.”**
+
+Until Vercel reports a successful deployment for that commit or a newer `main` commit, the public URL might still show the previous lime design. **Do not describe GitHub's successful merge or local screenshots as proof that the live website updated.** This is a deployment-account limit, not a TypeScript compilation failure.
+
+To publish the merged design when the limit clears:
+
+1. Open the [Vercel project dashboard](https://vercel.com/kasim5) and select the PromisePulse project.
+2. Open **Deployments** and inspect the deployment associated with the newest `main` commit.
+3. If Vercel is still rate-limiting builds, wait until it allows another deployment or review the plan's build allowance.
+4. Use **Redeploy** for the latest production commit, if available, or trigger a fresh deployment from `main`.
+5. Confirm **Ready**, the production domain assignment, and the displayed Git commit SHA before opening the public site and checking its theme.
+
+The release screenshots in this repository are from Chromium rendering the source application with actual checked-in historical data. They provide UI evidence **even if a Vercel deployment is pending**.
 
 ## 1. Deploy to Vercel from GitHub
 
@@ -32,12 +48,13 @@ Open **https://promise-pulse-rose.vercel.app/** in a desktop browser and a mobil
 
 - Confirm Welcome loads and displays the actual warehouse totals.
 - Open Overview, Intelligence and Analytics Atlas; confirm charts and the historical state map populate.
-- Switch between light and dark themes and use the mobile navigation.
+- Switch between light and dark themes and use the mobile navigation. Verify cyan `#7DD3FC` on active navigation, primary CTAs, the highlighted KPI, selected Brazil state, chart accents, the new favicon and Data Mining Lab controls. The purple wordmark should remain.
 - Click the **graduation-cap Data Mining Lab button**; it must open the overview **directly**, without a popup.
 - Open Warehouse & ETL, Data Lakes, EDA & Preprocessing, Classification, Clustering and Pattern Mining through the cards and **internal tabs**.
 - Inspect the Clustering dendrogram, association rules and CSV exports. Recorded results must come from `mining_lab.json`, not fallback examples.
 - Check DevTools → Network for successful requests to `/data/manifest.json`, `/data/fact_orders.parquet`, `/data/mining_lab.json` and the DuckDB `.wasm` file.
 - Confirm there are no JavaScript exceptions, broken fonts or horizontal overflow on a narrow phone screen.
+- In DevTools Console, run `getComputedStyle(document.documentElement).getPropertyValue('--pp-accent-cyan').trim()`. The deployed soft-cyan release should return `#7DD3FC` (case-insensitive). If the old theme appears, confirm the deployed commit and cached assets before changing source code.
 
 The repository contains two useful checks:
 ```bash
@@ -55,9 +72,11 @@ node ../tests/test_syllabus_modules.cjs
 node ../tests/test_mining_export_integrity.cjs
 node ../tests/test_editorial_hierarchy.cjs
 node ../tests/test_algorithm_playground.cjs
+node ../tests/test_soft_cyan_theme.cjs
+node ../tests/test_documentation.cjs
 ```
 
-The browser test in `web/scripts/smoke-live-editorial.mjs` additionally checks desktop/mobile light/dark navigation, and is run by [the live UI GitHub workflow](../.github/workflows/live-editorial-smoke.yml). Playwright is installed separately by the workflow; it is **not** a permanent frontend dependency.
+The source-backed browser checks in `web/scripts/smoke-soft-cyan.mjs`, `capture-current-docs.mjs` and `smoke-algorithms.mjs` verify the selected cyan states, responsive pages, experimental teaching steps and retry behavior. Playwright is installed separately by CI; it is **not** a permanent frontend dependency. The live smoke workflow can fail when Vercel has not deployed the current commit, even if the local source build passes.
 
 ## 3. Local development (no source CSV download required)
 
@@ -121,6 +140,8 @@ If the exported files change, inspect `manifest.json` and verify all tests **bef
 | Algorithm step visualizers appear different from empirical plots | Expected: step scenes are illustrative; the charts below use exported Olist experimental results. |
 
 | Slow first load | Browser downloads large WebAssembly binaries and historical Parquet files; first-run performance depends on device/network |
+| GitHub merge successful, Vercel shows old lime theme | Deployment is separate from source merging. Inspect latest production deployment SHA, rate limits, and CDN caching before redeploying. |
+| Vercel says build rate limited | Check build quota on the project dashboard; retry/redeploy the newest `main` commit after Vercel permits it. |
 | Chart not changing | Check filters and denominator/scope; model calibration uses a fixed held-out cohort |
 | Custom domain fails | Verify DNS and domain setup in Vercel; canonical documentation URL uses the current `vercel.app` domain |
 | Deep URL `/some-page` fails | Current navigation is client-side view state under `/`, not separately configured routes. Do not invent deep links without adding a routing mechanism. |
@@ -135,4 +156,4 @@ If the exported files change, inspect `manifest.json` and verify all tests **bef
 
 The new browser QA in [`v5-algorithm-playground.yml`](../.github/workflows/v5-algorithm-playground.yml) checks five step visualizations in light/dark/mobile and tests transient 503 failures followed by successful retry. Its screenshots and provenance are stored under `docs/screenshots/current/`.
 
-Related documentation: [Algorithm Playground](ALGORITHM_PLAYGROUND.md) · [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).
+Related documentation: [Design System](THEME_SYSTEM.md) · [Algorithm Playground](ALGORITHM_PLAYGROUND.md) · [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).
