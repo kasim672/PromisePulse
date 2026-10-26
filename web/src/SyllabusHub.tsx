@@ -41,11 +41,11 @@ export function SyllabusHub({onNavigate}:{onNavigate:(tab:Tab)=>void}){
  ]
  const format=(n:number|undefined)=>n===undefined?'—':n.toLocaleString('en-US')
  return <div className="pp-home syllabus-page syllabus-hub">
-   <div className="pp-page-top"><div><div className="pp-overline"><GraduationCap size={15}/> DATA MINING LAB</div>
+   <div className="pp-page-top"><div>
     <h1>Explore the <em>data.</em></h1>
-    <p>Inspect how historical Olist transactions are transformed, evaluated and analysed. Explore the methods, compare recorded results and download supporting data.</p></div><span className="pp-historical"><span/> HISTORICAL OLIST DATA</span></div>
+    <p>Inspect how historical Olist transactions are transformed, evaluated and analysed. Explore the methods, compare recorded results and download supporting data.</p></div></div>
    <div className="syllabus-hub-hero">
-    <div className="syllabus-hub-intro"><span><BookOpen size={17}/> DATA & ANALYTICS WORKSPACE</span><h2>From transactions to <em>insights.</em></h2>
+    <div className="syllabus-hub-intro"><h2>From transactions to <em>insights.</em></h2>
      <p>Start with warehouse structure and data quality, move into statistical exploration, then inspect predictive models, customer segments and purchase patterns.</p>
      <button type="button" onClick={()=>onNavigate('Warehouse & ETL')}>Explore the warehouse <ArrowRight size={17}/></button></div>
     <div className="syllabus-hub-guide" aria-label="Analysis workflow">
@@ -58,9 +58,9 @@ export function SyllabusHub({onNavigate}:{onNavigate:(tab:Tab)=>void}){
     {loading?<p role="status">Loading analysis data…</p>:error?<p role="alert">Dataset information unavailable: {error}. Analysis pages display source errors rather than invented results.</p>:
       <div className="syllabus-hub-stat-grid">{evidence.map(x=><div key={x.label}><span>{x.label}</span><strong>{format(x.value)}</strong></div>)}</div>}
    </div>
-   <div className="syllabus-hub-heading"><div><span>ANALYSIS AREAS</span><h2>Choose what to explore</h2><p>Open any area to investigate its charts, methods and recorded results.</p></div><div className="syllabus-hub-filters" aria-label="Filter analysis areas">{(['All','Foundation','Statistics','Modelling','Discovery'] as const).map(value=><button key={value} type="button" aria-pressed={filter===value} className={filter===value?'active':''} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
+   <div className="syllabus-hub-heading"><div><h2>Choose what to explore</h2><p>Open any area to investigate its charts, methods and recorded results.</p></div><div className="syllabus-hub-filters" aria-label="Filter analysis areas">{(['All','Foundation','Statistics','Modelling','Discovery'] as const).map(value=><button key={value} type="button" aria-pressed={filter===value} className={filter===value?'active':''} onClick={()=>setFilter(value)}>{value}</button>)}</div></div>
    <div className="syllabus-hub-grid">{selected.map(x=>{const Icon=x.icon;return <article className="pp-block syllabus-hub-card" key={x.id}>
-    <div className="syllabus-hub-card-top"><span className="syllabus-hub-module">{x.phase.toUpperCase()}</span><span>OLIST DATA</span></div><span className="syllabus-hub-icon"><Icon size={23}/></span><h3>{x.short}</h3><p>{x.topics}</p>
+    <span className="syllabus-hub-icon"><Icon size={23}/></span><h3>{x.short}</h3><p>{x.topics}</p>
     <div className="syllabus-hub-learning"><strong><CheckCircle2 size={14}/> Explore</strong><span>{x.outcome}</span></div>
     <div className="syllabus-hub-measure"><strong>Available data</strong><span>{x.measure}</span></div>
     <button type="button" className="syllabus-hub-open" onClick={()=>onNavigate(x.id)}>Open analysis <ArrowRight size={17}/></button>
