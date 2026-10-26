@@ -162,6 +162,38 @@ There are **12 original workspaces**, plus one **Data Mining Lab overview** and 
 
 The 66 registered Atlas/research chart definitions are **36 Analytics Atlas + 30 Research** charts. The Data Mining Lab adds supplementary experimental plots; do not treat those as part of the original 66 count.
 
+### In-browser algorithm teaching and loading states
+
+The new visualizer is **separate from the published Olist experiment export**. It computes deterministic examples in memory and does not change the dataset, retrain the original scikit-learn models, or insert new tables into DuckDB.
+
+```mermaid
+flowchart LR
+  Click["Visitor selects a step"] --> Demo["AlgorithmPlayground.tsx"]
+  Demo --> Math["algorithmSteps.ts: sample-only calculations"]
+  Math --> Scene["SVG scene and accessible explanation"]
+  Olist["mining_lab.json: published experiment metrics"] --> Existing["Existing empirical panels"]
+  Scene -. "No data mutation" .-> Existing
+```
+
+The K-Means demonstrator recalculates squared Euclidean distances and arithmetic means of six visible points; Decision Tree follows two displayed example rules; Apriori, FP-Growth, and Eclat use the **same five illustrative baskets**, allowing support and TID intersections to be checked by hand. Their five-basket denominator must never be conflated with the real **649 eligible Olist baskets**.
+
+The browser's `loadWarehouse` reports actual loading stages via `WarehouseProgress`: manifest fetch, DuckDB-Wasm initialization, then how many required Parquet tables have been registered. It deliberately does **not** display a fictional overall completion percentage; individual SQL and mining JSON requests have unknown durations. An abort signal prevents stale fetch results from updating a navigated-away view, and failures expose **Retry loading data**. Measured data is never replaced by illustrative examples.
+
+```mermaid
+stateDiagram-v2
+  [*] --> Manifest
+  Manifest --> WebAssembly: manifest parsed
+  WebAssembly --> Parquet: DuckDB-Wasm initialized
+  Parquet --> Parquet: registered N of total tables
+  Parquet --> Ready: all views created
+  Manifest --> Error: network or format failure
+  WebAssembly --> Error: engine startup fails
+  Parquet --> Error: file or SQL failure
+  Error --> Manifest: user selects Retry
+```
+
+See [the full worked algorithm examples](ALGORITHM_PLAYGROUND.md) and [the current screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md).
+
 ## 5. Historical model and mining-sample limits
 
 The published manifest's delivery-risk model was evaluated on **19,294** time-held-out prediction rows. Its positive-class precision at the published 0.60 threshold is about **0.049**, with recall about **0.288**. These are weak results; no production predictive capability is claimed. The separate syllabus classification module uses an independently exported experimental test cohort and should not be conflated with these 19,294 rows.
@@ -180,6 +212,8 @@ The syllabus mining export uses **950** sampled customer RFM vectors and at most
 | `web/src/App.tsx` | Application shell, routing state and native analysis workspaces |
 | `web/src/AnalyticsAtlas.tsx`, `web/src/ResearchWorkspace.tsx` | Charting and research analyses |
 | `web/src/SyllabusHub.tsx`, `web/src/SyllabusLab.tsx` | Mining overview and six lab screens |
+| `web/src/algorithmSteps.ts`, `web/src/AlgorithmPlayground.tsx` | Computed, labeled teaching-step visualizations (not empirical training traces) |
+| `web/src/DataStates.tsx` | Real progress stages, accessible query loading and retryable errors |
 | `web/public/data/` | Static historical analytical data; do not publish secrets |
 | `web/src/editorial.css` | Current heading hierarchy and de-emphasis of decorative microcopy |
 | `docs/screenshots/current/` | Current-release browser captures (see manifest) |
