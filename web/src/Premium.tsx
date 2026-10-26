@@ -101,14 +101,13 @@ function Geo({rows}:{rows:RecordRow[]}){
   const current=byState.get(selected??'')??sorted[0]
   const selectedCode=String(current?.state??'')
   const selectedShape=BRAZIL_STATE_SHAPES.find(shape=>shape.code===selectedCode)
-  const rank=Math.max(1,sorted.findIndex(r=>String(r.state)===selectedCode)+1)
   const share=total?100*(Number(current?.orders)||0)/total:0
   const top=sorted.slice(0,5)
   return <div className="pp-map-wrap">
-    <div className="pp-map-head"><span><span className="pp-live-dot"/> 27 Brazilian states · historical</span><span>2016–2018 Olist records</span></div>
+    
     <div className="pp-map-layout">
       <div className="pp-map-plot">
-        <div className="pp-map-meta"><span>BRAZIL</span><small>ORDER VOLUME CHOROPLETH</small></div>
+        <h3 className="pp-map-meta">Orders by Brazilian state</h3>
         <svg className="pp-brazil-svg" viewBox="0 0 450 460" role="img" aria-label="Historical Olist order volume by Brazilian state">
           <defs>
             <filter id="pp-state-selected-glow" x="-30%" y="-30%" width="160%" height="160%">
@@ -132,7 +131,6 @@ function Geo({rows}:{rows:RecordRow[]}){
         <div className="pp-map-scale" aria-hidden="true"><span>Lower volume</span><i/><span>Higher volume</span></div>
       </div>
       <aside className="pp-map-inspector" aria-live="polite">
-        <div className="pp-map-inspector-overline">STATE DETAIL <span>#{String(rank).padStart(2,'0')}</span></div>
         <div className="pp-map-state-title"><strong>{selectedCode||'—'}</strong><span>{selectedShape?.name??'Historical market'}</span></div>
         <div className="pp-map-primary"><strong>{num(current?.orders)}</strong><span>historical orders</span></div>
         <div className="pp-map-metrics">
@@ -155,8 +153,8 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
     delivery=useQuery(db,queries.delivery),recent=useQuery(db,queries.recent),categories=useQuery(db,queries.categories)
   const row=kpi.rows[0]??{},filtered=recent.rows.filter(r=>filter==='All'||String(r.status)===filter.toLowerCase())
   return <div className="pp-home">
-    <div className="pp-page-top"><div><div className="pp-overline"><Sparkles size={13}/> INSIGHT COMMAND CENTER <span>/ 01</span></div><h1>Every order tells <em>a story.</em></h1><p>Explore Brazil's historical e-commerce economy through a verified analytical warehouse.</p></div>
-      <div className="pp-top-actions"><label className="pp-year"><CalendarDays size={15}/><span>Period</span><select aria-label="Analysis year" value={year} onChange={e=>setYear(e.target.value as YearSelection)}>{yearOptions.map(v=><option key={v} value={v}>{v==='all'?'All years (2016–2018)':v}</option>)}</select></label><span className="pp-historical"><span/> HISTORICAL DATA</span></div></div>
+    <div className="pp-page-top"><div><h1>Every order tells <em>a story.</em></h1><p>Explore Brazil's historical e-commerce economy through a verified analytical warehouse.</p></div>
+      <div className="pp-top-actions"><label className="pp-year"><CalendarDays size={15}/><span>Period</span><select aria-label="Analysis year" value={year} onChange={e=>setYear(e.target.value as YearSelection)}>{yearOptions.map(v=><option key={v} value={v}>{v==='all'?'All years (2016–2018)':v}</option>)}</select></label></div></div>
     <div className="pp-dashboard">
       <div className="pp-left">
         <div className="pp-kpis">
@@ -165,7 +163,7 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
           <div className="pp-kpi pp-kpi-revenue"><span>Payment revenue <TrendingUp size={15}/></span><strong title={brl(row.revenue)}>{kpi.busy?'···':brlCompact(row.revenue)}</strong><small title={brl(row.revenue)}>Full total · {kpi.busy?'···':brl(row.revenue)}</small></div>
           <div className="pp-kpi"><span>Avg. delivery <Globe2 size={15}/></span><strong>{kpi.busy?'···':num(row.delivery_days,1)+'d'}</strong><small>Delivered orders with dates</small></div>
         </div>
-        <Block title="Delivery outcomes" subtitle="Status across all historical orders" aside={<span className="pp-more">01 / 03</span>}>
+        <Block title="Delivery outcomes" subtitle="Status across all historical orders">
           <Loading data={delivery}><Donut rows={delivery.rows}/></Loading>
         </Block>
         <Block title="Revenue performance" subtitle="Recorded payment totals · BRL" className="pp-revenue-card" aside={<Export rows={trends.rows} name="revenue-by-month"/>}>
@@ -202,9 +200,9 @@ export function PremiumIntelligence({db}:{db:Warehouse}){
  const risk=useQuery(db,db.manifest.model.status==='evaluated'?q.riskCalibration:'SELECT NULL AS decile WHERE FALSE')
  const repeatRow=repeat.rows[0]??{}
  return <div className="pp-insights pp-home">
-  <div className="pp-page-top"><div><div className="pp-overline"><Sparkles size={13}/> WAREHOUSE INTELLIGENCE <span>/ 02</span></div><h1>The patterns <em>behind the numbers.</em></h1><p>Distinct distribution and segment views, derived from actual Olist warehouse facts.</p></div>
+  <div className="pp-page-top"><div><h1>The patterns <em>behind the numbers.</em></h1><p>Distinct distribution and segment views, derived from actual Olist warehouse facts.</p></div>
   <label className="pp-year"><CalendarDays size={15}/> <select aria-label="Intelligence analysis year" value={year} onChange={e=>setYear(e.target.value as YearSelection)}>{yearOptions.map(v=><option key={v} value={v}>{v==='all'?'All years (2016–2018)':v}</option>)}</select></label></div>
-  <div className="pp-insights-hero"><div><span>BEHAVIORAL INTELLIGENCE</span><h2>See the signal.<br/><em>Not just the totals.</em></h2><p>Ten independent SQL lenses into delivery operations, buyers, logistics costs and marketplace composition.</p></div><div><span>REPEAT PURCHASE RATE</span><strong>{repeat.busy?'···':num(repeatRow.repeat_pct,2)+'%'}</strong><small>{num(repeatRow.repeat_customers)} repeat buyers / {num(repeatRow.customers)} distinct buyers in selected period</small></div></div>
+  <div className="pp-insights-hero"><div><h2>See the signal.<br/><em>Not just the totals.</em></h2><p>Ten independent SQL lenses into delivery operations, buyers, logistics costs and marketplace composition.</p></div><div><span>REPEAT PURCHASE RATE</span><strong>{repeat.busy?'···':num(repeatRow.repeat_pct,2)+'%'}</strong><small>{num(repeatRow.repeat_customers)} repeat buyers / {num(repeatRow.customers)} distinct buyers in selected period</small></div></div>
   <div className="pp-bottom-grid pp-insights-grid">
    <Block title="Delivery performance over time" subtitle="Known on-time and late outcomes · by purchase month" aside={<Export rows={monthly.rows} name="delivery-trend"/>}><Loading data={monthly}><Trend rows={monthly.rows.map(r=>({...r,period:r.period,revenue:Number(r.ontime)+Number(r.late)}))}/><div className="pp-inline-legend"><span className="pp-dot-lime"/> Known delivery outcomes <span className="pp-dot-violet"/> Late counts in CSV export</div></Loading></Block>
    <Block title="Delivery duration distribution" subtitle="Elapsed calendar days from order to delivery" aside={<Export rows={fulfillment.rows} name="delivery-duration"/>}><Loading data={fulfillment}><Bars rows={fulfillment.rows} label="band" value="orders"/></Loading></Block>
