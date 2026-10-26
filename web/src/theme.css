@@ -104,9 +104,6 @@ html[data-theme="dark"] .header-search:hover,
 html[data-theme="dark"] .theme-toggle:hover {background:rgba(255,255,255,.13);color:#fff}
 html[data-theme="dark"] .theme-toggle-icon{color:#7dd3fc}
 html[data-theme="dark"] .header-search kbd {border-color:#555e6d;background:#343b49;color:#d3d9e2}
-html[data-theme="dark"] .header-version {color:#b4bac6}
-html[data-theme="dark"] .header-online {background:#7dd3fc;box-shadow:0 0 0 4px #7dd3fc2a}
-html[data-theme="dark"] .header-online.offline{background:#ffd084;box-shadow:0 0 0 4px #ffd08427}
 html[data-theme="dark"] .header-cta,
 html[data-theme="dark"] .primary-btn {
   background:#7dd3fc;border-color:#7dd3fc;color:#082f49;
