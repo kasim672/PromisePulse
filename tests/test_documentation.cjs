@@ -66,4 +66,31 @@ assert.match(readme,/precision ≈ 0\.049/)
 assert.match(readme,/Root directory.*\bweb\b/)
 assert.doesNotMatch(readme,/feature branch only/i)
 assert.doesNotMatch(readme,/V6 features implemented/i)
+
+const architecture=readme&&fs.readFileSync(path.join(root,'docs/ARCHITECTURE_V5.md'),'utf8')
+const deployment=fs.readFileSync(path.join(root,'docs/DEPLOYMENT.md'),'utf8')
+const gallery=fs.readFileSync(path.join(root,'docs/SCREENSHOT_GALLERY_CURRENT.md'),'utf8')
+for(const [label,body] of [['README',readme],['architecture',architecture],['deployment',deployment]]){
+  assert.match(body,/web\/api\/ask\.js|POST \/api\/ask/,'current '+label+' must cover the deployed Gemini endpoint')
+  assert.doesNotMatch(body,/pending feature branch|proposed project-only AI chat|git switch feat\/gemini-project-research-assistant/i,'outdated assistant status in '+label)
+}
+assert.match(architecture,/sequenceDiagram/,'architecture must include actual browser and Gemini request flows')
+assert.match(architecture,/erDiagram/,'architecture must distinguish fact grains')
+assert.match(svg,/Gemini/,'architecture SVG must include the separate Gemini boundary')
+assert.match(gallery,/a9620fa/,'legacy screenshots must retain their exact old commit provenance')
+assert.match(gallery,/capture-assistant-docs\.mjs/,'assistant screenshot capture must be documented')
+const captureScript=fs.readFileSync(path.join(root,'web/scripts/capture-assistant-docs.mjs'),'utf8')
+assert.match(captureScript,/project-ai-message\.assistant/,'chat screenshots must exercise real responses')
+assert.doesNotMatch(captureScript,/route\.fulfill|page\.route\(/,'chat documentation captures must not fake a backend answer')
+const newerPath=path.join(dir,'ASSISTANT_CAPTURE_MANIFEST.json')
+if(fs.existsSync(newerPath)){
+ const ai=JSON.parse(fs.readFileSync(newerPath,'utf8'))
+ assert.equal(ai.images.length,5,'expected five actual chatbot captures')
+ for(const file of ai.images){
+   assert.match(file,/^((mobile-)?assistant-(intro|research)-(light|dark))\.png$/)
+   assert.ok(fs.statSync(path.join(dir,file)).size>15000,'invalid chatbot screenshot: '+file)
+ }
+ assert.equal(ai.source_sha,manifest.git_sha,'AI and page screenshots must come from the same source revision')
+}
+
 console.log('PASS docs: '+checked+' local links, '+manifest.images.length+' cyan UI screenshots, '+algorithmManifest.images.length+' algorithm screenshots, valid SVG, V5 provenance')
