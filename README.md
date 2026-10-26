@@ -112,6 +112,10 @@ Loading is also more informative: warehouse initialization reports the manifest,
 | --- | --- |
 | [![Data Mining Lab](docs/screenshots/current/mining-hub-light.png)](docs/screenshots/current/mining-hub-light.png) | [![Clustering and Ward dendrogram](docs/screenshots/current/clustering-light.png)](docs/screenshots/current/clustering-light.png) |
 
+[![AI assistant with readable light-mode colors](docs/screenshots/current/assistant-light.png)](docs/screenshots/current/assistant-light.png)
+
+*The chatbot is now captured in light, dark and mobile mode. These screenshots show its rendered entry state, not a live Gemini response.*
+
 **[See the complete soft-cyan desktop, dark-mode and mobile gallery](docs/SCREENSHOT_GALLERY_CURRENT.md).** Previous [V3](docs/SCREENSHOT_GALLERY.md), [V4](docs/SCREENSHOT_GALLERY_V4.md) and [early V5](docs/SCREENSHOT_GALLERY_V5.md) captures remain archived; some older screenshots predate the typography cleanup.
 
 ## System architecture
