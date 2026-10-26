@@ -53,7 +53,7 @@ Gemini request processing can incur charges or exhaust a free quota. This public
 
 ### Run locally on Ubuntu (no Vercel account or CLI needed)
 
-**The usual `npm run dev` now runs the Gemini endpoint locally.** A development-only Vite middleware serves `POST /api/ask` by calling the **same server handler** used by Vercel in production. The Gemini key is read from the **server-side `web/.env`**; it is never injected into browser JavaScript.
+**The usual `npm run dev` now runs the Gemini endpoint locally.** The `npm run dev` launcher starts a **loopback-only Node API server** and Vite together; an explicit Vite proxy forwards `POST /api/ask` to the backend. Both local and Vercel routes invoke the **same server handler**. The Gemini key is read from the **server-side `web/.env`**; it is never injected into browser JavaScript.
 
 The repository intentionally tracks **`web/.env.example` only**, not `web/.env`. To create your own local file without overwriting a key you might already have:
 
@@ -87,10 +87,10 @@ Open **http://127.0.0.1:5173/**, click **Ask PromisePulse AI**, and ask **“How
 
 #### If the chat says “/api/ask route was not found”
 
-This is an **HTTP 404 route problem**, not evidence that the Gemini API key is incorrect. The normal Vite terminal should print:
+This is an **HTTP 404 route problem**, not evidence that the Gemini API key is incorrect. The local development terminal now prints two startup messages:
 
 ```text
-[PromisePulse] Local Gemini API mounted at /api/ask (server-side configuration)
+[PromisePulse API] Listening at http://127.0.0.1:8787/api/ask (loopback only)\nVITE v6.x ready ... http://127.0.0.1:5173/
 ```
 
 From a **second terminal**, check the route without using Gemini credits or exposing the key:
@@ -102,7 +102,7 @@ curl -i -X POST http://127.0.0.1:5173/api/ask \
   -d '{"question":"hi"}'
 ```
 
-Expected: **HTTP 400** with `Enter a question between 3 and 450 characters.` This invalid question verifies the endpoint without calling Google. If you receive **HTTP 404**, stop Vite (`Ctrl+C`), update your branch with `git pull --ff-only origin feat/gemini-project-research-assistant`, and restart `npm run dev` from the `web` folder. Open the URL Vite prints, usually **http://127.0.0.1:5173/**.
+Expected: **HTTP 400** with `Enter a question between 3 and 450 characters.` This invalid question verifies the endpoint without calling Google. If you receive **HTTP 404**, stop Vite (`Ctrl+C`), update `main` with `git pull --ff-only origin main`, and restart `npm run dev` from the `web` folder. Open the URL Vite prints, usually **http://127.0.0.1:5173/**.
 
 An empty `GEMINI_API_KEY` produces **HTTP 503** for a valid project question, not 404. Short greetings such as `hi` are handled locally with a project-focused welcome message (no Gemini API call). Other two-character inputs receive an inline validation message.
 
@@ -114,8 +114,8 @@ If you prefer, `cp .env.example .env` does the same initialization manually, but
 ```mermaid
 flowchart LR
   Browser["React site at localhost:5173"] --> Vite["Vite development server"]
-  Vite --> Route["Local /api/ask middleware"]
-  Route --> Handler["Same web/api/ask.js used by Vercel"]
+  Vite --> Route["Same-origin /api/ask proxy"]\n  Route --> Local["Loopback Node API server :8787"]
+  Local --> Handler["Same web/api/ask.js used by Vercel"]
   Env["Ignored web/.env: GEMINI_API_KEY"] -. "Node server only" .-> Handler
   Handler --> Sources["Curated project-only evidence"]
   Handler --> Google["Gemini API over HTTPS"]
@@ -148,3 +148,10 @@ The test intercepts the outgoing Gemini `fetch` request and verifies a mocked an
 - No extra permissions, read-write warehouse access, user accounts, persistent chat database or new AI models have been introduced.
 
 Current official references: [Gemini generateContent REST](https://ai.google.dev/api/generate-content) and [Vercel Functions with Vite](https://vercel.com/docs/frameworks/frontend/vite).
+
+
+### Local API reliability (current)
+
+`npm run dev` launches `scripts/local-gemini-server.mjs` and `scripts/dev.mjs` before opening Vite. The local server listens only on `127.0.0.1:8787`; the browser still calls `http://127.0.0.1:5173/api/ask` through Vite's explicit reverse proxy. The launcher probes `/__gemini_health` before starting Vite. Vite also has `strictPort: true` so an older server cannot quietly remain at 5173 while the new app opens on 5174. Closing the terminal stops both processes.
+
+If you see `EADDRINUSE`, first stop old `npm run dev` processes rather than using another port or exposing the local Gemini API publicly. The port 8787 is for internal loopback traffic only. Your `web/.env` is loaded by the Node backend, never into client-visible `import.meta.env`.
