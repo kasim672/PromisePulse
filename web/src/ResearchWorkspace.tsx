@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
 import {Activity,ArrowRight,BookOpen,BrainCircuit,Database,Download,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
 import type {Warehouse} from './db'
+import {useSharedFilters} from './sharedFilters'
 import type {RecordRow} from './types'
 import type {AtlasState,AtlasYear} from './atlasQueries'
 import {ATLAS_STATES} from './atlasQueries'
@@ -63,8 +64,11 @@ const destinationMeta:Record<ResearchDestination,{title:string,accent:string,sub
 }
 export function ResearchWorkspace({db,destination}:{db:Warehouse;destination:ResearchDestination}){
  const [groupId,setGroupId]=useState<ResearchGroupId>(DEFAULTS[destination])
- const [year,setYear]=useState<AtlasYear>('all')
- const [state,setState]=useState<AtlasState>('ALL')
+ const [shared,setShared]=useSharedFilters()
+ const year=shared.year as AtlasYear
+ const state=shared.state as AtlasState
+ const setYear=(v:AtlasYear)=>setShared({year:v})
+ const setState=(v:AtlasState)=>setShared({state:v})
  const [data,setData]=useState<QueryState>(waiting)
  const cache=useRef(new Map<string,RecordRow[]>())
  const meta=destinationMeta[destination]
