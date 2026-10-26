@@ -5,7 +5,7 @@ import {
   CircleHelp, Database, Download, ExternalLink, FileCheck2, FileSpreadsheet,
   Layers3, LayoutDashboard, Menu, Moon, RefreshCw, Search, ShieldCheck, Sun,
   Compass, UsersRound, Truck, FlaskConical, Sparkles,
-  Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined,
+  Table2, TrendingUp, X, GitFork, Network, ChartNoAxesCombined, GraduationCap,
 } from 'lucide-react'
 import { loadWarehouse } from './db'
 import type { Warehouse } from './db'
@@ -15,6 +15,7 @@ import { AnalyticsAtlas } from './AnalyticsAtlas'
 import { Welcome } from './Welcome'
 import { ResearchWorkspace } from './ResearchWorkspace'
 import { SyllabusLab } from './SyllabusLab'
+import { SyllabusHub } from './SyllabusHub'
 import {ATLAS_CHART_COUNT} from './atlasQueries'
 import {NEW_CHART_COUNT} from './researchQueries'
 import { buildOlapQuery, CATEGORY_SQL, exploratoryRiskMetricsQuery, OVERVIEW_SQL, riskQuery, STATE_SQL, TRENDS_SQL, WAREHOUSE_TABLES } from './queries'
@@ -33,6 +34,7 @@ const NAV: { label: Tab; icon: typeof LayoutDashboard; description: string }[] =
   { label: 'Risk Center', icon: BrainCircuit, description: 'Historical mining results' },
   { label: 'Data Catalog', icon: Table2, description: 'Inspect the source & warehouse' },
   { label: 'Pipeline & Quality', icon: ShieldCheck, description: 'Inspect the lineage & tests' },
+  { label: 'Syllabus Hub', icon: GraduationCap, description: 'All six modules, 30 contact hours and reproducible experiments' },
   { label: 'Warehouse & ETL', icon: Database, description: 'Syllabus 1: Dimensional schema, facts, ETL and quality' },
   { label: 'Data Lakes', icon: Layers3, description: 'Syllabus 2: Raw and curated source comparison' },
   { label: 'EDA & Preprocessing', icon: ChartNoAxesCombined, description: 'Syllabus 3: Descriptive statistics, distributions, correlation and cleaning' },
@@ -390,6 +392,7 @@ export default function App() {
         {active === 'Risk Center' && <RiskCenter db={db}/>}
         {active === 'Data Catalog' && <DataCatalog db={db}/>}
         {active === 'Pipeline & Quality' && <PipelineQuality db={db}/>}
+        {active === 'Syllabus Hub' && <SyllabusHub onNavigate={changePage}/>}
         {active === 'Warehouse & ETL' && <SyllabusLab module="Warehouse & ETL"/>}
         {active === 'Data Lakes' && <SyllabusLab module="Data Lakes"/>}
         {active === 'EDA & Preprocessing' && <SyllabusLab module="EDA & Preprocessing"/>}
