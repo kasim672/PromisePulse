@@ -1,0 +1,78 @@
+/* PromisePulse editorial typography: remove decorative micro-headlines while
+   preserving meaningful measurement labels, attribution and filter context. */
+.welcome-story h1 { margin-top:0; }
+.welcome-visual-top h2 {
+  margin:0;
+  color:#f4f7fb;
+  font:650 clamp(19px,1.55vw,25px)/1.2 'Urbanist',sans-serif;
+  letter-spacing:-.015em;
+}
+.welcome-number-grid span {
+  font:600 12px/1.4 'Urbanist',sans-serif;
+  letter-spacing:0;
+  color:#d0d9e4;
+}
+.welcome-number-grid small {font:500 12px/1.45 'Urbanist',sans-serif;}
+.welcome-history-title h3 {
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#e9f0fa;
+  font:650 clamp(15px,1.1vw,19px)/1.3 'Urbanist',sans-serif;
+}
+.welcome-history-title strong,.welcome-history-foot {
+  font:500 12px/1.5 'Urbanist',sans-serif;
+  letter-spacing:0;
+}
+.welcome-proof>div {display:flex;flex-direction:column;gap:7px;}
+.welcome-proof h3 {
+  margin:0;
+  font:650 clamp(19px,1.5vw,24px)/1.2 'Urbanist',sans-serif;
+  color:var(--welcome-ink);
+  letter-spacing:-.02em;
+}
+.welcome-proof p {margin:0;font:500 14px/1.6 'Urbanist',sans-serif;}
+.welcome-trust,.welcome-feature-text small,.welcome-section-header p,.welcome-footnote {
+  font-size:13px;
+  line-height:1.6;
+}
+.welcome-section-header h2,.welcome-closer h2 {margin-top:0;}
+.welcome-visual-bottom,.welcome-visual-bottom button {font-size:13px;}
+/* Primary page titles are the first visual headline, not a caption underneath a slogan. */
+.pp-page-top h1 {margin-top:0;}
+.pp-page-top p {font-size:clamp(13px,.98vw,16px);line-height:1.7;}
+/* Genuine measurement labels need to be legible, not tiny uppercase decorations. */
+.pp-kpi>span,.pp-kpi>small {font-size:13px;letter-spacing:0;}
+.pp-insights-hero>div>span {font:650 14px/1.4 'Urbanist',sans-serif;letter-spacing:0;}
+.pp-map-plot .pp-map-meta {
+  position:absolute;
+  top:17px;
+  left:19px;
+  z-index:3;
+  margin:0;
+  padding:0;
+  color:#f3f7fa;
+  font:650 clamp(17px,1.4vw,22px)/1.3 'Urbanist',sans-serif;
+  letter-spacing:-.012em;
+}
+.pp-map-ranking-head {font-size:12px;letter-spacing:0;}
+.pp-map-note,.pp-map-head,.pp-provenance {font-size:12px;line-height:1.6;}
+.atlas-chart-heading h3 {font-size:clamp(18px,1.5vw,22px);line-height:1.3;}
+.atlas-chart-heading p {font-size:13px;line-height:1.6;}
+.atlas-chart-kind,.atlas-grain {font-size:12px;letter-spacing:0;}
+.atlas-group-intro h2 {font-size:clamp(24px,2.5vw,34px);}
+.atlas-group-intro>div>span,.atlas-filter-note,.research-method-note {font-size:13px;line-height:1.55;}
+.syllabus-hub-heading h2 {margin-top:0;}
+.syllabus-hub-stat-grid span,.syllabus-hub-learning,.syllabus-hub-measure {font-size:12px;}
+.syllabus-hub-card h3,.syllabus-card .pp-block-header h3 {font-size:clamp(19px,1.5vw,23px);}
+.syllabus-hub-card>p,.syllabus-card .pp-block-header p,.syllabus-note {font-size:13px;line-height:1.6;}
+.research-fact-strip span,.syllabus-facts {font-size:12px;}
+@media(max-width:760px) {
+ .welcome-visual-top h2 {font-size:20px;}
+ .welcome-number-grid span {font-size:11px;}
+ .welcome-number-grid small {font-size:11px;}
+ .welcome-proof h3 {font-size:19px;}
+ .pp-map-plot .pp-map-meta {font-size:17px;top:12px;left:12px;}
+ .atlas-chart-heading h3 {font-size:19px;}
+}
