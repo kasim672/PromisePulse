@@ -1,4 +1,4 @@
-name: Refresh current PromisePulse documentation screenshots
+name: Refresh verified PromisePulse screenshot gallery
 on:
   push:
     branches: [main]
@@ -50,6 +50,17 @@ jobs:
           PP_BASE_URL: http://127.0.0.1:4173
           PP_SKIP_RECOVERY: '1'
         run: node scripts/smoke-algorithms.mjs
+      - name: Capture all five algorithm visualizers from the same source commit
+        working-directory: web
+        env:
+          PP_BASE_URL: http://127.0.0.1:4173
+          PP_SKIP_RECOVERY: '1'
+        run: node scripts/smoke-algorithms.mjs
+      - name: Validate 31 authentic desktop, mobile, chat, and teaching screenshots
+        working-directory: web
+        run: |
+          node -e "const fs=require('fs');const d='../docs/screenshots/current/';const a=JSON.parse(fs.readFileSync(d+'CAPTURE_MANIFEST.json'));const b=JSON.parse(fs.readFileSync(d+'ALGORITHM_CAPTURE_MANIFEST.json'));if(a.images.length!==16||b.images.length!==15||a.git_sha!==b.source_sha)process.exit(1);console.log('Verified 31 screenshots with matching source SHAs')"
+          node ../tests/test_documentation.cjs
       - name: Upload current screenshots as an audit artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -65,6 +76,9 @@ jobs:
           node -e "const f=require('./docs/screenshots/current/CAPTURE_MANIFEST.json');const g=require('./docs/screenshots/current/ALGORITHM_CAPTURE_MANIFEST.json');if(f.images.length!==16||g.images.length!==15||f.git_sha!==g.source_sha)process.exit(1)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # predev regenerates a tracked index; this screenshot workflow never
+          # commits it or carries unstaged changes into the rebase.
+          git restore -- web/api/_site-index.mjs
           git add docs/screenshots/current/
           if git diff --cached --quiet; then
             echo "Capture unchanged; no commit required."
