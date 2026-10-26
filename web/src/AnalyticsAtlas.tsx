@@ -1,6 +1,6 @@
 import {useEffect,useId,useMemo,useRef,useState} from 'react'
 import type {CSSProperties} from 'react'
-import {Activity,BarChart3,CalendarDays,CheckCircle2,Database,Download,Filter,MapPinned,Microscope,TrendingUp} from 'lucide-react'
+import {Activity,BarChart3,CalendarDays,CheckCircle2,Database,Download,Filter,MapPinned,Microscope,TrendingUp,Maximize2,Minimize2} from 'lucide-react'
 import type {Warehouse} from './db'
 import {useSharedFilters} from './sharedFilters'
 import type {RecordRow} from './types'
@@ -97,8 +97,14 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
   </div>
 }
 export function ChartCard({rows,metric,lens,loading,error}:{rows:RecordRow[];metric:AtlasMetric;lens:AtlasLens;loading:boolean;error:string}){
-  return <section className="pp-block atlas-chart-card" aria-label={metric.title}>
-    <div className="atlas-chart-heading"><div><h3>{metric.title}</h3><p>{metric.insight}</p></div><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span></div>
+  const [expanded,setExpanded]=useState(false)
+  useEffect(()=>{if(!expanded)return
+    const dismiss=(e:KeyboardEvent)=>{if(e.key==='Escape')setExpanded(false)}
+    window.addEventListener('keydown',dismiss)
+    return ()=>window.removeEventListener('keydown',dismiss)
+  },[expanded])
+  return <section className={'pp-block atlas-chart-card '+(expanded?'atlas-chart-expanded':'')} aria-label={metric.title}>
+    <div className="atlas-chart-heading"><div><h3>{metric.title}</h3><p>{metric.insight}</p></div><div className="atlas-visual-actions"><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span><button type="button" aria-label={(expanded?'Close focused view of ':'Focus on ')+metric.title} title={expanded?'Close focused view (Escape)':'Expand chart'} onClick={()=>setExpanded(v=>!v)}>{expanded?<Minimize2 size={17}/>:<Maximize2 size={17}/>}</button></div></div>
     {loading?<div className="atlas-loading"><span className="spinner"/> Querying actual Parquet aggregates…</div>:error?<p className="atlas-error" role="alert">{error}</p>:<MetricPlot rows={rows} metric={metric} lens={lens}/>}
   </section>
 }
