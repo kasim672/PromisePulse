@@ -21,6 +21,18 @@ async function save(page,name){
  records.push(filename)
  console.log('Captured '+filename)
 }
+async function captureAssistant(page,prefix,theme){
+ const trigger=page.getByRole('button',{name:'Ask PromisePulse AI'})
+ await trigger.click()
+ const dialog=page.getByRole('dialog',{name:'PromisePulse Research Assistant'})
+ await dialog.waitFor({state:'visible',timeout:15000})
+ const styling=await dialog.evaluate(node=>({background:getComputedStyle(node).backgroundColor,theme:document.documentElement.dataset.theme}))
+ if(styling.theme!==theme)throw Error('Chat theme mismatch: '+JSON.stringify(styling))
+ if(theme==='light'&&styling.background!=='rgb(248, 251, 255)')throw Error('Light chat has incorrect surface: '+styling.background)
+ await save(page,prefix+'assistant-'+theme)
+ await dialog.getByRole('button',{name:'Close AI assistant'}).click()
+ await dialog.waitFor({state:'hidden'})
+}
 async function openLab(page,index){
  const nav=page.getByRole('navigation',{name:'Main navigation'})
  await nav.getByRole('button',{name:'Data Mining Lab',exact:true}).click()
@@ -49,6 +61,7 @@ async function scenario(theme,width,height,mobile=false){
   await page.locator('.welcome-history svg').waitFor({state:'visible',timeout:90000})
   const prefix=mobile?'mobile-':''
   await save(page,prefix+'welcome-'+theme)
+  await captureAssistant(page,prefix,theme)
   const nav=page.getByRole('navigation',{name:'Main navigation'})
   await nav.getByRole('button',{name:'Overview',exact:true}).click()
   await page.locator('.pp-dashboard').waitFor({state:'visible',timeout:90000})
@@ -93,5 +106,5 @@ try{
   images:records
  }
  await fs.writeFile(path.join(output,'CAPTURE_MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n')
- console.log('PASS: '+records.length+' screenshots of current production source')
+ console.log('PASS: '+records.length+' screenshots of checked-in source (not a production-deployment claim)')
 }catch(e){console.error(e);process.exitCode=1}finally{await browser.close()}
