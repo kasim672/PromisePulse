@@ -17,3 +17,6 @@ Final academically complete rerun: include exact closed frequent itemsets by pro
 
 ## 2026-10-26 full-syllabus review branch regeneration
 Re-run every numeric experiment from the unchanged historical Olist Parquet inputs on this review branch after correcting train-only median imputation and category vocabulary fitting. Commit the regenerated `web/public/data/mining_lab.json` only if the Python verifier succeeds. Keep weak/negative model results as observed; update published metrics in documentation from the actual artifact, never estimates.
+
+## Validate numerical training boundary
+Execute `python tests/test_mining_training_boundary.py` under the scientific Python dependencies to confirm test-only categorical levels and extreme values cannot influence fitted train transforms. Then regenerate from the same checked-in historical Olist Parquet, verify the empirical JSON and commit it only if results change.
