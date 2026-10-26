@@ -20,3 +20,7 @@ Re-run every numeric experiment from the unchanged historical Olist Parquet inpu
 
 ## Validate numerical training boundary
 Execute `python tests/test_mining_training_boundary.py` under the scientific Python dependencies to confirm test-only categorical levels and extreme values cannot influence fitted train transforms. Then regenerate from the same checked-in historical Olist Parquet, verify the empirical JSON and commit it only if results change.
+
+
+## Retest after fixing CI source import root
+Scientific fixture now adds the repository root to the Python module search path before importing the actual training encoder, then checks train-only fitted medians and one-hot categories. Regenerate only after the fixture passes.
