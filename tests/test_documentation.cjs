@@ -3,7 +3,7 @@ const path=require('node:path')
 const assert=require('node:assert/strict')
 
 const root=path.resolve(__dirname,'..')
-const docs=['README.md','docs/ARCHITECTURE_V5.md','docs/DEPLOYMENT.md','docs/SCREENSHOT_GALLERY_CURRENT.md']
+const docs=['README.md','docs/ARCHITECTURE_V5.md','docs/DEPLOYMENT.md','docs/SCREENSHOT_GALLERY_CURRENT.md','docs/THEME_SYSTEM.md','docs/USER_GUIDE.md']
 let checked=0
 for(const document of docs){
  const input=fs.readFileSync(path.join(root,document),'utf8')
@@ -24,9 +24,9 @@ assert.doesNotMatch(svg,/<div\b/i,'diagram must be a standalone SVG, not HTML wr
 
 const dir=path.join(root,'docs/screenshots/current')
 const manifest=JSON.parse(fs.readFileSync(path.join(dir,'CAPTURE_MANIFEST.json'),'utf8'))
-assert.equal(manifest.release,'PromisePulse 5.0 with post-release editorial typography cleanup')
+assert.equal(manifest.release,'PromisePulse 5.0 with editorial typography, interactive mining algorithms and soft cyan #7DD3FC')
 assert.ok(manifest.git_sha&&manifest.captured_at_utc,'screenshots must have commit and time provenance')
-assert.ok(Array.isArray(manifest.images)&&manifest.images.length>=10)
+assert.ok(Array.isArray(manifest.images)&&manifest.images.length===13)
 for(const filename of manifest.images){
  assert.match(filename,/\.png$/)
  const file=path.join(dir,filename)
@@ -35,6 +35,7 @@ for(const filename of manifest.images){
 }
 const algorithmManifest=JSON.parse(fs.readFileSync(path.join(dir,'ALGORITHM_CAPTURE_MANIFEST.json'),'utf8'))
 assert.ok(algorithmManifest.source_sha&&algorithmManifest.captured_at_utc,'teaching screenshots must preserve capture provenance')
+assert.equal(algorithmManifest.source_sha,manifest.git_sha,'page and algorithm screenshots must come from the same source revision')
 assert.equal(algorithmManifest.images.length,15,'five algorithms must have desktop light/dark and mobile captures')
 for(const method of ['decision-tree','k-means','apriori','fp-growth','eclat']){
  for(const name of ['algorithm-'+method+'-light.png','algorithm-'+method+'-dark.png','mobile-algorithm-'+method+'-light.png']){
@@ -55,8 +56,14 @@ for(const file of teaching.images){
 }
 const readme=fs.readFileSync(path.join(root,'README.md'),'utf8')
 assert.match(readme,/PromisePulse 5\.0/)
+assert.match(readme,/#7DD3FC/,'README should describe current cyan palette')
+assert.match(readme,/docs\/THEME_SYSTEM\.md/,'README should link to current design guide')
+const themeGuide=fs.readFileSync(path.join(root,'docs/THEME_SYSTEM.md'),'utf8')
+assert.match(themeGuide,/#7DD3FC/)
+assert.match(themeGuide,/deployment-rate-limit/i,'design documentation must distinguish merged source from deployment')
+assert.match(svg,/#7DD3FC/,'architecture figure must reflect cyan presentation layer')
 assert.match(readme,/precision ≈ 0\.049/)
 assert.match(readme,/Root directory.*\bweb\b/)
 assert.doesNotMatch(readme,/feature branch only/i)
 assert.doesNotMatch(readme,/V6 features implemented/i)
-console.log('PASS docs: '+checked+' local links, '+manifest.images.length+' original screenshots, '+algorithmManifest.images.length+' algorithm screenshots, valid SVG, V5 provenance')
+console.log('PASS docs: '+checked+' local links, '+manifest.images.length+' cyan UI screenshots, '+algorithmManifest.images.length+' algorithm screenshots, valid SVG, V5 provenance')
