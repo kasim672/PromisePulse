@@ -194,14 +194,23 @@ function Rules({d}:{d:Evidence}){
 }
 export function SyllabusLab({module,onNavigate}:{module:SyllabusModule;onNavigate:(tab:Tab)=>void}){
  const [result,setResult]=useState<Evidence|null>(null),[pending,setPending]=useState(true),[error,setError]=useState('')
- useEffect(()=>{let live=true;void fetch(import.meta.env.BASE_URL+'data/mining_lab.json').then(res=>{if(!res.ok)throw Error('Mining export missing: install requirements-mining.txt and run python scripts/build_mining_lab.py.');return res.json() as Promise<Evidence>}).then(v=>{if(live){setResult(v);setPending(false)}}).catch(e=>{if(live){setPending(false);setError(String(e))}});return()=>{live=false}},[])
+ const [attempt,setAttempt]=useState(0)
+ useEffect(()=>{
+  const controller=new AbortController()
+  setPending(true);setError('')
+  void fetch(import.meta.env.BASE_URL+'data/mining_lab.json',{signal:controller.signal})
+   .then(res=>{if(!res.ok)throw Error('Mining export missing. Review the export instructions in the repository.');return res.json() as Promise<Evidence>})
+   .then(value=>{if(!controller.signal.aborted){setResult(value);setPending(false)}})
+   .catch(e=>{if(!controller.signal.aborted){setPending(false);setError(String(e))}})
+  return ()=>controller.abort()
+ },[attempt])
  return <div className="pp-home atlas-page syllabus-page">
   <div className="pp-page-top"><div><h1>{module.split(' ')[0]} <em>{module.split(' ').slice(1).join(' ')}</em></h1><p>Explore historical Olist data, inspect the underlying methods, and compare verified results.</p></div></div>
   <nav className="syllabus-tabs" aria-label="Data Mining Lab sections">
     <button type="button" onClick={()=>onNavigate('Syllabus Hub')}>Overview</button>
     {sequence.map(name=><button type="button" key={name} className={name===module?'active':''} aria-current={name===module?'page':undefined} onClick={()=>onNavigate(name)}>{name}</button>)}
   </nav>
-  {pending?<section className="pp-block syllabus-pending"><span className="spinner"/> Loading real mining evidence…</section>:error?<section className="pp-block syllabus-error" role="alert"><h3>Experiment data unavailable</h3><p>{error}</p><p>No results are simulated. Generate the offline export and reload.</p></section>:result&&<>
+  {pending?<section className="pp-block syllabus-pending"><span className="spinner"/> Loading real mining evidence…</section>:error?<section className="pp-block syllabus-error" role="alert"><h3>Experiment data unavailable</h3><p>{error}</p><p>No results are simulated. The data may not have loaded correctly.</p><button type="button" className="syllabus-retry" onClick={()=>setAttempt(v=>v+1)}>Retry loading experiment data</button></section>:result&&<>
     <div className="syllabus-facts"><span>Data <strong>Olist Brazilian E-Commerce</strong></span><span>Years <strong>{result.source.year_range}</strong></span><span>Seed <strong>{result.source.random_seed}</strong></span><span>Source <strong>Verified Parquet</strong></span></div>
     {module==='Warehouse & ETL'&&<Warehouse d={result}/>}
     {module==='Data Lakes'&&<DataLakes d={result}/>}
