@@ -1,0 +1,22 @@
+{
+  "source": "Real Chromium rendering deterministic educational examples; empirical Olist results remain separate",
+  "captured_at_utc": "2026-10-26T14:56:46.874Z",
+  "source_sha": "865cf5443a952bef4209e22f425a65f8c798bb77",
+  "images": [
+    "algorithm-decision-tree-light.png",
+    "algorithm-k-means-light.png",
+    "algorithm-apriori-light.png",
+    "algorithm-fp-growth-light.png",
+    "algorithm-eclat-light.png",
+    "algorithm-decision-tree-dark.png",
+    "algorithm-k-means-dark.png",
+    "algorithm-apriori-dark.png",
+    "algorithm-fp-growth-dark.png",
+    "algorithm-eclat-dark.png",
+    "mobile-algorithm-decision-tree-light.png",
+    "mobile-algorithm-k-means-light.png",
+    "mobile-algorithm-apriori-light.png",
+    "mobile-algorithm-fp-growth-light.png",
+    "mobile-algorithm-eclat-light.png"
+  ]
+}
