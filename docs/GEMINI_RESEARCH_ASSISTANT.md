@@ -54,10 +54,10 @@ In the untracked `web/.env` set:
 
 ```dotenv
 GEMINI_API_KEY=YOUR_PRIVATE_GOOGLE_AI_STUDIO_KEY
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.5-flash
 ```
 
-The model value is configurable; use a model available for the associated API key. Restart the server after changing `.env`:
+The model value is configurable; use a model available for the associated API key. Google now limits access to the older Gemini 2.5 Flash model for some projects. If you copied an earlier `web/.env`, update its `GEMINI_MODEL` explicitly because existing environment variables override the new default. A Gemini HTTP 404 may indicate model access, not a missing PromisePulse API route. Restart the server after changing `.env`:
 
 ```bash
 npm run dev
