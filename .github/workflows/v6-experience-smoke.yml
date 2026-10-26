@@ -59,3 +59,10 @@ jobs:
         env:
           PP_BASE_URL: http://127.0.0.1:4173/
         run: node scripts/smoke-v6.mjs
+      - name: Save verified layout screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promisepulse-v6-desktop-mobile
+          path: web/.screenshots-v6/
+          if-no-files-found: ignore
