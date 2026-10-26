@@ -55,6 +55,25 @@ The **66 original research chart definitions** come from 36 Atlas charts and 30 
 
 The original university **30-hour syllabus breakdown** remains in the [syllabus methodology document](docs/SYLLABUS_V5.md); it is not shown as unnecessary micro-headlines on the website.
 
+### Interactive algorithm walkthroughs
+
+The original three mining areas now include an **interactive teaching visualizer**. Use numbered steps, **Previous**, **Next step**, and **Restart** to follow an actual calculation on clearly displayed example inputs.
+
+- **K-Means:** Watch six plotted points move between computed centroid assignments, recalculated group means and convergence.
+- **Decision Tree:** Follow highlighted conditions through a deliberately illustrative decision path.
+- **Apriori:** Generate, count and prune itemsets at a fixed minimum support of three out of five example baskets.
+- **FP-Growth:** Insert the same five baskets into an FP-tree and watch prefix counts update.
+- **Eclat:** Intersect transaction-ID sets for item combinations.
+
+**Teaching examples are not Olist training traces or live predictions.** The actual published classification metrics, 950-customer clustering evidence, and 649-basket association analysis stay in their original panels. For worked examples and limitations, read the [Algorithm Playground guide](docs/ALGORITHM_PLAYGROUND.md).
+
+Loading is also more informative: warehouse initialization reports the manifest, WebAssembly engine and actual Parquet-file registration counts; analysis charts show query-specific placeholders. Warehouse and lab fetch failures provide diagnostic details and a retry action, without invented fallback data.
+
+[![K-Means interactive teaching scene](docs/screenshots/current/algorithm-k-means-light.png)](docs/screenshots/current/algorithm-k-means-light.png)
+
+[See all five algorithm screenshots and mobile views](docs/SCREENSHOT_GALLERY_CURRENT.md).
+
+
 ### Actual screenshots
 
 | Overview (light) | Overview (dark) |
@@ -177,6 +196,7 @@ node ../tests/test_research_expansion.cjs
 node ../tests/test_syllabus_modules.cjs
 node ../tests/test_mining_export_integrity.cjs
 node ../tests/test_editorial_hierarchy.cjs
+node ../tests/test_algorithm_playground.cjs
 ```
 
 GitHub Actions runs these checks in [`.github/workflows/web-checks.yml`](.github/workflows/web-checks.yml). Browser navigation tests and capture scripts are in `web/scripts/` and install Playwright separately. The [capture gallery](docs/SCREENSHOT_GALLERY_CURRENT.md) documents the screenshot source, viewport and commit instead of relying on mockups.
