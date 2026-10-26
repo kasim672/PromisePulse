@@ -97,7 +97,7 @@ function MetricPlot({rows,metric,lens}:{rows:RecordRow[];metric:AtlasMetric;lens
 }
 export function ChartCard({rows,metric,lens,loading,error}:{rows:RecordRow[];metric:AtlasMetric;lens:AtlasLens;loading:boolean;error:string}){
   return <section className="pp-block atlas-chart-card" aria-label={metric.title}>
-    <div className="atlas-chart-heading"><div><span className="atlas-mini-label">VISUAL ANALYSIS · {metric.id.toUpperCase().replaceAll('-',' ')}</span><h3>{metric.title}</h3><p>{metric.insight}</p></div><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span></div>
+    <div className="atlas-chart-heading"><div><h3>{metric.title}</h3><p>{metric.insight}</p></div><span className="atlas-chart-kind">{metric.unit==='brl'?'BRL':metric.unit==='percent'?'%':metric.unit==='days'?'DAYS':'COUNT'}</span></div>
     {loading?<div className="atlas-loading"><span className="spinner"/> Querying actual Parquet aggregates…</div>:error?<p className="atlas-error" role="alert">{error}</p>:<MetricPlot rows={rows} metric={metric} lens={lens}/>}
   </section>
 }
@@ -110,7 +110,7 @@ function Matrix({rows,title,subtitle,kind}:{rows:MatrixRow[];title:string;subtit
   const byCell=useMemo(()=>new Map(rows.map(r=>[String(r.y)+'|'+String(r.x),r])),[rows])
   const max=Math.max(1,...rows.map(r=>Number(r.orders)||0))
   return <section className="pp-block atlas-matrix-card">
-    <div className="atlas-chart-heading"><div><span className="atlas-mini-label">CROSS-DIMENSIONAL ANALYSIS</span><h3>{title}</h3><p>{subtitle}</p></div><button className="atlas-export" title="Export matrix" aria-label={'Export '+title} onClick={()=>saveCsv(rows,'promisepulse-'+kind)} disabled={!rows.length}><Download size={16}/></button></div>
+    <div className="atlas-chart-heading"><div><h3>{title}</h3><p>{subtitle}</p></div><button className="atlas-export" title="Export matrix" aria-label={'Export '+title} onClick={()=>saveCsv(rows,'promisepulse-'+kind)} disabled={!rows.length}><Download size={16}/></button></div>
     {!rows.length?<p className="atlas-empty">No qualifying historical records for the selected filters.</p>:<>
       <div className="atlas-heatmap-scroll"><table className="atlas-matrix-table"><thead><tr><th scope="col">{kind==='statemonth'?'State':kind==='reviewlate'?'Review':'Day'}</th>{xs.map(x=><th scope="col" key={x}>{x}</th>)}</tr></thead><tbody>{ys.map(y=><tr key={y}><th scope="row">{kind==='weekhour'?labelFor('weekday',y):y}</th>{xs.map(x=>{
         const r=byCell.get(y+'|'+x),value=Number(r?.orders)||0,intensity=Math.round(12+83*Math.sqrt(value/max));
@@ -126,7 +126,7 @@ function Calibration({rows}:{rows:RecordRow[]}){
   const data=rows.filter(r=>r.observed_pct!=null&&r.predicted_pct!=null)
   const index=selected??(data.length?data.length-1:0)
   return <section className="pp-block atlas-chart-card">
-    <div className="atlas-chart-heading"><div><span className="atlas-mini-label">HELD-OUT CLASSIFICATION DIAGNOSTIC</span><h3>Prediction calibration by decile</h3><p>Mean estimated probability versus observed late frequency on the historical held-out set. The diagonal indicates perfect calibration, not measured performance.</p></div><button className="atlas-export" onClick={()=>saveCsv(rows,'promisepulse-risk-calibration')} disabled={!rows.length} title="Export decile table" aria-label="Export calibration table"><Download size={16}/></button></div>
+    <div className="atlas-chart-heading"><div><h3>Prediction calibration by decile</h3><p>Mean estimated probability versus observed late frequency on the historical held-out set. The diagonal indicates perfect calibration, not measured performance.</p></div><button className="atlas-export" onClick={()=>saveCsv(rows,'promisepulse-risk-calibration')} disabled={!rows.length} title="Export decile table" aria-label="Export calibration table"><Download size={16}/></button></div>
     {!data.length?<p className="atlas-empty">No evaluated held-out predictions available.</p>:<>
       <svg viewBox="0 0 420 290" className="atlas-calibration" role="group" aria-label="Interactive observed versus predicted late delivery probability in held-out risk deciles">
         <line x1="44" y1="242" x2="370" y2="242" stroke="var(--atlas-grid)"/><line x1="44" y1="242" x2="44" y2="20" stroke="var(--atlas-grid)"/>
@@ -190,10 +190,10 @@ export function AnalyticsAtlas({db}:{db:Warehouse}){
     ['Review × delivery outcome matrix','Only orders with recorded reviews and known late/on-time label.','reviewlate']
   ] as const
   return <div className="pp-home atlas-page">
-    <div className="pp-page-top"><div><div className="pp-overline"><Microscope size={14}/> RESEARCH-GRADE EXPLORATORY WORKSPACE <span>/ ANALYTICS ATLAS</span></div>
+    <div className="pp-page-top"><div>
       <h1>Explore every <em>dimension.</em></h1>
       <p>{ATLAS_CHART_COUNT} chart definitions across nine focused lenses. Real historical Olist aggregations, not simulated live shipping. The existing dashboard remains unchanged.</p></div>
-      <span className="pp-historical"><span/> DESCRIPTIVE · 2016–2018</span>
+      
     </div>
     <div className="pp-block atlas-topbar">
       <div className="atlas-filter"><label htmlFor="atlas-year">Purchase period</label><select id="atlas-year" value={year} onChange={e=>setYear(e.target.value as AtlasYear)}>{(['all','2016','2017','2018'] as const).map(v=><option key={v} value={v}>{v==='all'?'All years':v}</option>)}</select></div>
@@ -203,7 +203,7 @@ export function AnalyticsAtlas({db}:{db:Warehouse}){
     <div className="atlas-layout">
       <nav className="atlas-lenses" aria-label="Analytics lenses">{ATLAS_GROUPS.map((g,i)=>{const Icon=GROUP_ICONS[i];return <button type="button" key={g.id} className={'atlas-lens '+(g.id===lens?'active':'')} aria-current={g.id===lens?'page':undefined} onClick={()=>setLens(g.id)}><Icon size={17}/><span>{g.title}</span><strong>{g.metrics.length.toString().padStart(2,'0')}</strong></button>})}</nav>
       <div className="atlas-content">
-        <div className="atlas-group-intro"><div><p>SELECTED ANALYSIS LENS</p><h2>{group.title}</h2><span>{group.subtitle}</span></div><div className="atlas-grain"><Database size={16}/>{group.grain}</div></div>
+        <div className="atlas-group-intro"><div><h2>{group.title}</h2><span>{group.subtitle}</span></div><div className="atlas-grain"><Database size={16}/>{group.grain}</div></div>
         {lens==='laboratory'?<div className="atlas-panel-grid atlas-lab-grid">
           {labInfo.map(([title,subtitle,key])=>{
             const dat=matrix[key]
