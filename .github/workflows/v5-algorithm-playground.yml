@@ -69,4 +69,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/screenshots/current/
           git commit -m "docs: capture real five-algorithm walkthroughs in light dark and mobile"
-          git push origin HEAD:feat/v5-algorithm-playground-and-loading
+          git fetch --no-tags origin feat/v5-algorithm-playground-and-loading
+          git rebase FETCH_HEAD
+          git push origin HEAD:refs/heads/feat/v5-algorithm-playground-and-loading
