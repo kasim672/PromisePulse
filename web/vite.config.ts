@@ -5,5 +5,5 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   server: { port: 5173 },
-  build: { target: 'es2022' },
+  build: { target: 'es2022', cssCodeSplit: true, rollupOptions: { output: { manualChunks(id) { if(id.includes('node_modules/react/')||id.includes('node_modules/react-dom/')||id.includes('node_modules/scheduler/')) return 'react-vendor' } } } },
 })
