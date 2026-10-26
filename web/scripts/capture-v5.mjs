@@ -12,6 +12,20 @@ const labels=['Warehouse & ETL','Data Lakes','EDA & Preprocessing','Classificati
 const slug=['warehouse-etl','data-lakes','eda-preprocessing','classification-regression','clustering-dendrogram','apriori-fpgrowth-eclat']
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']})
 const screenshots=[],errors=[]
+async function navigateToModule(page,label){
+ const nav=page.getByRole('navigation',{name:'Main navigation'})
+ const trigger=nav.getByRole('button',{name:'Data Mining Lab',exact:true})
+ await trigger.click()
+ const submenu=page.locator('#syllabus-nav-submenu')
+ await submenu.waitFor({state:'visible'})
+ const inBounds=await submenu.evaluate(el=>{
+   const r=el.getBoundingClientRect()
+   return r.top>=0&&r.left>=0&&r.bottom<=innerHeight+1&&r.right<=innerWidth+1
+ })
+ if(!inBounds)throw Error('Data Mining Lab menu clipped outside visible viewport')
+ await submenu.getByRole('button',{name:label,exact:true}).click()
+ await submenu.waitFor({state:'hidden'})
+}
 async function capture(theme,viewport,mobile=false){
  const ctx=await browser.newContext({viewport,deviceScaleFactor:1,colorScheme:theme,reducedMotion:'reduce'})
  await ctx.addInitScript(value=>localStorage.setItem('promisepulse-theme',value),theme)
@@ -20,7 +34,7 @@ async function capture(theme,viewport,mobile=false){
  await page.goto(root,{waitUntil:'domcontentloaded',timeout:100000})
  await page.locator('.pp-welcome').waitFor({timeout:120000})
  const suffix=(mobile?'-mobile':'')+'-'+theme
- await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Syllabus Hub',exact:true}).click()
+ await navigateToModule(page,'Syllabus Hub')
  await page.locator('.syllabus-hub-grid .syllabus-hub-card').first().waitFor({state:'visible',timeout:120000})
  await page.waitForFunction(()=>document.querySelectorAll('.syllabus-hub-stat-grid strong').length===6,null,{timeout:120000})
  const cards=await page.locator('.syllabus-hub-grid .syllabus-hub-card').count()
@@ -35,7 +49,7 @@ async function capture(theme,viewport,mobile=false){
  console.log('Verified six-module navigator and 30-hour summary: '+first)
  for(let i=0;i<labels.length;i++){
   if(mobile&&i!==2&&i!==4)continue
-  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:labels[i],exact:true}).click()
+  await navigateToModule(page,labels[i])
   await page.locator('.syllabus-page').waitFor({timeout:100000})
   await page.locator('.syllabus-page .syllabus-card').first().waitFor({state:'visible',timeout:120000})
   await page.locator('.syllabus-pending').waitFor({state:'hidden',timeout:120000})
