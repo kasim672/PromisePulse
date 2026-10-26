@@ -52,6 +52,7 @@ jobs:
         env:
           PP_BASE_URL: http://127.0.0.1:4173/
         run: node scripts/capture-current-docs.mjs
+      # Warehouse recovery is verified using rendered data, not a removed header badge.
       - name: Capture all five computed teaching algorithms and verify retries
         working-directory: web
         env:
