@@ -104,7 +104,7 @@ curl -i -X POST http://127.0.0.1:5173/api/ask \
 
 Expected: **HTTP 400** with `Enter a question between 3 and 450 characters.` This invalid question verifies the endpoint without calling Google. If you receive **HTTP 404**, stop Vite (`Ctrl+C`), update your branch with `git pull --ff-only origin feat/gemini-project-research-assistant`, and restart `npm run dev` from the `web` folder. Open the URL Vite prints, usually **http://127.0.0.1:5173/**.
 
-An empty `GEMINI_API_KEY` produces **HTTP 503** for a valid project question, not 404. A greeting like `hi` is below the three-character API minimum and now gets an inline validation message.
+An empty `GEMINI_API_KEY` produces **HTTP 503** for a valid project question, not 404. Short greetings such as `hi` are handled locally with a project-focused welcome message (no Gemini API call). Other two-character inputs receive an inline validation message.
 
 
 If you prefer, `cp .env.example .env` does the same initialization manually, but **`npm run setup:gemini` is safer** because it refuses to overwrite an existing local `.env`.
