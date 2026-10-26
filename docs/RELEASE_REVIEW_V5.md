@@ -1,6 +1,6 @@
 # PromisePulse 5.0 — Release Review and Empirical Quality Gate
 
-**Status:** implementation complete on a **draft feature branch only**. `main` has not been modified. This review is grounded in `web/public/data/mining_lab.json`, `docs/screenshots/v5/CAPTURE_MANIFEST.json`, source code and GitHub Actions as extended and revalidated on October 26, 2026.
+**Status:** archived pre-merge release review. **PR #7 was merged into `main`**; the former feature branch was deleted. The preserved review evidence is grounded in `web/public/data/mining_lab.json`, `docs/screenshots/v5/CAPTURE_MANIFEST.json`, source code and GitHub Actions as extended and revalidated on October 26, 2026.
 
 ## Additive delivery contract
 
@@ -10,7 +10,7 @@ Navigation now has the original 12 workspace entries plus one **Data Mining Lab*
 
 ## The six syllabus modules, implemented and verifiable
 
-| Module | Student syllabus hours | Evidence available in this branch | Limits |
+| Module | Student syllabus hours | Evidence in current release | Limits |
 | --- | ---: | --- | --- |
 | Warehouse & ETL | 8 | Physical order/item stars and constellation, inventory, source quality plots and table exports | Snowflake alternative is illustrative, not deployed |
 | Data Lakes | 3 | Raw input file manifest compared to curated Parquet, sizes/record counts and curation stages | Static raw/curated views, not a live cloud data-lake cluster |
@@ -99,7 +99,7 @@ Consult `requirements-export.txt` and the script's CLI flags/inputs before regen
 
 ## Consolidated review branch — academic hub and methodological correction
 
-The current consolidated implementation is maintained on `feat/promisepulse-5-syllabus-research-lab`. The Data Mining Lab overview displays analytical workflows, clickable analysis cards, filters and source-backed counters. It no longer displays syllabus-hour graphics, academic module numbers or a separate dropdown.
+The consolidated implementation is now maintained on `main` following merge of PR #7. The Data Mining Lab overview displays analytical workflows, clickable analysis cards, filters and source-backed counters. It no longer displays syllabus-hour graphics, academic module numbers or a separate dropdown.
 
 The original exporter performed median imputation and categorical one-hot encoding across the chronological training and evaluation periods together; this could expose the training transform to future holdout feature distributions. The review branch corrects this by fitting missing-value medians and category vocabulary on training data alone and applying those parameters unchanged to the historical test period. See `tests/test_mining_training_boundary.py` for explicit unseen-category/outlier fixtures. Model classification quality remains weak and must not be exaggerated. The experiment is regenerated from source Parquet and requires independent journal-level replication.
 
@@ -107,4 +107,4 @@ The original exporter performed median imputation and categorical one-hot encodi
 
 The complete review branch was checked with the original `npm run build`, SQL, theme, Analytics Atlas, research expansion and syllabus-integrity tests: [successful GitHub Actions web-validation run](https://github.com/kasim672/PromisePulse/actions/runs/40293545892). A separate scientific Python Action [successfully reran the source exporter and train-only boundary regression test](https://github.com/kasim672/PromisePulse/actions/runs/40293539314), including adversarial unseen holdout categorical values and missing numeric values. The GitHub Actions browser verifier [passed 19 real Chromium screenshots](https://github.com/kasim672/PromisePulse/actions/runs/40293229735) after fixing the hub's light/dark progress-bar and accent contrast; see the screenshot capture manifest for exact image provenance. Machine-generated verification artifacts must remain separate from research claims.
 
-The current student-review entry is **draft PR #7**, based on `feat/promisepulse-5-syllabus-research-lab`. The old V5 prototype branches were deleted and their PRs closed without merging. The three prior V5 prototype branches and their draft PR (if any) are not merged or deleted here. `main` stays unmodified until explicit user approval. A final production/CI check for the newest commit should be reviewed in the PR checks before merging.
+Historical review: [PR #7](https://github.com/kasim672/PromisePulse/pull/7) was approved and **merged**. Experimental prototype branches were not merged. The production `main` branch now contains V5; the live site has passed post-merge browser validation. For present-day procedures use [Deployment](DEPLOYMENT.md) and the [Current Screenshot Gallery](SCREENSHOT_GALLERY_CURRENT.md).
