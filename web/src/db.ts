@@ -11,6 +11,8 @@ export interface Warehouse {
   close(): Promise<void>
 }
 
+export type WarehouseProgress={phase:'manifest'|'engine'|'tables'|'ready';completed:number;total:number;table?:string}
+export type WarehouseLoadOptions={signal?:AbortSignal;onProgress?:(value:WarehouseProgress)=>void}
 const tables = ['dim_customer', 'dim_product', 'dim_seller', 'dim_date', 'fact_orders', 'fact_order_items']
 
 function cleanValue(value: unknown): string | number | boolean | null {
@@ -22,11 +24,15 @@ function cleanValue(value: unknown): string | number | boolean | null {
   return String(value)
 }
 
-export async function loadWarehouse(): Promise<Warehouse> {
+export async function loadWarehouse({signal,onProgress}:WarehouseLoadOptions={}): Promise<Warehouse> {
+  const notify=(value:WarehouseProgress)=>{if(!signal?.aborted)onProgress?.(value)}
+  notify({phase:'manifest',completed:0,total:0})
   const base = import.meta.env.BASE_URL
-  const manifestResponse = await fetch(`${base}data/manifest.json`, { cache: 'no-store' })
+  const manifestResponse = await fetch(`${base}data/manifest.json`, { cache: 'no-store',signal })
   if (!manifestResponse.ok) throw new Error('Data export missing. Run the Python export command in the README first.')
   const manifest = await manifestResponse.json() as Manifest
+  notify({phase:'engine',completed:0,total:0})
+  if(signal?.aborted)throw new DOMException('Load cancelled','AbortError')
   const bundles = {
     mvp: { mainModule: mvpWasm, mainWorker: mvpWorker },
     eh: { mainModule: ehWasm, mainWorker: ehWorker },
@@ -37,12 +43,19 @@ export async function loadWarehouse(): Promise<Warehouse> {
   try {
     await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
     const conn = await db.connect()
-    for (const table of [...tables, ...(manifest.model.status === 'evaluated' ? ['risk_predictions'] : [])]) {
-      const response = await fetch(`${base}data/${table}.parquet`)
+    const required=[...tables, ...(manifest.model.status === 'evaluated' ? ['risk_predictions'] : [])]
+    let completed=0
+    for (const table of required) {
+      if(signal?.aborted)throw new DOMException('Load cancelled','AbortError')
+      notify({phase:'tables',completed,total:required.length,table})
+      const response = await fetch(`${base}data/${table}.parquet`,{signal})
       if (!response.ok) throw new Error(`Missing warehouse file ${table}.parquet; regenerate the export.`)
       await db.registerFileBuffer(`${table}.parquet`, new Uint8Array(await response.arrayBuffer()))
       await conn.query(`CREATE VIEW ${table} AS SELECT * FROM read_parquet('${table}.parquet')`)
+      completed++
+      notify({phase:'tables',completed,total:required.length,table})
     }
+    notify({phase:'ready',completed,total:required.length})
     return {
       manifest,
       async query(sql) {
