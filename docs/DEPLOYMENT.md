@@ -1,92 +1,49 @@
-# Deploy PromisePulse 5.0
+# PromisePulse 5.0 — deployment and operations
 
-**Live website:** https://promise-pulse-rose.vercel.app/  
-**Source:** [`kasim672/PromisePulse`](https://github.com/kasim672/PromisePulse) · **production branch:** `main`
+**Repository:** [kasim672/PromisePulse](https://github.com/kasim672/PromisePulse) · **production branch:** `main` · **intended domain:** [promise-pulse-rose.vercel.app](https://promise-pulse-rose.vercel.app/)
 
-PromisePulse 5.0 uses **soft-cyan `#7DD3FC` accents** and is a **static Vite/React application** with DuckDB-Wasm running in the visitor's browser. Python, scikit-learn and the DuckDB desktop package are required to **rebuild data**, but not to **serve the production website**. The GitHub repository already contains the historical exports under `web/public/data/`.
+This document matches the checked-in Vite/React, DuckDB-Wasm and server-side Gemini assistant implementation. Two independent services are involved: **public static warehouse/website assets** and the **optional `/api/ask` Vercel Function**. No hosted Python process or SQL database is required for visitors.
 
-## Deployment state versus GitHub release
+## 1. Release status: source versus deployment
 
-The soft-cyan theme was merged into `main` on **October 26, 2026** in [PR #10](https://github.com/kasim672/PromisePulse/pull/10), merge commit `0ddf3b69a8d33b2a448dca0a31f5eeb2a456a4eb`. Its GitHub web validation succeeded, but the corresponding **Vercel deployment returned “Deployment rate limited — retry in 24 hours.”**
+A passing GitHub build confirms the current source compiles and its automated tests pass. It **does not** establish that a newer `main` commit has reached the public Vercel domain. On **October 26, 2026**, Vercel reported a **deployment-rate-limit** problem during earlier builds. Its continuing state must be checked in Vercel; do not assume a specific commit is live based only on GitHub merges, a badge, or screenshots. This guide documents the current source, not a separately confirmed live deployment.
 
-Until Vercel reports a successful deployment for that commit or a newer `main` commit, the public URL might still show the previous lime design. **Do not describe GitHub's successful merge or local screenshots as proof that the live website updated.** This is a deployment-account limit, not a TypeScript compilation failure.
+To verify: open the project's **Vercel → Deployments**, identify the newest **production** build, check **Ready**, verify the Git commit SHA and production domain assignment, then test the browser and `/api/ask`. If the account remains rate-limited, resume after the limit clears or review plan limits and then redeploy the intended `main` commit. A rate limit is not evidence of a TypeScript or SQL failure.
 
-To publish the merged design when the limit clears:
+## 2. Vercel configuration
 
-1. Open the [Vercel project dashboard](https://vercel.com/kasim5) and select the PromisePulse project.
-2. Open **Deployments** and inspect the deployment associated with the newest `main` commit.
-3. If Vercel is still rate-limiting builds, wait until it allows another deployment or review the plan's build allowance.
-4. Use **Redeploy** for the latest production commit, if available, or trigger a fresh deployment from `main`.
-5. Confirm **Ready**, the production domain assignment, and the displayed Git commit SHA before opening the public site and checking its theme.
+Import the GitHub repository into [Vercel](https://vercel.com/new). Use these settings:
 
-The release screenshots in this repository are from Chromium rendering the source application with actual checked-in historical data. They provide UI evidence **even if a Vercel deployment is pending**.
-
-### Optional project-only Gemini assistant
-
-A pending feature branch, `feat/gemini-project-research-assistant`, adds the `/api/ask` Vercel Function to the Vite project root (`web/api/ask.js`). It must be merged and deployed before that endpoint exists in production. This new feature does not change the static Parquet warehouse or existing machine-learning results.
-
-To enable it locally, run `cd web && npm run setup:gemini`, put your own key in the new **ignored** `web/.env`, and use ordinary `npm run dev`. The local Node server serves `/api/ask` through Vite's proxy, using the same server-side handler as Vercel, without exposing the key to React. For deployment later, set `GEMINI_API_KEY` **privately in Vercel project Environment Variables**, not in source or a `VITE_*` variable. The server defaults to `GEMINI_MODEL=gemini-2.5-flash`; change it only to an available model. Review request quotas, Google billing, Vercel firewall rules and user-data implications first. See [Gemini Research Assistant](GEMINI_RESEARCH_ASSISTANT.md).
-
-The normal static frontend build remains unchanged. The Gemini feature requires a real Vercel deployment with Functions support; a successful `npm run build` does not by itself test Gemini authentication or confirm the Vercel API route is live.
-
-## 1. Deploy to Vercel from GitHub
-
-1. Sign in to [Vercel](https://vercel.com/new) and import `kasim672/PromisePulse`.
-2. Choose production branch **`main`**.
-3. Set **Root Directory = `web`**. The Node frontend is not at the repository root.
-4. Configure the following settings, then deploy:
-
-| Vercel option | Value |
+| Option | Value |
 | --- | --- |
-| Framework preset | **Vite** |
-| Root directory | **`web`** |
+| Framework | **Vite** |
+| Git repository | `kasim672/PromisePulse` |
+| Production branch | **`main`** |
+| **Root directory** | **`web`** |
 | Install command | `npm ci` |
 | Build command | `npm run build` |
 | Output directory | `dist` |
-| Environment variables | None required for bundled historical data |
-| Production branch | `main` |
+| Runtime for optional chatbot | Vercel Function at `web/api/ask.js` |
+| Static dashboard secrets | None needed |
+| Optional server-only AI secrets | `GEMINI_API_KEY`, `GEMINI_MODEL` |
 
-Vercel builds the React application and copies `web/public/` into its output. `index.html`, versioned JavaScript/CSS, `manifest.json`, Parquet files and the mining lab JSON are served as static assets.
+The build runs `prebuild` to refresh `web/api/_site-index.mjs` from the checked-in technical docs and public aggregate JSON, runs TypeScript checks and emits `dist/`. Vite copies `web/public/data/` to the static output. The separately deployed `web/api/ask.js` answers chat requests in a serverless runtime. It is not part of the client JavaScript bundle.
 
-**Do not configure** a Python/Flask/FastAPI server, a live PostgreSQL/DuckDB service, or an API key just to deploy the current dashboard. All analytical queries run in browser memory through DuckDB-Wasm.
+**Do not** deploy Flask, FastAPI, PostgreSQL, a live DuckDB server, recurring model training or Streamlit. Python and DuckDB CLI libraries only rebuild the offline research artifacts.
 
-## 2. Verify a production deployment
+### Server-side Gemini setup
 
-Open **https://promise-pulse-rose.vercel.app/** in a desktop browser and a mobile browser.
+The chat drawer is already on `main`. For **Gemini-generated explanations**, obtain an API key from [Google AI Studio](https://aistudio.google.com/apikey) and set `GEMINI_API_KEY` in **Vercel Project Settings → Environment Variables** for the intended environment(s). Do **not** prefix it with `VITE_` or paste it into GitHub, HTML, `web/public` or issue comments.
 
-- Confirm Welcome loads and displays the actual warehouse totals.
-- Open Overview, Intelligence and Analytics Atlas; confirm charts and the historical state map populate.
-- Switch between light and dark themes and use the mobile navigation. Verify cyan `#7DD3FC` on active navigation, primary CTAs, the highlighted KPI, selected Brazil state, chart accents, the new favicon and Data Mining Lab controls. The purple wordmark should remain.
-- Click the **graduation-cap Data Mining Lab button**; it must open the overview **directly**, without a popup.
-- Open Warehouse & ETL, Data Lakes, EDA & Preprocessing, Classification, Clustering and Pattern Mining through the cards and **internal tabs**.
-- Inspect the Clustering dendrogram, association rules and CSV exports. Recorded results must come from `mining_lab.json`, not fallback examples.
-- Check DevTools → Network for successful requests to `/data/manifest.json`, `/data/fact_orders.parquet`, `/data/mining_lab.json` and the DuckDB `.wasm` file.
-- Confirm there are no JavaScript exceptions, broken fonts or horizontal overflow on a narrow phone screen.
-- In DevTools Console, run `getComputedStyle(document.documentElement).getPropertyValue('--pp-accent-cyan').trim()`. The deployed soft-cyan release should return `#7DD3FC` (case-insensitive). If the old theme appears, confirm the deployed commit and cached assets before changing source code.
+`GEMINI_MODEL` is optional. At the time of this source revision, `web/api/ask.js` defaults to `gemini-3.5-flash`; **actual model availability is specific to your Google API project and can change**. Use a model ID supported by your key, then redeploy. A Gemini HTTP 404 can mean an unavailable model, while a **website** `/api/ask` HTTP 404 usually means the endpoint was not deployed/proxied at all. These are different issues.
 
-The repository contains two useful checks:
-```bash
-# Run from the repository root
-cd web
-npm ci
-npm run build
+If the private key is absent or Gemini is unavailable, the assistant may still show *clearly labeled reference excerpts* from website documentation. This fallback is **not** a successful Gemini-generated answer. Configure Google quotas/alerts and Vercel bot protection or rate limits for public traffic; the backend's in-memory rate limit is best-effort only.
 
-# GitHub CI also runs regression tests in tests/
-node ../tests/test_sql_generation.cjs
-node ../tests/test_theme.cjs
-node ../tests/test_atlas.cjs
-node ../tests/test_research_expansion.cjs
-node ../tests/test_syllabus_modules.cjs
-node ../tests/test_mining_export_integrity.cjs
-node ../tests/test_editorial_hierarchy.cjs
-node ../tests/test_algorithm_playground.cjs
-node ../tests/test_soft_cyan_theme.cjs
-node ../tests/test_documentation.cjs
-```
+[Full chatbot architecture, privacy, fallback behavior and limitations](GEMINI_RESEARCH_ASSISTANT.md).
 
-The source-backed browser checks in `web/scripts/smoke-soft-cyan.mjs`, `capture-current-docs.mjs` and `smoke-algorithms.mjs` verify the selected cyan states, responsive pages, experimental teaching steps and retry behavior. Playwright is installed separately by CI; it is **not** a permanent frontend dependency. The live smoke workflow can fail when Vercel has not deployed the current commit, even if the local source build passes.
+## 3. Local development on Linux/macOS
 
-## 3. Local development (no source CSV download required)
+Prerequisites: Node.js 22 (matching CI) and npm. The checked-in static data lets the analytics website run without raw CSVs, Python, Kaggle authentication or a Gemini key.
 
 ```bash
 git clone https://github.com/kasim672/PromisePulse.git
@@ -97,71 +54,108 @@ npm ci
 npm run dev
 ```
 
-Open **http://127.0.0.1:5173/**. Vite reads the prebuilt assets already checked in under `web/public/data/`. You do not need Kaggle credentials just to explore the dashboard.
+Open **http://127.0.0.1:5173/**. `npm run dev` runs `predev` to refresh the assistant index, then starts `scripts/dev.mjs`, which launches the Node AI API on **127.0.0.1:8787** and Vite on **127.0.0.1:5173**. Vite uses **`vite.config.ts` explicitly** and forwards `/api/ask` to loopback. Both ports must be free; stop stale Vite or API processes instead of silently changing URLs.
 
-To simulate the production bundle:
+The checked-in example `web/.env.example` contains empty/illustrative settings. Initialize the private file only if you want Gemini:
 
 ```bash
+cd web
+npm run setup:gemini
+# Edit web/.env and set GEMINI_API_KEY privately.
+# Optionally set GEMINI_MODEL to a valid model for your API key.
+npm run dev
+```
+
+In a second terminal:
+
+```bash
+cd web
+npm run check:gemini
+```
+
+A **PASS** from `check:gemini` confirms the **local HTTP route** is present: it submits an intentionally invalid short question and uses **no Google API credits**. Afterward, manually ask the UI about the dataset to validate the actual key, quota and Google response.
+
+For production static-build inspection:
+
+```bash
+cd web
 npm run build
 npm run preview
 ```
 
-The preview URL is printed by Vite (commonly port 4173).
+The Vite preview serves static assets; **do not assume it reproduces a deployed Vercel serverless Function**. Test the AI route using `npm run dev` or the deployed `/api/ask`.
 
-## 4. Optional: rebuild the historical data
+## 4. Production verification checklist
 
-This is only needed to recompute the warehouse/model/lab datasets. Run from the **repository root**:
+1. Confirm Vercel's production build is **Ready**, is assigned to the intended domain and matches the `main` Git SHA being tested.
+2. Check Welcome and Overview load the actual historical warehouse. Network responses to `/data/manifest.json`, `/data/fact_orders.parquet`, `/data/mining_lab.json`, browser WebAssembly assets and application JS should succeed.
+3. Check Analytics Atlas, customer cohorts, OLAP, the Brazil historical state map, Risk Center and mining lab figures. Do not mistake illustrative teaching animations for trained-model output.
+4. Open the graduation-cap icon: it should enter the six-section mining hub directly. Check tab/card navigation and failure/retry states.
+5. Compare dark and light themes, keyboard focus and mobile layout. The cyan theme token is `#7DD3FC`; the chatbot's **light theme has white/pale-blue surfaces** while the existing dark chat palette is preserved.
+6. Click **Ask PromisePulse AI**. Confirm `POST /api/ask` is not a frontend 404. Without a key, validate the explicitly labeled **reference** fallback. With a key, ask about the Olist dataset, verify a generated explanation, and try a general question. Validate citations for project-specific claims.
+7. Verify no API key appears in HTML, client JS, `VITE_*` variables or browser network requests to your own site. The server alone calls Google with the key. Inspect quota and firewall protection separately.
+8. Recheck without browser-cache interference if the live interface differs from the [source-backed screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md).
+
+To test API routing without using Gemini credits, a POST with a short invalid question should return **HTTP 400**, not 404:
+
+```bash
+curl -i -X POST https://promise-pulse-rose.vercel.app/api/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"hi"}'
+```
+
+Run this against your **actual Ready production deployment**. A pass demonstrates the function route, not Gemini authentication.
+
+## 5. Build and data verification
+
+From `web/`:
+
+```bash
+npm ci
+npm run build
+node ../tests/test_documentation.cjs
+node ../tests/test_theme.cjs
+node ../tests/test_soft_cyan_theme.cjs
+node ../tests/test_gemini_assistant.mjs
+node ../tests/test_mining_export_integrity.cjs
+```
+
+See [`.github/workflows/web-checks.yml`](../.github/workflows/web-checks.yml) for all required tests. Playwright Chromium is installed separately in browser-validation workflows rather than as a permanent web runtime dependency. Authentic screenshots and their source commit are tracked in [`docs/screenshots/current/`](screenshots/current/).
+
+### Optional: rebuild the historical exports
+
+This is an **offline reproducibility operation**, not required to serve the bundled dataset. Download the eight Olist CSVs from [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and place them in `data/raw/`, then from the repository root:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-export.txt
-```
-
-Download the Olist dataset from [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and place its eight required CSV files in `data/raw/`. The raw source files are intentionally not committed.
-
-```bash
 python scripts/build_web_data.py --raw-dir data/raw --train
 python scripts/verify_export.py
 python scripts/build_mining_lab.py
 python scripts/verify_mining_lab.py
-
-cd web
-npm ci
-npm run build
 ```
 
-`--train` is optional; it runs the historical chronological model evaluation and exports `risk_predictions.parquet`. Without it, the manifest marks the model as not trained and some held-out model views cannot be populated. The mining lab exporter reads the already exported Parquet files. It does not train a model in the browser.
+With `--train`, the exporter evaluates retrospective chronological delivery risk and produces `risk_predictions.parquet`; without it, model-dependent views may be unavailable. The mining lab exporter reads the published warehouse. Verify and review generated changes before committing them.
 
-If the exported files change, inspect `manifest.json` and verify all tests **before** committing the new public assets. The published Olist license is **CC BY-NC-SA 4.0**; confirm proposed use is compatible with its noncommercial and share-alike terms. Application source code itself is under MIT.
+## 6. Troubleshooting
 
-## 5. Troubleshooting
+| Symptom | Where to inspect | Action |
+| --- | --- | --- |
+| GitHub merged, old UI on live URL | Vercel Deployments / Git SHA / Ready status | Verify the actual production deployment; investigate rate limit or cache before editing code |
+| Assistant greeting works, other prompts return 404 | Network `/api/ask`, Vite config or Vercel Function | Run `npm run check:gemini` locally; ensure `npm run dev` starts both servers; deploy `web/api/ask.js` on Vercel |
+| Gemini reference notice instead of generated answer | Private server `.env` / Vercel Environment Variables, model, quota | Check key presence, Google model access and quota; restart or redeploy after changing settings |
+| HTTP 429 in chat | Local/Vercel throttling or Google quota | Check rate limits and Google usage; do not disable safety limits for public traffic |
+| Loading warehouse never finishes | Browser Network and Console, static Parquet/manifest files | Confirm complete `web/public/data` export; retry or regenerate verified files |
+| Mining lab unavailable | `/data/mining_lab.json` | Verify file exists and export/integrity checks passed |
+| Colors or chat bubbles unreadable | Saved `promisepulse-theme` setting / CSS bundle | Confirm latest deployed Git SHA and `project-assistant.css` is loaded |
 
-| Symptom | What to inspect |
-| --- | --- |
-| Vercel deploy reports no `package.json` | Set Root Directory to `web` |
-| Blank page or asset 404 | Check `npm run build`, build output `dist`, browser console and the public `data` paths |
-| Warehouse initialization error | Check `/data/manifest.json` and all Parquet responses; clear cached assets/reload |
-| Mining lab says experiment data unavailable | Verify `/data/mining_lab.json` is deployed and `scripts/verify_mining_lab.py` passes |
-| Retrying a failed warehouse load | Click **Retry loading data**; the app makes another manifest request and restarts browser initialization. Check the visible phase and `X / Y` registration count. |
-| Mining lab JSON temporarily unavailable | Retry on Data Mining Lab overview or an individual lab. No sample values are substituted for measured results. |
-| Algorithm step visualizers appear different from empirical plots | Expected: step scenes are illustrative; the charts below use exported Olist experimental results. |
+## 7. Security and evidence
 
-| Slow first load | Browser downloads large WebAssembly binaries and historical Parquet files; first-run performance depends on device/network |
-| GitHub merge successful, Vercel shows old lime theme | Deployment is separate from source merging. Inspect latest production deployment SHA, rate limits, and CDN caching before redeploying. |
-| Vercel says build rate limited | Check build quota on the project dashboard; retry/redeploy the newest `main` commit after Vercel permits it. |
-| Chart not changing | Check filters and denominator/scope; model calibration uses a fixed held-out cohort |
-| Custom domain fails | Verify DNS and domain setup in Vercel; canonical documentation URL uses the current `vercel.app` domain |
-| Deep URL `/some-page` fails | Current navigation is client-side view state under `/`, not separately configured routes. Do not invent deep links without adding a routing mechanism. |
-| Dataset or model numbers appear outdated | The original Olist source is **2016–2018**, and the checked-in export has its own timestamp. This is not a data freshness issue in a live operational system. |
+- **All** `web/public/data/` assets are publicly downloadable. Do not publish private information or credentials there.
+- The browser SQL wrapper is client-side and not a security isolation boundary for malicious data.
+- The Gemini API sees visitors' questions and selected website passages when enabled; don't describe conversations as remaining solely inside the browser.
+- Historical metrics and current build/deployment statuses must not be conflated. A screenshot demonstrates a specific captured source revision, **not** a service-level health guarantee.
+- Olist's dataset license is **CC BY-NC-SA 4.0**; PromisePulse source code is **MIT**. Check the individual usage requirements before republishing derived data.
 
-## 6. Security and publishing boundaries
-
-- `web/public/data/` is **public**, including `manifest.json` and Parquet files. Do not publish API keys, password files or private records.
-- The frontend validates submitted query strings and only permits a single read-only `SELECT`/`WITH`/`EXPLAIN` query in its wrapper. Do not treat this client-only boundary as a security sandbox for untrusted data.
-- No backend account database, write APIs, user login or server-side scheduled ML retraining is included in this release.
-- Avoid advertising the dataset as a live feed or the models as production delivery predictions.
-
-The new browser QA in [`v5-algorithm-playground.yml`](../.github/workflows/v5-algorithm-playground.yml) checks five step visualizations in light/dark/mobile and tests transient 503 failures followed by successful retry. Its screenshots and provenance are stored under `docs/screenshots/current/`.
-
-Related documentation: [Design System](THEME_SYSTEM.md) · [Algorithm Playground](ALGORITHM_PLAYGROUND.md) · [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).
+Related: [architecture](ARCHITECTURE_V5.md) · [assistant](GEMINI_RESEARCH_ASSISTANT.md) · [screenshots](SCREENSHOT_GALLERY_CURRENT.md) · [reproducibility](RESEARCH_REPRODUCIBILITY.md).
