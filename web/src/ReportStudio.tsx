@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import {FileText,Printer,X} from 'lucide-react'
 import type {Manifest} from './types'
-type Part='warehouse'|'quality'|'model'|'method'
-const labels:Record<Part,string>={warehouse:'Warehouse tables',quality:'Quality checks',model:'Delivery-risk evaluation',method:'Methods and limitations'}
-const sections:Part[]=['warehouse','quality','model','method']
+type Part='warehouse'|'chart'|'quality'|'model'|'method'
+const labels:Record<Part,string>={warehouse:'Warehouse tables',chart:'Warehouse volume chart',quality:'Quality checks',model:'Delivery-risk evaluation',method:'Methods and limitations'}
+const sections:Part[]=['warehouse','chart','quality','model','method']
 const fmt=(value:unknown)=>typeof value==='number'?value.toLocaleString('en-US',{maximumFractionDigits:3}):String(value??'—')
 export function ReportStudio({manifest,onClose}:{manifest:Manifest;onClose:()=>void}){
  const [title,setTitle]=useState('PromisePulse — Historical Data Report')
@@ -18,6 +18,19 @@ export function ReportStudio({manifest,onClose}:{manifest:Manifest;onClose:()=>v
    <article className="report-print" aria-label="Report preview">
     <h1>{title.trim()||'Untitled report'}</h1><p><strong>Source:</strong> {manifest.dataset.name} ({manifest.dataset.period})</p><p>Provider: {manifest.dataset.provider}. Source: {manifest.dataset.url}</p>
     {selected.includes('warehouse')&&<section><h2>Warehouse tables</h2><table><thead><tr><th>Relation</th><th>Rows</th></tr></thead><tbody>{Object.entries(manifest.warehouse).map(([name,n])=><tr key={name}><td>{name}</td><td>{fmt(n)}</td></tr>)}</tbody></table></section>}
+    {selected.includes('chart')&&<section><h2>Warehouse record volumes</h2><p>Row counts from the published manifest. Facts and dimensions have different grains; counts are not additive.</p>
+    <svg viewBox="0 0 660 230" role="img" aria-label="Warehouse table row counts">
+     {Object.entries(manifest.warehouse).filter(([name])=>name==='fact_orders'||name==='fact_order_items'||name==='dim_customer'||name==='dim_product'||name==='dim_seller').map(([name,amount],i)=>{
+       const max=Math.max(1,...Object.values(manifest.warehouse))
+       const width=440*amount/max
+       return <g key={name} transform={`translate(0,${i*44+8})`}>
+         <text x="5" y="18" fontSize="13" fill="#1b2d41">{name.replaceAll('_',' ')}</text>
+         <rect x="175" y="3" width={Math.max(1,width)} height="22" fill="#2b6795" rx="3"/>
+         <text x={180+width} y="19" fontSize="13" fill="#1b2d41">{fmt(amount)}</text>
+       </g>
+     })}
+    </svg>
+   </section>}
     {selected.includes('quality')&&<section><h2>Data quality</h2><table><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody>{Object.entries(manifest.quality).map(([name,n])=><tr key={name}><td>{name.replaceAll('_',' ')}</td><td>{fmt(n)}</td></tr>)}</tbody></table></section>}
     {selected.includes('model')&&<section><h2>Model evaluation</h2><p>Evaluation status: {manifest.model.status}. Prediction time: {manifest.model.prediction_time||'Unavailable'}.</p><table><thead><tr><th>Metric</th><th>Held-out result</th></tr></thead><tbody>{Object.entries(manifest.model.model_metrics||{}).map(([name,n])=><tr key={name}><td>{name.replaceAll('_',' ')}</td><td>{fmt(n)}</td></tr>)}</tbody></table></section>}
     {selected.includes('method')&&<section><h2>Methods and limitations</h2><p>Historical observational Olist records, 2016–2018. Client-side OLAP queries run against exported Parquet datasets. Offline model evaluation is not live operational prediction. Association, segmentation and delivery analysis do not prove causation.</p><ol>{manifest.lineage.map((name,i)=><li key={i}>{name}</li>)}</ol></section>}
