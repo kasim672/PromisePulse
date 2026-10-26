@@ -1,0 +1,27 @@
+{
+  "release": "PromisePulse 5.0 with post-release editorial typography cleanup",
+  "captured_at_utc": "2026-10-26T14:07:43.366Z",
+  "git_sha": "9a61a1f8534a36ecb8cb224dffc647cf1116f29f",
+  "source": "Actual checked-in Olist Parquet, manifest.json and mining_lab.json",
+  "method": "Playwright Chromium against running Vite app; no synthetic metrics",
+  "viewports": [
+    "1440x900 light",
+    "1440x900 dark",
+    "390x844 mobile light"
+  ],
+  "images": [
+    "welcome-light.png",
+    "overview-light.png",
+    "analytics-atlas-light.png",
+    "mining-hub-light.png",
+    "warehouse-etl-light.png",
+    "clustering-light.png",
+    "pattern-mining-light.png",
+    "welcome-dark.png",
+    "overview-dark.png",
+    "mining-hub-dark.png",
+    "mobile-welcome-light.png",
+    "mobile-overview-light.png",
+    "mobile-mining-hub-light.png"
+  ]
+}
