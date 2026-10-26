@@ -45,7 +45,7 @@ export function ProjectAssistant(){
    const body:unknown=await response.json().catch(()=>null)
    const result=body&&typeof body==='object'?body as {answer?:unknown;sources?:unknown;error?:unknown}:null
    if(!response.ok||typeof result?.answer!=='string'){
-    const msg=typeof result?.error==='string'?result.error:response.status===404?'AI is not available in local Vite preview. Run with Vercel Dev or deploy the server function.':'The assistant could not answer right now. Please try again.'
+    const msg=typeof result?.error==='string'?result.error:response.status===404?'The local AI endpoint is unavailable. Restart npm run dev and check that web/.env is configured.':'The assistant could not answer right now. Please try again.'
     throw new Error(msg)
    }
    if(controller.signal.aborted)return
