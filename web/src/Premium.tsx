@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowDownRight, ArrowUpRight, CalendarDays, CheckCircle2, ChevronRight, Download, Globe2, MapPinned, Package, TrendingUp } from 'lucide-react'
 import type { Warehouse } from './db'
+import {useSharedFilters} from './sharedFilters'
 import type { RecordRow } from './types'
 import { dashboardQueries, insightQueries } from './premiumQueries'
 import type { YearSelection } from './premiumQueries'
@@ -146,7 +147,9 @@ function Geo({rows}:{rows:RecordRow[]}){
 }
 const yearOptions:YearSelection[]=['all','2018','2017','2016']
 export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}){
-  const [year,setYear]=useState<YearSelection>('all')
+  const [shared,setShared]=useSharedFilters()
+  const year=shared.year as YearSelection
+  const setYear=(v:YearSelection)=>setShared({year:v})
   const [filter,setFilter]=useState('All')
   const queries=useMemo(()=>dashboardQueries(year),[year])
   const kpi=useQuery(db,queries.summary),trends=useQuery(db,queries.monthly),regions=useQuery(db,queries.states),
@@ -192,7 +195,9 @@ export function PremiumOverview({db,onNavigate}:{db:Warehouse,onNavigate:Switch}
   </div>
 }
 export function PremiumIntelligence({db}:{db:Warehouse}){
- const [year,setYear]=useState<YearSelection>('all')
+ const [shared,setShared]=useSharedFilters()
+  const year=shared.year as YearSelection
+  const setYear=(v:YearSelection)=>setShared({year:v})
  const q=useMemo(()=>insightQueries(year),[year])
  const monthly=useQuery(db,q.deliveryMonths),fulfillment=useQuery(db,q.fulfillment),weekday=useQuery(db,q.weekday),
   review=useQuery(db,q.review),basket=useQuery(db,q.basket),frequency=useQuery(db,q.customerFrequency),
