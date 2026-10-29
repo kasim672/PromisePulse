@@ -19,6 +19,18 @@ On `npm run dev`, a local Node process runs the same handler at **`127.0.0.1:878
 
 The knowledge index is rebuilt from checked-in documentation, `manifest.json` and selected mining aggregates on `predev` and `prebuild`. Neither Vercel nor the browser runs the Python ETL or executes chat-requested SQL over raw Parquet files. See [AI architecture and security](GEMINI_RESEARCH_ASSISTANT.md).
 
+## Automation, Vercel build limits and release version (October 30, 2026)
+
+The source release is **PromisePulse 5.0.0**. Both `web/package.json` and `web/package-lock.json` now use `5.0.0`; the application UI and historical data were not changed in this maintenance update.
+
+**GitHub Actions are not the deployment engine.** [Three QA workflows](../.github/ACTIONS_PAUSED.md) can be run manually from GitHub's Actions tab; eleven historical workflows remain archived, including screenshot and branch-cleanup automations. No restored workflow has an automatic `push` or `pull_request` trigger. This avoids unexpected GitHub-hosted runner usage, but means that merging does **not** imply CI passed. Run [Web Validation](../.github/workflows/web-checks.yml) manually and review its result before a release.
+
+**Vercel and GitHub have separate quotas.** The previous Vercel **build-rate-limit** result is not a source file-count diagnostic. At commit `a10c8e36`, the repository contained **251 tracked files**, only **72** of them under `web/`; these counts do not include generated output or uploaded dependencies. Vercel documents a 15,000-source-file limit for **CLI deployments**, but the repository evidence does not show that limit being reached. Inspect the actual Vercel deployment error, build logs, billing and usage limits before deciding on an upgrade or retry.
+
+A checked-in `web/vercel.json` pins **Vite**, `npm ci`, `npm run build`, and `dist`. It cannot change Vercel's account-wide build-rate limits or the dashboard's **Root Directory** setting. Keep the root set to `web`, the production branch set to `main`, and the server-only `GEMINI_API_KEY` stored as a Vercel environment variable.
+
+To limit unnecessary Vercel builds, review **Project Settings → Build and Deployment → Root Directory → Skip deployment** for unaffected code. **Caution:** the production AI evidence index is generated from `README.md` and selected `docs/*.md` files **outside** `web/`. A naive "build only when web changes" rule would skip important documentation updates and make the assistant knowledge stale. If configuring an Ignored Build Step, account for all evidence-index source paths, and remember that a skipped build may still count toward deployment limits. The safest immediate fix for a true rate-limit error is to confirm the quota/refresh window in Vercel and deploy `main` when permitted.
+
 ## 1. Deploy to Vercel from GitHub
 
 1. Sign in to [Vercel](https://vercel.com/new) and import `kasim672/PromisePulse`.
@@ -35,6 +47,8 @@ The knowledge index is rebuilt from checked-in documentation, `manifest.json` an
 | Output directory | `dist` |
 | Environment variables | None for static analytics; private `GEMINI_API_KEY` needed for generated AI responses |
 | Production branch | `main` |
+
+The repository's [`web/vercel.json`](../web/vercel.json) records the same install/build/output settings. Configure the project root in Vercel itself; `vercel.json` does not set an external project's root directory.
 
 Vercel builds the React application and copies `web/public/` into its output. `index.html`, versioned JavaScript/CSS, `manifest.json`, Parquet files and the mining lab JSON are served as static assets.
 
@@ -61,7 +75,7 @@ cd web
 npm ci
 npm run build
 
-# GitHub CI also runs regression tests in tests/
+# The manual GitHub Web Validation workflow also runs regression tests in tests/
 node ../tests/test_sql_generation.cjs
 node ../tests/test_theme.cjs
 node ../tests/test_atlas.cjs
@@ -162,6 +176,6 @@ If the exported files change, inspect `manifest.json` and verify all tests **bef
 - No backend account database, write APIs, user login or server-side scheduled ML retraining is included in this release.
 - Avoid advertising the dataset as a live feed or the models as production delivery predictions.
 
-The new browser QA in [`v5-algorithm-playground.yml`](../.github/workflows/v5-algorithm-playground.yml) checks five step visualizations in light/dark/mobile and tests transient 503 failures followed by successful retry. Its screenshots and provenance are stored under `docs/screenshots/current/`.
+The archived historical browser QA in [`v5-algorithm-playground.yml`](../.github/workflows-paused/v5-algorithm-playground.yml) checked five step visualizations in light/dark/mobile and tests transient 503 failures followed by successful retry. Its screenshots and provenance are stored under `docs/screenshots/current/`.
 
 Related documentation: [Design System](THEME_SYSTEM.md) · [Algorithm Playground](ALGORITHM_PLAYGROUND.md) · [Architecture](ARCHITECTURE_V5.md) · [Screenshot gallery](SCREENSHOT_GALLERY_CURRENT.md) · [Research reproducibility](RESEARCH_REPRODUCIBILITY.md).

@@ -1,8 +1,14 @@
 # PromisePulse — current release notes
 
-**Release line:** PromisePulse 5.0, maintained on [`main`](https://github.com/kasim672/PromisePulse/tree/main). Documentation reviewed October 27, 2026.
+**Release line:** PromisePulse 5.0, maintained on [`main`](https://github.com/kasim672/PromisePulse/tree/main). Documentation and deployment maintenance reviewed October 30, 2026.
 
 This is an **academic historical e-commerce intelligence dashboard**, not a live order-fulfilment, live model inference, or production forecasting service. Each shipped analytical number refers to the Olist historical export, and a successful GitHub merge is not itself evidence of a production deployment.
+
+## October 30 maintenance: build metadata and automation
+
+The web package and lockfile use version **5.0.0**, matching this release line. A `web/vercel.json` explicitly specifies the Vite build command, `npm ci` and `dist` output. Vercel root-directory selection, existing build-rate limits, environment variables and deployment readiness still require verification in the Vercel dashboard.
+
+Three read-only/manual QA workflows are restored under `.github/workflows/`; eleven older, branch-specific or write-back workflows stay in `.github/workflows-paused/`. The restored workflows do not run automatically. See [Actions status](../.github/ACTIONS_PAUSED.md). No product feature, screenshot, historical dataset or model result changed.
 
 ## Included in the source release
 

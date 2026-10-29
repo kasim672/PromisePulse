@@ -1,6 +1,6 @@
 # Screenshot Capture Request
 
-This file intentionally triggers `.github/workflows/capture-screenshots.yml` on the feature branch.
+Historical capture request: its former workflow is archived at `.github/workflows-paused/capture-screenshots.yml`. It no longer triggers automatically, and its original feature branch may no longer exist.
 
 Requested capture: real PromisePulse 3.0 app using bundled Olist Parquet.
 - 1440 × 900: seven routes in light and dark mode
