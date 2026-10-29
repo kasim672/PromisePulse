@@ -158,7 +158,7 @@ The exact Python scripts, requirements and available flags are the authority; co
 
 ### Continuous integration
 
-The GitHub Actions workflow `.github/workflows/web-checks.yml` checks `npm ci`, the TypeScript/Vite production build, SQL query generation, theme contract, and the Atlas chart registry/query constraints. It is a **build and static contract check**, not a browser accessibility certification nor a complete end-to-end source-data SQL test.
+The **manual-only** GitHub Actions workflow `.github/workflows/web-checks.yml` checks `npm ci`, the TypeScript/Vite production build, SQL query generation, theme contract, and the Atlas chart registry/query constraints. It is a **build and static contract check**, not a browser accessibility certification nor a complete end-to-end source-data SQL test.
 
 ```bash
 cd web

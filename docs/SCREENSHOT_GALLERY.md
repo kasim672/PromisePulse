@@ -58,6 +58,6 @@ cd PromisePulse/web
 PP_BASE_URL=http://127.0.0.1:4173 node scripts/capture-doc-screens.mjs
 ```
 
-The script checks that the actual dashboard appears before screenshots are taken, waits for historical Atlas queries, and fails rather than silently replacing failed data with invented chart values. The one-shot GitHub Actions [Capture authentic UI screenshots](../.github/workflows/capture-screenshots.yml) workflow records the same assets automatically.
+The script checks that the actual dashboard appears before screenshots are taken, waits for historical Atlas queries, and fails rather than silently replacing failed data with invented chart values. The historical [Capture authentic UI screenshots](../.github/workflows-paused/capture-screenshots.yml) workflow is archived, does **not** run automatically, and references an older feature branch.
 
 **Capture limitations:** the gallery establishes appearance under the recorded browser, viewport and state; it does not replace manual WCAG testing, independent source-data query execution, benchmark replication or on-device responsive review. Screenshots of the older blue-theme design may remain under `docs/screenshots/` for historical comparison, but they are **not current PromisePulse 3.0 UI captures**.

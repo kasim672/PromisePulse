@@ -121,7 +121,7 @@ node ../tests/test_research_expansion.cjs
 npm run dev
 ```
 
-The 4th check enforces exactly 12 dock destinations, 30 new figure identities, safe order/item separation and allowlisted filters, and checks AI honesty text. The additional Playwright smoke in `web/scripts/capture-v4.mjs` navigates the actual running application, executes warehouse-backed charts, tests AI question selection, verifies the original Overview is preserved, and captures light/dark/mobile screenshots. GitHub Actions runs this script via `.github/workflows/v4-browser-capture.yml`; screenshots carry a manifest with provenance.
+The 4th check enforces exactly 12 dock destinations, 30 new figure identities, safe order/item separation and allowlisted filters, and checks AI honesty text. The additional Playwright smoke in `web/scripts/capture-v4.mjs` navigates the actual running application, executes warehouse-backed charts, tests AI question selection, verifies the original Overview is preserved, and captures light/dark/mobile screenshots. The original `.github/workflows-paused/v4-browser-capture.yml` is archived and no longer runs automatically. Historical screenshots carry a manifest with provenance.
 
 ## Limits for scholarly submission
 

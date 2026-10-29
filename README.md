@@ -2,7 +2,7 @@
 
 **Historical e-commerce intelligence, dimensional warehousing and reproducible data-mining experiments.**
 
-[![Web build and checks](https://github.com/kasim672/PromisePulse/actions/workflows/web-checks.yml/badge.svg?branch=main)](https://github.com/kasim672/PromisePulse/actions/workflows/web-checks.yml)
+[![Web checks: manual](https://img.shields.io/badge/CI-manual%20checks-blue)](.github/workflows/web-checks.yml)
 [![MIT source license](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 [![Olist historical dataset](https://img.shields.io/badge/dataset-Olist%202016--2018-4b779c)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 
@@ -27,6 +27,8 @@ The interface uses a **soft-cyan accent (`#7DD3FC`)** in place of fluorescent li
 The current `main` release includes the original analytics and six mining lab modules, the step-by-step visualizers, the **Gemini-backed website knowledge assistant**, and its improved dark/light chat styling ([PR #18](https://github.com/kasim672/PromisePulse/pull/18), [PR #19](https://github.com/kasim672/PromisePulse/pull/19)). UI changes do not alter Olist data, SQL, historical model evaluation or mining results. See [release notes](docs/RELEASE_NOTES.md).
 
 **GitHub source and public deployment are separate:** recent Vercel status checks reported deployment build-rate limits. Check **Deployments → Production**, its **Ready** status, and the deployed commit SHA before assuming the public URL reflects `main`. The [deployment guide](docs/DEPLOYMENT.md) explains verification; the [design system](docs/THEME_SYSTEM.md) covers both appearance modes.
+
+**Automation status (October 30, 2026):** Three GitHub Actions checks are restored as **manual-only** workflows: [web validation](.github/workflows/web-checks.yml), [Gemini QA](.github/workflows/gemini-assistant.yml), and [live editorial smoke QA](.github/workflows/live-editorial-smoke.yml). None runs automatically on a push or pull request. Eleven historical screenshot, feature-branch and cleanup workflows remain archived under `.github/workflows-paused/`, because some still target deleted branches or can write back to Git. See [Actions status](.github/ACTIONS_PAUSED.md). These workflows are independent of Vercel deployment quotas.
 
 ## PromisePulse AI — website knowledge assistant
 
@@ -212,6 +214,8 @@ The production domain is **[promise-pulse-rose.vercel.app](https://promise-pulse
 | Output directory | `dist` |
 | Required production secrets | None for the bundled static historical data |
 
+The version in `web/package.json` and `web/package-lock.json` is aligned with this **5.0.0** release. A checked-in [`web/vercel.json`](web/vercel.json) pins the Vite build, `npm ci` and `dist` settings; the **Root directory = `web`** still must be configured in the Vercel project dashboard. This configuration does not change Vercel account quotas or guarantee a successful deployment.
+
 Vercel deploys compiled HTML, JS, CSS, WebAssembly and `web/public/data` files. No live DuckDB server or Python deployment is involved. **[Read the complete setup, production QA, data-regeneration and troubleshooting guide](docs/DEPLOYMENT.md).**
 
 ## Validate the release
@@ -233,13 +237,14 @@ node ../tests/test_soft_cyan_theme.cjs
 node ../tests/test_documentation.cjs
 ```
 
-GitHub Actions runs these checks in [`.github/workflows/web-checks.yml`](.github/workflows/web-checks.yml). Browser navigation tests and capture scripts are in `web/scripts/` and install Playwright separately. The [capture gallery](docs/SCREENSHOT_GALLERY_CURRENT.md) documents the screenshot source, viewport and commit instead of relying on mockups.
+To run these checks on GitHub, open **Actions → PromisePulse Web Validation → Run workflow** on `main` ([workflow file](.github/workflows/web-checks.yml)). The workflow is manual-only; automatic runs are intentionally disabled to conserve runner minutes. The historical screenshot workflows remain [archived](.github/ACTIONS_PAUSED.md). Browser navigation tests and capture scripts are in `web/scripts/` and install Playwright separately. The [capture gallery](docs/SCREENSHOT_GALLERY_CURRENT.md) documents the screenshot source, viewport and commit instead of relying on mockups.
 
 ## Project layout
 
 ```text
 PromisePulse/
-├── .github/workflows/         # Web build, data verification and browser QA
+├── .github/workflows/         # Three manual-only QA workflows
+├── .github/workflows-paused/  # Eleven archived legacy workflows
 ├── docs/
 │   ├── ARCHITECTURE_V5.md     # Editable flow, ER and sequence diagrams
 │   ├── architecture.svg       # Standalone overview diagram

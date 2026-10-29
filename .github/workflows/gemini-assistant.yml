@@ -1,18 +1,5 @@
 name: Gemini Project Research Assistant QA
 on:
-  push:
-    branches: [feat/gemini-project-research-assistant, fix/gemini-local-api-standalone, fix/gemini-assistant-real-answers, main]
-    paths:
-      - 'web/src/**'
-      - 'web/api/**'
-      - 'web/scripts/smoke-gemini-assistant.mjs'
-      - 'web/scripts/local-gemini-server.mjs'
-      - 'web/scripts/dev.mjs'
-      - 'web/vite.config.ts'
-      - 'web/package.json'
-      - 'tests/test_gemini_local_http.mjs'
-      - 'tests/test_gemini_assistant.mjs'
-      - '.github/workflows/gemini-assistant.yml'
   workflow_dispatch:
 permissions:
   contents: read

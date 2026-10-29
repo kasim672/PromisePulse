@@ -81,7 +81,7 @@ flowchart LR
 
 - `node tests/test_algorithm_playground.cjs` checks computed K-Means updates, Apriori supports, FP prefix counts, Eclat TID intersections, and the app integrations.
 - `web/scripts/smoke-algorithms.mjs` exercises step selection, Restart/Previous, desktop light/dark, mobile, and simulated HTTP 503 failures followed by successful Retry.
-- The [browser screenshot workflow](../.github/workflows/v5-algorithm-playground.yml) stores genuine Chromium captures and an `ALGORITHM_CAPTURE_MANIFEST.json` describing their source.
+- The [archived browser screenshot workflow](../.github/workflows-paused/v5-algorithm-playground.yml) previously stored genuine Chromium captures and an `ALGORITHM_CAPTURE_MANIFEST.json` describing their source; it is not currently active.
 
 ### Screenshots
 

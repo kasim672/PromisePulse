@@ -74,7 +74,7 @@ node ../tests/test_syllabus_modules.cjs
 node ../tests/test_mining_export_integrity.cjs
 ```
 
-The new `test_mining_export_integrity.cjs` verifies observed source row counts, missingness arithmetic, quantile ordering, 7×7 Pearson symmetry, model confusion-matrix totals and reported precision/recall, regression metric ranges, 950 modeled customer memberships, dendrogram linkage size, itemset support bounds and association-rule validity. It is part of **every push and PR** through `.github/workflows/web-checks.yml`.
+The new `test_mining_export_integrity.cjs` verifies observed source row counts, missingness arithmetic, quantile ordering, 7×7 Pearson symmetry, model confusion-matrix totals and reported precision/recall, regression metric ranges, 950 modeled customer memberships, dendrogram linkage size, itemset support bounds and association-rule validity. It is included in the **manual-only** `.github/workflows/web-checks.yml`; checks no longer run automatically for every push or PR. Run Web Validation in the Actions tab before releasing.
 
 The offline exporter remains the source of the empirical report:
 
